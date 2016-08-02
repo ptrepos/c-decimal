@@ -1,0 +1,411 @@
+/**
+ * 256 bit integer for decimal.
+ * this source includes decimal implementation.
+ *
+ * Copyright (C) dachicraft foundation 2016
+ * @author t.hada 2016/07/09
+ */
+#pragma once
+
+#include <assert.h>
+#include <stdint.h>
+#include <stdbool.h>
+
+#include <magica/decimal/decimal.h>
+#include "intop.h"
+
+#define MG_UINT256_WORD_COUNT	(8)
+
+/**
+ * 256bit integer implementation for 64bit.
+ */
+typedef struct mg_uint256
+{
+	uint32_t word[MG_UINT256_WORD_COUNT];
+} mg_uint256;
+
+/** 
+ * value setter function.
+ */
+static inline int mg_uint256_set_zero(mg_uint256 *op1);
+static inline int mg_uint256_set(mg_uint256 *op1, uint64_t value);
+
+/** 
+ * comparison functions
+ */
+static inline int mg_uint256_is_zero(const mg_uint256 *op1);
+static inline int mg_uint256_compare(const mg_uint256 *op1, const mg_uint256 *op2);
+
+/** 
+ * swap pointer
+ */
+static inline void mg_uint256_swap(mg_uint256 **a, mg_uint256 **b);
+
+/**
+ * arithmetric functions
+ */
+static inline void mg_uint256_add(/*inout*/mg_uint256 *op1, const mg_uint256 *op2);
+static inline void mg_uint256_sub(/*inout*/mg_uint256 *op1, const mg_uint256 *op2, /*out*/int *borrow);
+static inline void mg_uint256_neg(/*inout*/mg_uint256 *op1);
+static inline void mg_uint256_mul128(const mg_uint256 *op1, const mg_uint256 *op2, /*out*/mg_uint256 *ret); // multiply for low bits.
+static inline void mg_uint256_mul(const mg_uint256 *op1, const mg_uint256 *op2, /*out*/mg_uint256 *ret, /*out*/int *overflow);
+extern mg_decimal_error mg_uint256_div(/*inout*/mg_uint256 *op1, const mg_uint256 *op2, /*out*/mg_uint256 *quotient);
+
+/**
+ * These functions includes for mg_decimal.
+ */
+static inline bool mg_uint256_is_overflow_int64(const mg_uint256 *op1);
+static inline int64_t mg_uint256_get_int64(mg_uint256 *op1);
+static inline const mg_uint256 *mg_uint256_get_10eN(int digits);
+extern int mg_uint256_get_digits(const mg_uint256 *value);
+
+extern void mg_uint256_test_to_string(const mg_uint256 *value, char *buf);
+extern void mg_uint256_test_convert(const char *buf, mg_uint256 *value);
+
+/**
+ * 10^N constants table
+ * N = 0 ~ 63
+ */
+extern MG_PRIVATE const mg_uint256 *MG_UINT256_10eN_TABLE[];
+
+
+static inline int mg_uint256_set_zero(mg_uint256 *op1)
+{
+	for(int i = 0; i < MG_UINT256_WORD_COUNT; i++) {
+		op1->word[i] = 0;
+	}
+	return 0;
+}
+
+static inline int mg_uint256_set(mg_uint256 *op1, uint64_t value)
+{
+	op1->word[0] = (uint32_t)value;
+	op1->word[1] = (uint32_t)(value >> 32ULL);
+	for(int i = 2; i < MG_UINT256_WORD_COUNT; i++) {
+		op1->word[i] = 0;
+	}
+
+	return 0;
+}
+
+static inline bool mg_uint256_is_overflow_int64(const mg_uint256 *op1)
+{
+	return (op1->word[7] | op1->word[6] | op1->word[5] | op1->word[4] | 
+		    op1->word[3] | op1->word[2]) != 0 || 
+		   (op1->word[1] & ~0x7FFFFFFFUL) != 0;
+}
+
+static inline int64_t mg_uint256_get_int64(mg_uint256 *op1)
+{
+	return ((int64_t)(op1->word[1] & 0x7FFFFFFF) << 32ULL) | (int64_t)op1->word[0];
+}
+
+static inline int32_t mg_uint256_get_int32(mg_uint256 *op1)
+{
+	return (int64_t)op1->word[0];
+}
+
+
+static inline void mg_uint256_swap(mg_uint256 **a, mg_uint256 **b)
+{
+	mg_uint256 *tmp = *a;
+	*a = *b;
+	*b = tmp;
+}
+
+static inline int mg_uint256_is_zero(const mg_uint256 *op1)
+{
+	return (op1->word[7] | op1->word[6] | op1->word[5] | op1->word[4] | 
+		    op1->word[3] | op1->word[2] | op1->word[1] | op1->word[0]) == 0;
+}
+
+static inline int mg_uint256_compare(const mg_uint256 *op1, const mg_uint256 *op2)
+{
+	for(int i = MG_UINT256_WORD_COUNT; i > 0; i--) {
+		if(op1->word[i-1] != op2->word[i-1]) 
+			return op1->word[i-1] < op2->word[i-1] ? -1: 1;
+	}
+	return 0;
+}
+
+static inline void mg_uint256_add128(mg_uint256 *op1, const mg_uint256 *op2)
+{
+	unsigned char c;
+
+	c = 0;
+	c = mg_uint32_add(c, op1->word[0], op2->word[0], &op1->word[0]);
+	c = mg_uint32_add(c, op1->word[1], op2->word[1], &op1->word[1]);
+	c = mg_uint32_add(c, op1->word[2], op2->word[2], &op1->word[2]);
+	c = mg_uint32_add(c, op1->word[3], op2->word[3], &op1->word[3]);
+}
+
+
+static inline void mg_uint256_add(mg_uint256 *op1, const mg_uint256 *op2)
+{
+	unsigned char c;
+	
+	c = 0;
+	c = mg_uint32_add(c, op1->word[0], op2->word[0], &op1->word[0]);
+	c = mg_uint32_add(c, op1->word[1], op2->word[1], &op1->word[1]);
+	c = mg_uint32_add(c, op1->word[2], op2->word[2], &op1->word[2]);
+	c = mg_uint32_add(c, op1->word[3], op2->word[3], &op1->word[3]);
+	c = mg_uint32_add(c, op1->word[4], op2->word[4], &op1->word[4]);
+	c = mg_uint32_add(c, op1->word[5], op2->word[5], &op1->word[5]);
+	c = mg_uint32_add(c, op1->word[6], op2->word[6], &op1->word[6]);
+	c = mg_uint32_add(c, op1->word[7], op2->word[7], &op1->word[7]);
+}
+
+static inline void mg_uint256_sub128(mg_uint256 *op1, const mg_uint256 *op2, /*out*/int *borrow)
+{
+	unsigned char b;
+
+	b = 0;
+	b = mg_uint32_sub(b, op1->word[0], op2->word[0], &op1->word[0]);
+	b = mg_uint32_sub(b, op1->word[1], op2->word[1], &op1->word[1]);
+	b = mg_uint32_sub(b, op1->word[2], op2->word[2], &op1->word[2]);
+	b = mg_uint32_sub(b, op1->word[3], op2->word[3], &op1->word[3]);
+
+	*borrow = b;
+}
+
+static inline void mg_uint256_sub(mg_uint256 *op1, const mg_uint256 *op2, /*out*/int *borrow)
+{
+	unsigned char b;
+
+	b = 0;
+	b = mg_uint32_sub(b, op1->word[0], op2->word[0], &op1->word[0]);
+	b = mg_uint32_sub(b, op1->word[1], op2->word[1], &op1->word[1]);
+	b = mg_uint32_sub(b, op1->word[2], op2->word[2], &op1->word[2]);
+	b = mg_uint32_sub(b, op1->word[3], op2->word[3], &op1->word[3]);
+	b = mg_uint32_sub(b, op1->word[4], op2->word[4], &op1->word[4]);
+	b = mg_uint32_sub(b, op1->word[5], op2->word[5], &op1->word[5]);
+	b = mg_uint32_sub(b, op1->word[6], op2->word[6], &op1->word[6]);
+	b = mg_uint32_sub(b, op1->word[7], op2->word[7], &op1->word[7]);
+
+	*borrow = b;
+}
+
+static inline void mg_uint256_neg128(mg_uint256 *op1)
+{
+	unsigned char c;
+
+	op1->word[0] = ~op1->word[0];
+	op1->word[1] = ~op1->word[1];
+	op1->word[2] = ~op1->word[2];
+	op1->word[3] = ~op1->word[3];
+
+	c = 0;
+	c = mg_uint32_add(c, op1->word[0], 1, &op1->word[0]);
+	c = mg_uint32_add(c, op1->word[1], 0, &op1->word[1]);
+	c = mg_uint32_add(c, op1->word[2], 0, &op1->word[2]);
+	c = mg_uint32_add(c, op1->word[3], 0, &op1->word[3]);
+}
+
+
+static inline void mg_uint256_neg(mg_uint256 *op1)
+{
+	unsigned char c;
+	
+	op1->word[0] = ~op1->word[0];
+	op1->word[1] = ~op1->word[1];
+	op1->word[2] = ~op1->word[2];
+	op1->word[3] = ~op1->word[3];
+	op1->word[4] = ~op1->word[4];
+	op1->word[5] = ~op1->word[5];
+	op1->word[6] = ~op1->word[6];
+	op1->word[7] = ~op1->word[7];
+
+	c = 0;
+	c = mg_uint32_add(c, op1->word[0], 1, &op1->word[0]);
+	c = mg_uint32_add(c, op1->word[1], 0, &op1->word[1]);
+	c = mg_uint32_add(c, op1->word[2], 0, &op1->word[2]);
+	c = mg_uint32_add(c, op1->word[3], 0, &op1->word[3]);
+	c = mg_uint32_add(c, op1->word[4], 0, &op1->word[4]);
+	c = mg_uint32_add(c, op1->word[5], 0, &op1->word[5]);
+	c = mg_uint32_add(c, op1->word[6], 0, &op1->word[6]);
+	c = mg_uint32_add(c, op1->word[7], 0, &op1->word[7]);
+}
+
+static inline void mg_uint256_mul_with_words(const mg_uint256 *op1, int op1_words, const mg_uint256 *op2, int op2_words, /*out*/mg_uint256 *ret, /*out*/int *overflow)
+{
+	unsigned carry, carry2;
+	uint32_t lo, hi;
+
+	*overflow = 0;
+	mg_uint256_set_zero(ret);
+
+	for(int i = 0; i < op1_words; i++) {
+		carry2 = 0;
+		for(int j = 0; j < op2_words; j++) {
+			int k = i + j;
+			if(k >= MG_UINT256_WORD_COUNT) {
+				if(!((op1->word[i] == 0 || op2->word[j] == 0) && carry2 == 0)) {
+					*overflow = 1;
+					return;
+				}
+				break;
+			}
+
+			lo = mg_uint32_mul(op1->word[i], op2->word[j], &hi);
+
+			carry = mg_uint32_add(0, ret->word[k], lo, &ret->word[k]);
+
+			k++;
+			if(k >= MG_UINT256_WORD_COUNT) {
+				if(!(hi == 0 && carry == 0)) {
+					*overflow = 1;
+					return;
+				}
+				continue;
+			}
+			carry = mg_uint32_add(carry, ret->word[k], hi, &ret->word[k]);
+
+			k++;
+			if(k >= MG_UINT256_WORD_COUNT) {
+				if(!(carry2 == 0 && carry == 0)) {
+					*overflow = 1;
+					return;
+				}
+				continue;
+			}
+			carry2 = mg_uint32_add(carry, ret->word[k], carry2, &ret->word[k]);
+		}
+	}
+}
+
+static inline void mg_uint256_mul128(const mg_uint256 *op1, const mg_uint256 *op2, mg_uint256 *ret)
+{
+#if !defined(__MG_X86_MUL_UNLOOP)
+	int op1_digits = MG_UINT256_WORD_COUNT / 2;
+	while(op1_digits > 0 && op1->word[op1_digits-1] == 0)
+		op1_digits--;
+
+	int op2_digits = MG_UINT256_WORD_COUNT / 2;
+	while(op2_digits > 0 && op2->word[op2_digits-1] == 0)
+		op2_digits--;
+
+	int overflow;
+	mg_uint256_mul_with_words(op1, op1_digits, op2, op2_digits, /*out*/ret, /*out*/&overflow);
+#else
+	unsigned c1, c2;
+	uint32_t lo, hi;
+	
+	mg_uint256_set_zero(ret);
+
+	lo = mg_uint32_mul(op1->word[0], op2->word[0], &hi);
+	ret->word[0] = lo;
+	ret->word[1] = hi;
+
+	lo = mg_uint32_mul(op1->word[1], op2->word[1], &hi);
+	ret->word[2] = lo;
+	ret->word[3] = hi;
+
+	lo = mg_uint32_mul(op1->word[2], op2->word[2], &hi);
+	ret->word[4] = lo;
+	ret->word[5] = hi;
+
+	lo = mg_uint32_mul(op1->word[3], op2->word[3], &hi);
+	ret->word[6] = lo;
+	ret->word[7] = hi;
+
+	c2 = 0;
+	c1 = 0;
+	lo = mg_uint32_mul(op1->word[0], op2->word[1], &hi);
+	c1 = mg_uint32_add(c1, ret->word[1], lo, &ret->word[1]);
+	c1 = mg_uint32_add(c1, ret->word[2], hi, &ret->word[2]);
+	c2 = mg_uint32_add(c1, ret->word[3], c2, &ret->word[3]);
+
+	c1 = 0;
+	lo = mg_uint32_mul(op1->word[0], op2->word[2], &hi);
+	c1 = mg_uint32_add(c1, ret->word[2], lo, &ret->word[2]);
+	c1 = mg_uint32_add(c1, ret->word[3], hi, &ret->word[3]);
+	c2 = mg_uint32_add(c1, ret->word[4], c2, &ret->word[4]);
+
+	c1 = 0;
+	lo = mg_uint32_mul(op1->word[0], op2->word[3], &hi);
+	c1 = mg_uint32_add(c1, ret->word[3], lo, &ret->word[3]);
+	c1 = mg_uint32_add(c1, ret->word[4], hi, &ret->word[4]);
+	c2 = mg_uint32_add(c1, ret->word[5], c2, &ret->word[5]);
+
+	c2 = 0;
+	c1 = 0;
+	lo = mg_uint32_mul(op1->word[1], op2->word[0], &hi);
+	c1 = mg_uint32_add(c1, ret->word[1], lo, &ret->word[1]);
+	c1 = mg_uint32_add(c1, ret->word[2], hi, &ret->word[2]);
+	c2 = mg_uint32_add(c1, ret->word[3], c2, &ret->word[3]);
+
+	c2 = mg_uint32_add(0, ret->word[4], c2, &ret->word[4]);
+
+	c1 = 0;
+	lo = mg_uint32_mul(op1->word[1], op2->word[2], &hi);
+	c1 = mg_uint32_add(c1, ret->word[3], lo, &ret->word[3]);
+	c1 = mg_uint32_add(c1, ret->word[4], hi, &ret->word[4]);
+	c2 = mg_uint32_add(c1, ret->word[5], c2, &ret->word[5]);
+
+	c1 = 0;
+	lo = mg_uint32_mul(op1->word[1], op2->word[3], &hi);
+	c1 = mg_uint32_add(c1, ret->word[4], lo, &ret->word[4]);
+	c1 = mg_uint32_add(c1, ret->word[5], hi, &ret->word[5]);
+	c2 = mg_uint32_add(c1, ret->word[6], c2, &ret->word[6]);
+
+	c2 = 0;
+	c1 = 0;
+	lo = mg_uint32_mul(op1->word[2], op2->word[0], &hi);
+	c1 = mg_uint32_add(c1, ret->word[2], lo, &ret->word[2]);
+	c1 = mg_uint32_add(c1, ret->word[3], hi, &ret->word[3]);
+	c2 = mg_uint32_add(c1, ret->word[4], c2, &ret->word[4]);
+
+	c1 = 0;
+	lo = mg_uint32_mul(op1->word[2], op2->word[1], &hi);
+	c1 = mg_uint32_add(c1, ret->word[3], lo, &ret->word[3]);
+	c1 = mg_uint32_add(c1, ret->word[4], hi, &ret->word[4]);
+	c2 = mg_uint32_add(c1, ret->word[5], c2, &ret->word[5]);
+
+	c2 = mg_uint32_add(0, ret->word[6], c2, &ret->word[6]);
+
+	c1 = 0;
+	lo = mg_uint32_mul(op1->word[2], op2->word[3], &hi);
+	c1 = mg_uint32_add(c1, ret->word[5], lo, &ret->word[5]);
+	c1 = mg_uint32_add(c1, ret->word[6], hi, &ret->word[6]);
+	c2 = mg_uint32_add(c1, ret->word[7], c2, &ret->word[7]);
+
+	c2 = 0;
+	c1 = 0;
+	lo = mg_uint32_mul(op1->word[3], op2->word[0], &hi);
+	c1 = mg_uint32_add(c1, ret->word[3], lo, &ret->word[3]);
+	c1 = mg_uint32_add(c1, ret->word[4], hi, &ret->word[4]);
+	c2 = mg_uint32_add(c1, ret->word[5], c2, &ret->word[5]);
+
+	c1 = 0;
+	lo = mg_uint32_mul(op1->word[3], op2->word[1], &hi);
+	c1 = mg_uint32_add(c1, ret->word[4], lo, &ret->word[4]);
+	c1 = mg_uint32_add(c1, ret->word[5], hi, &ret->word[5]);
+	c2 = mg_uint32_add(c1, ret->word[6], c2, &ret->word[6]);
+
+	c1 = 0;
+	lo = mg_uint32_mul(op1->word[3], op2->word[2], &hi);
+	c1 = mg_uint32_add(c1, ret->word[5], lo, &ret->word[5]);
+	c1 = mg_uint32_add(c1, ret->word[6], hi, &ret->word[6]);
+	c2 = mg_uint32_add(c1, ret->word[7], c2, &ret->word[7]);a
+#endif
+}
+
+static inline void mg_uint256_mul(const mg_uint256 *op1, const mg_uint256 *op2, mg_uint256 *ret, int *overflow)
+{
+	int op1_digits = MG_UINT256_WORD_COUNT;
+	while(op1_digits > 0 && op1->word[op1_digits-1] == 0)
+		op1_digits--;
+
+	int op2_digits = MG_UINT256_WORD_COUNT;
+	while(op2_digits > 0 && op2->word[op2_digits-1] == 0)
+		op2_digits--;
+
+	mg_uint256_mul_with_words(op1, op1_digits, op2, op2_digits, /*out*/ret, /*out*/overflow);
+}
+
+static inline const mg_uint256 *mg_uint256_get_10eN(int digits)
+{
+	assert(digits < 78);
+
+	return MG_UINT256_10eN_TABLE[digits];
+}
