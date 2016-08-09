@@ -17,6 +17,7 @@
 #include "intop.h"
 
 #define MG_UINT256_WORD_COUNT	(4)
+#define MG_UINT256_WORD_BITS	(64)
 
 /**
  * 256bit integer implementation for 64bit.
@@ -53,6 +54,12 @@ static inline void mg_uint256_mul128(const mg_uint256 *op1, const mg_uint256 *op
 static inline void mg_uint256_mul(const mg_uint256 *op1, const mg_uint256 *op2, /*out*/mg_uint256 *ret, /*out*/int *overflow);
 extern mg_decimal_error mg_uint256_div(/*inout*/mg_uint256 *op1, const mg_uint256 *op2, /*out*/mg_uint256 *quotient);
 
+
+static inline void mg_uint256_or(/*inout*/mg_uint256 *op1, const mg_uint256 *op2);
+static inline void mg_uint256_left_shift(/*inout*/mg_uint256 *op1, int op2);
+static inline void mg_uint256_right_shift(/*inout*/mg_uint256 *op1, int op2);
+
+
 /**
  * These functions includes for mg_decimal.
  */
@@ -63,6 +70,10 @@ extern int mg_uint256_get_digits(const mg_uint256 *value);
 
 extern void mg_uint256_test_to_string(const mg_uint256 *value, char *buf);
 extern void mg_uint256_test_convert(const char *buf, mg_uint256 *value);
+
+static inline void mg_uint256_modulus_by_scale(/*inout*/mg_uint256 *op1, int op2);
+static inline int mg_uint256_get_max_bit_index(const mg_uint256 *value);
+
 
 /**
  * 10^N constants table
@@ -97,6 +108,11 @@ static inline bool mg_uint256_is_overflow_int64(const mg_uint256 *op1)
 static inline int64_t mg_uint256_get_int64(mg_uint256 *op1)
 {
 	return op1->word[0] & 0x7FFFFFFFFFFFFFFFULL;
+}
+
+static inline uint64_t mg_uint256_get_uint64(mg_uint256 *op1)
+{
+	return op1->word[0];
 }
 
 static inline void mg_uint256_swap(mg_uint256 **a, mg_uint256 **b)
@@ -283,9 +299,89 @@ static inline void mg_uint256_mul(const mg_uint256 *op1, const mg_uint256 *op2, 
 	mg_uint256_mul_with_words(op1, op1_digits, op2, op2_digits, /*out*/ret, /*out*/overflow);
 }
 
+static inline void mg_uint256_or(/*inout*/mg_uint256 *op1, const mg_uint256 *op2)
+{
+	for(int i = 0; i < MG_UINT256_WORD_COUNT; i++)
+		op1->word[i] = op1->word[i] | op2->word[i];
+}
+
+static inline void mg_uint256_left_shift(/*inout*/mg_uint256 *op1, int op2)
+{
+	int bytes = op2 / MG_UINT256_WORD_BITS;
+	int bits = op2 % MG_UINT256_WORD_BITS;
+	
+	for(int i = MG_UINT256_WORD_COUNT; i > bytes; i--) {
+		op1->word[i-1] = op1->word[i-bytes-1];
+	}
+	for(int i = 0; i < bytes; i++) {
+		op1->word[i] = 0;
+	}
+	
+	if(bits != 0) {
+		mg_uint256 ret;
+		ret.word[0] = (op1->word[0] << bits);
+		for(int i = 1; i < MG_UINT256_WORD_COUNT; i++) {
+			ret.word[i] = (op1->word[i] << bits) | (op1->word[i-1]  >> (MG_UINT256_WORD_BITS - bits));
+		}
+		*op1 = ret;
+	}
+}
+
+static inline void mg_uint256_right_shift(/*inout*/mg_uint256 *op1, int op2)
+{
+	int bytes = op2 / MG_UINT256_WORD_BITS;
+	int bits = op2 % MG_UINT256_WORD_BITS;
+
+	for(int i = bytes; i < MG_UINT256_WORD_COUNT; i++) {
+		op1->word[i-bytes] = op1->word[i];
+	}
+	for(int i = MG_UINT256_WORD_COUNT - bytes; i < MG_UINT256_WORD_COUNT; i++) {
+		op1->word[i] = 0;
+	}
+
+	if(bits != 0) {
+		mg_uint256 ret;
+		for(int i = 0; i < MG_UINT256_WORD_COUNT - 1; i++) {
+			ret.word[i] = (op1->word[i] >> bits) | (op1->word[i+1] << (MG_UINT256_WORD_BITS - bits));
+		}
+		ret.word[MG_UINT256_WORD_COUNT-1] = (op1->word[MG_UINT256_WORD_COUNT-1] >> bits);
+		*op1 = ret;
+	}
+}
+
 static inline const mg_uint256 *mg_uint256_get_10eN(int digits)
 {
 	assert(0 <= digits && digits < 78);
 
 	return MG_UINT256_10eN_TABLE[digits];
+}
+
+static inline void mg_uint256_modulus_by_scale(/*inout*/mg_uint256 *op1, int op2)
+{
+	int bytes = op2 / MG_UINT256_WORD_BITS;
+	int bits = op2 % MG_UINT256_WORD_BITS;
+
+	for(int i = bytes + 1; i < MG_UINT256_WORD_COUNT; i++) {
+		op1->word[i] = 0;
+	}
+
+	if(bits != 0) {
+		op1->word[bytes] = (op1->word[bytes] << (MG_UINT256_WORD_BITS - bits)) >> (MG_UINT256_WORD_BITS - bits);
+	}
+}
+
+static inline int mg_uint256_get_max_bit_index(const mg_uint256 *value)
+{
+	for(int i = MG_UINT256_WORD_COUNT; i > 0; i--) {
+		if(value->word[i-1] != 0) {
+			uint64_t n = value->word[i-1];
+			for(int j = 0; j < MG_UINT256_WORD_BITS; j++) {
+				n >>= 1;
+				if(n == 0) {
+					return (i - 1) * MG_UINT256_WORD_BITS + j;
+				}
+			}
+		}
+	}
+	return -1;
 }

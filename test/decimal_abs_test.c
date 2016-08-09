@@ -12,7 +12,7 @@ static void abs_test(const char *text, const char *ret)
 	int size;
 	mg_decimal value1, value2;
 
-	mg_assert(mg_decimal_parse_string(&value1, text) == 0);
+	mg_assert(mg_decimal_parse_string(text, &value1) == 0);
 
 	mg_assert(mg_decimal_abs(&value1, /*out*/&value2) == 0);
 

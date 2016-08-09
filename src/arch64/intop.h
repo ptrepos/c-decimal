@@ -34,13 +34,13 @@ static inline uint8_t mg_uint64_sub(uint8_t carryIn, uint64_t op1, uint64_t op2,
 #endif
 }
 
-static inline uint64_t mg_uint64_mul(uint64_t op1, uint64_t op2, uint64_t *highRet)
+static inline uint64_t mg_uint64_mul(uint64_t op1, uint64_t op2, uint64_t *high_ret)
 {
 #if defined(_MSC_VER) && defined(_M_AMD64)
-	return _umul128(op1, op2, highRet);
+	return _umul128(op1, op2, high_ret);
 #elif defined(__GNUC__) || defined(__clang__)
 	unsigned __int128 n = (unsigned __int128)op1 * (unsigned __int128)op2;
-	*highRet = (uint64_t)(n >> 64);
+	*high_ret = (uint64_t)(n >> 64);
 	return (uint64_t)n;
 #endif
 }

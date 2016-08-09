@@ -18,13 +18,7 @@
     <ClCompile Include="test\main.c">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="src\arch64\uint256.c">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="test\uint256_test.c">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="src\arch32\uint256.c">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="test\decimal_zero_test.c">
@@ -97,6 +91,9 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="test\uint256_div_pattern_test .c">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="src\priv_uint256.c">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>

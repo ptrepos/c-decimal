@@ -5,7 +5,7 @@
  * Copyright (C) dachicraft foundation 2016
  * @author t.hada 2016/07/09
  */
-#include "uint256.h"
+#include "arch_priv_uint256.h"
 
 static const mg_uint256 V_10e0 = { 0x1 };
 static const mg_uint256 V_10e1 = { 0xa };
@@ -133,7 +133,7 @@ MG_PRIVATE int mg_uint256_get_digits(const mg_uint256 *value)
 
 #define DOUBLE_RSHIFT_64		(5.4210108624275221700372640043497e-20)
 #define DOUBLE_LSHIFT_64		(18446744073709551616.0)
-#define DOUBLE_CORRECT			(0.9999)
+#define DOUBLE_CORRECT			(0.999999)
 
 static inline void set_double(mg_uint256 *op1, double value, int n)
 {
@@ -160,6 +160,11 @@ MG_PRIVATE mg_decimal_error mg_uint256_div(mg_uint256 *op1, const mg_uint256 *op
 	if(mg_uint256_is_zero(op2)) {
 		err = MG_DECIMAL_ERROR_ZERODIVIDE;
 		goto _ERROR;
+	}
+
+	if(mg_uint256_compare(op1, op2) < 0) {
+		mg_uint256_set_zero(quotient);
+		goto _EXIT;
 	}
 
 	mg_uint256_set_zero(q);

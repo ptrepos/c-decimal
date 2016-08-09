@@ -26,28 +26,12 @@
     <ClInclude Include="include\magica\math\decimal.h" />
     <ClInclude Include="include\magica\math\libmgmath.h" />
     <ClInclude Include="include\magica\math\mgcompat.h" />
-    <ClInclude Include="src\arch32\intop.h" />
-    <ClInclude Include="src\arch32\uint256.h" />
-    <ClInclude Include="src\arch64\intop.h" />
-    <ClInclude Include="src\arch64\uint256.h" />
+    <ClInclude Include="src\priv_decimal.h" />
+    <ClInclude Include="src\priv_double.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\arch32\decimal.c">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="src\arch32\uint256.c">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="src\arch64\decimal.c">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="src\arch64\uint256.c">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
+    <ClCompile Include="src\decimal.c" />
+    <ClCompile Include="src\priv_uint256.c" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{222F2A3F-643B-4B0E-A176-36BEA0466D97}</ProjectGuid>
@@ -125,7 +109,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;__MG_DECIMAL_DLL;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);__MG_DECIMAL_DLL</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>include;src;src/arch32</AdditionalIncludeDirectories>
       <TreatWarningAsError>false</TreatWarningAsError>
     </ClCompile>
     <Link>
@@ -139,7 +123,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;__MG_DECIMAL_DLL;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);__MG_DECIMAL_DLL</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>include;src;src/arch64</AdditionalIncludeDirectories>
       <TreatWarningAsError>false</TreatWarningAsError>
     </ClCompile>
     <Link>
@@ -155,7 +139,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;__MG_DECIMAL_DLL;NDEBUG;_CONSOLE;%(PreprocessorDefinitions);__MG_DECIMAL_DLL</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>include;src;src/arch32</AdditionalIncludeDirectories>
       <TreatWarningAsError>false</TreatWarningAsError>
     </ClCompile>
     <Link>
@@ -173,7 +157,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;__MG_DECIMAL_DLL;NDEBUG;_CONSOLE;%(PreprocessorDefinitions);__MG_DECIMAL_DLL</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>include;src;src/arch64</AdditionalIncludeDirectories>
       <TreatWarningAsError>false</TreatWarningAsError>
       <WholeProgramOptimization>true</WholeProgramOptimization>
     </ClCompile>

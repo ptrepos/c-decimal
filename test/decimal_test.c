@@ -10,8 +10,8 @@ static void add_loop(const char *text1)
 {
 	mg_decimal value1, value2;
 
-	mg_assert(mg_decimal_parse_string(&value2, text1) == 0);
-	mg_assert(mg_decimal_value_of_int(1000000000000000ULL, &value1) == 0);
+	mg_assert(mg_decimal_parse_string(text1, &value2) == 0);
+	mg_assert(mg_decimal_value_of_int64(1000000000000000ULL, &value1) == 0);
 
 	for(int i = 0; i < 1000000; i++) {
 		mg_decimal_add(&value1, &value2, &value1);
@@ -22,8 +22,8 @@ static void mul_loop(const char *text1)
 {
 	mg_decimal value1, value2, tmp;
 
-	mg_assert(mg_decimal_parse_string(&value1, text1) == 0);
-	mg_assert(mg_decimal_parse_string(&value2, text1) == 0);
+	mg_assert(mg_decimal_parse_string(text1, &value1) == 0);
+	mg_assert(mg_decimal_parse_string(text1, &value2) == 0);
 
 	for(int i = 0; i < 1000000; i++) {
 		mg_decimal_multiply(&value1, &value2, &tmp);
@@ -34,8 +34,8 @@ static void div_loop(const char *text1, const char *text2)
 {
 	mg_decimal value1, value2, tmp;
 
-	mg_assert(mg_decimal_parse_string(&value1, text1) == 0);
-	mg_assert(mg_decimal_parse_string(&value2, text1) == 0);
+	mg_assert(mg_decimal_parse_string(text1, &value1) == 0);
+	mg_assert(mg_decimal_parse_string(text2, &value2) == 0);
 
 	for(int i = 0; i < 1000000; i++) {
 		mg_decimal_divide(&value1, &value2, &tmp);
@@ -129,13 +129,24 @@ void decimal_test()
 
 		for(int i = 0; i < 10; i++) {
 			div_loop("-0.15", "3");
+			div_loop("-1.00", "100000000000000000000");
+			div_loop("99999999999999999999999", "99999999999999999999999");
+		}
+
+		printf("PERFORMANCE TEST mg_decimal_divide1(): %fs\n", (float)(clock() - tm1) / CLOCKS_PER_SEC);
+	}
+	{
+		clock_t tm1 = clock();
+
+		for(int i = 0; i < 10; i++) {
+			div_loop("-0.15", "3");
 			div_loop("-1.00", "341111");
 			div_loop("-10.05", "99999999999999999999999");
 			div_loop("-100000000.3", "99999999999999999999999999999");
 			div_loop("-10000000000.5", "99999");
 		}
 
-		printf("PERFORMANCE TEST mg_decimal_divide(): %fs\n", (float)(clock() - tm1) / CLOCKS_PER_SEC);
+		printf("PERFORMANCE TEST mg_decimal_divide2(): %fs\n", (float)(clock() - tm1) / CLOCKS_PER_SEC);
 	}
 #endif
 }

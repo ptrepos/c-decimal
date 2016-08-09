@@ -12,7 +12,7 @@ static void round_test(const char *text, int precision, int type, const char *re
 	int size;
 	mg_decimal value1;
 
-	mg_assert(mg_decimal_parse_string(&value1, text) == 0);
+	mg_assert(mg_decimal_parse_string(text, &value1) == 0);
 
 	mg_assert(mg_decimal_round(/*inout*/&value1, precision, type) == 0);
 

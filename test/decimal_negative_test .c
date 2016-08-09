@@ -12,7 +12,7 @@ static void negative_test(const char *text, const char *ret)
 	int size;
 	mg_decimal value;
 
-	mg_assert(mg_decimal_parse_string(&value, text) == 0);
+	mg_assert(mg_decimal_parse_string(text, &value) == 0);
 
 	mg_assert(mg_decimal_negate(/*inout*/&value) == 0);
 

@@ -5,7 +5,7 @@
  * Copyright (C) dachicraft foundation 2016
  * @author t.hada 2016/07/09
  */
-#include "uint256.h"
+#include "arch_priv_uint256.h"
 
 static const mg_uint256 V_10e0 = {0x00000001, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000};
 static const mg_uint256 V_10e1 = {0x0000000a, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000};
@@ -168,6 +168,11 @@ MG_PRIVATE mg_decimal_error mg_uint256_div(mg_uint256 *op1, const mg_uint256 *op
 	if(mg_uint256_is_zero(op2)) {
 		err = MG_DECIMAL_ERROR_ZERODIVIDE;
 		goto _ERROR;
+	}
+
+	if(mg_uint256_compare(op1, op2) < 0) {
+		mg_uint256_set_zero(quotient);
+		goto _EXIT;
 	}
 
 	mg_uint256_set_zero(q);

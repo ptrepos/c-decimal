@@ -9,5 +9,5 @@
 #endif
 
 #if defined(_M_IX86) || defined(__x86)
-#	define __MG_DECIMAL_ARCH32__
+#	define __MG_DECIMAL_ARCH32
 #endif
