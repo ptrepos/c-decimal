@@ -1,3 +1,7 @@
+/**
+ * Copyright (C) Takuo Hada 2015-2016
+ * @author t.hada 2011/03/15
+ */
 #pragma once
 
 #define SIGN_POSITIVE		(0)

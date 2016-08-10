@@ -1,3 +1,9 @@
+/**
+ * Copyright (C) Takuo Hada 2015-2016
+ * @author t.hada 2011/03/15 
+ *
+ * 128 bit decimal implements.
+ */
 #pragma once
 
 #include <magica/decimal/decimal.h>

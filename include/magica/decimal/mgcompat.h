@@ -1,5 +1,5 @@
 /**
- * Copyright (C) dachicraft foundation 2015
+ * Copyright (C) Takuo Hada 2015-2016
  * @author t.hada 2011/03/15 
  *
  * MG_API_EXPORT 	外部ライブラリ シンボル出力

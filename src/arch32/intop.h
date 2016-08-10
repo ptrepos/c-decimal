@@ -1,5 +1,5 @@
 /**
- * Copyright (C) dachicraft foundation 2015
+ * Copyright (C) Takuo Hada 2016
  * @author t.hada 2015/10/04
  */
 #pragma once

@@ -1,9 +1,9 @@
 /**
+ * Copyright (C) Takuo Hada 2016
+ * @author t.hada 2016/07/09
+ *
  * 256 bit integer for decimal.
  * this source includes decimal implementation.
- *
- * Copyright (C) dachicraft foundation 2016
- * @author t.hada 2016/07/09
  */
 #include "arch_priv_uint256.h"
 

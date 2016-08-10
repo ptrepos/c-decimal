@@ -1,4 +1,7 @@
 /**
+ * Copyright (C) Takuo Hada 2015-2016
+ * @author t.hada 2016/08/02
+ *
  * IEEE754 double floating point format.
  */
 #pragma once
