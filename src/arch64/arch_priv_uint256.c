@@ -178,18 +178,19 @@ MG_PRIVATE mg_decimal_error mg_uint256_div(mg_uint256 *op1, const mg_uint256 *op
 	while(op2_digits > 0 && op2->word[op2_digits-1] == 0)
 		op2_digits--;
 
+	op2_v = (double)op2->word[op2_digits -1];
+	if(op2_digits >= 2)
+		op2_v += (double)op2->word[op2_digits-2] * DOUBLE_RSHIFT_64;
+
+	if(op2_v == 0.0) {
+		err = MG_DECIMAL_ERROR_ZERODIVIDE;
+		goto _ERROR;
+	}
+
 	while (mg_uint256_compare(op1, op2) >= 0) {
 		op1_v = (double)op1->word[op1_digits-1];
 		if(op1_digits >= 2)
 			op1_v += (double)op1->word[op1_digits-2] * DOUBLE_RSHIFT_64;
-		op2_v = (double)op2->word[op2_digits -1];
-		if(op2_digits >= 2)
-			op2_v += (double)op2->word[op2_digits-2] * DOUBLE_RSHIFT_64;
-
-		if(op2_v == 0.0) {
-			err = MG_DECIMAL_ERROR_ZERODIVIDE;
-			goto _ERROR;
-		}
 
 		q_n = op1_digits - op2_digits;
 		q_tmp = op1_v / op2_v;
