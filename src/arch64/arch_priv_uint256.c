@@ -131,11 +131,13 @@ MG_PRIVATE int mg_uint256_get_digits(const mg_uint256 *value)
 	return low;
 }
 
+typedef double max_float_t;
+
 #define DOUBLE_RSHIFT_64		(5.4210108624275221700372640043497e-20)
 #define DOUBLE_LSHIFT_64		(18446744073709551616.0)
 #define DOUBLE_CORRECT			(0.999999)
 
-static inline void set_double(mg_uint256 *op1, double value, int n)
+static inline void set_double(mg_uint256 *op1, max_float_t value, int n)
 {
 	mg_uint256_set_zero(op1);
 
@@ -152,7 +154,7 @@ static inline void set_double(mg_uint256 *op1, double value, int n)
 MG_PRIVATE mg_decimal_error mg_uint256_div(mg_uint256 *op1, const mg_uint256 *op2, mg_uint256 *quotient)
 {
 	mg_decimal_error err = 0;
-	double op1_v, op2_v, q_tmp;
+	max_float_t op1_v, op2_v, q_tmp;
 	mg_uint256 buf1, buf2, buf3;
 	mg_uint256 *q = &buf1, *qv = &buf2, *qv_hi = &buf3;
 	int q_n, underflow;
@@ -178,26 +180,27 @@ MG_PRIVATE mg_decimal_error mg_uint256_div(mg_uint256 *op1, const mg_uint256 *op
 	while(op2_digits > 0 && op2->word[op2_digits-1] == 0)
 		op2_digits--;
 
-	op2_v = (double)op2->word[op2_digits -1];
+	op2_v = (max_float_t)op2->word[op2_digits -1];
 	if(op2_digits >= 2)
-		op2_v += (double)op2->word[op2_digits-2] * DOUBLE_RSHIFT_64;
+		op2_v += (max_float_t)op2->word[op2_digits-2] * DOUBLE_RSHIFT_64;
 
 	if(op2_v == 0.0) {
 		err = MG_DECIMAL_ERROR_ZERODIVIDE;
 		goto _ERROR;
 	}
 
+	max_float_t op2_v_inv = 1.0 / op2_v;
+
 	while (mg_uint256_compare(op1, op2) >= 0) {
-		op1_v = (double)op1->word[op1_digits-1];
+		op1_v = (max_float_t)op1->word[op1_digits-1];
 		if(op1_digits >= 2)
-			op1_v += (double)op1->word[op1_digits-2] * DOUBLE_RSHIFT_64;
+			op1_v += (max_float_t)op1->word[op1_digits-2] * DOUBLE_RSHIFT_64;
 
 		q_n = op1_digits - op2_digits;
-		q_tmp = op1_v / op2_v;
-		if((q_tmp < 1.0 && q_n == 0) || q_n < 0) {
-			goto _EXIT;
+		q_tmp = op1_v * op2_v_inv;
+		if((q_tmp < 1.0 && q_n == 0)) {
+			q_tmp = 1.0;
 		}
-
 		// オーバーフロー防止
 		if(q_tmp >= DOUBLE_LSHIFT_64) {
 			q_tmp *= DOUBLE_CORRECT;
