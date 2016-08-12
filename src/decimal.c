@@ -1159,12 +1159,16 @@ static mg_decimal_error __mg_decimal_divide_impl(
 				break;
 
 			// fraction1 = fraction1 * 10^18
-			mg_uint256_mul_with_words(fraction1, MG_UINT256_WORD_COUNT, v10e18, MG_UINT256_WORD_COUNT / 4, /*out*/tmp, /*out*/&overflow);
+			mg_uint256_mul_with_words(
+					fraction1, MG_UINT256_WORD_COUNT, 
+					v10e18, MG_UINT256_WORD_COUNT / 4, /*out*/tmp, /*out*/&overflow);
 			assert(overflow == 0);
 			mg_uint256_swap(&fraction1, &tmp);
 
 			// q = q * 10^18
-			mg_uint256_mul_with_words(q, MG_UINT256_WORD_COUNT, v10e18, MG_UINT256_WORD_COUNT / 4, /*out*/tmp, /*out*/&overflow);
+			mg_uint256_mul_with_words(
+					q, MG_UINT256_WORD_COUNT, 
+					v10e18, MG_UINT256_WORD_COUNT / 4, /*out*/tmp, /*out*/&overflow);
 			assert(overflow == 0);
 			mg_uint256_swap(&q, &tmp);
 
@@ -1181,11 +1185,6 @@ static mg_decimal_error __mg_decimal_divide_impl(
 
 		int rounded_scale;
 		err = __mg_decimal_round_down_max_digits(q, scale, /*out*/&rounded_scale);
-		if(err != 0)
-			goto _ERROR;
-		scale = rounded_scale;
-
-		err = __mg_decimal_round_zero_digits(q, scale, /*out*/&rounded_scale);
 		if(err != 0)
 			goto _ERROR;
 		scale = rounded_scale;
