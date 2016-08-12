@@ -44,7 +44,9 @@
     <ClCompile Include="test\uint256_div_pattern_test .c" />
     <ClCompile Include="test\uint256_div_test.c" />
     <ClCompile Include="test\uint256_get_10eN_test.c" />
+    <ClCompile Include="test\uint256_left_shift_test.c" />
     <ClCompile Include="test\uint256_mul_test.c" />
+    <ClCompile Include="test\uint256_right_shift_test.c" />
     <ClCompile Include="test\uint256_test.c" />
   </ItemGroup>
   <ItemGroup>

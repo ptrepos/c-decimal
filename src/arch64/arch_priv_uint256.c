@@ -278,3 +278,55 @@ MG_PRIVATE void mg_uint256_test_convert(const char *buf, mg_uint256 *value)
 	}
 	*value = v;
 }
+
+MG_PRIVATE void mg_uint256_test_to_hex_string(const mg_uint256 *value, char *buf)
+{
+	int index;
+	mg_uint256 v, tmp;
+	mg_uint256 v16;
+
+	mg_uint256_set(&v16, 16);
+
+	v = *value;
+
+	index = 0;
+	do {
+		mg_uint256_div(&v, &v16, &tmp);
+
+		int64_t s = mg_uint256_get_int64(&v);
+		buf[index++] = s < 10 ? (char)(s + '0'): (char)(s + 'A' - 10);
+
+		v = tmp;
+	} while(!mg_uint256_is_zero(&v));
+
+	for(int i = 0; i < index / 2; i++) {
+		char c = buf[i];
+		buf[i] = buf[index - i - 1];
+		buf[index - i - 1] = c;
+	}
+	buf[index] = 0;
+}
+
+MG_PRIVATE void mg_uint256_test_hex_convert(const char *buf, mg_uint256 *value)
+{
+	mg_uint256 v, tmp, n;
+	mg_uint256 v16;
+
+	mg_uint256_set(&v16, 16);
+
+	mg_uint256_set_zero(&v);
+
+	int i = 0;
+	while(buf[i] != 0) {
+		int overflow;
+		mg_uint256_mul(&v, &v16, /*out*/&tmp, /*out*/&overflow);
+		assert(overflow == 0);
+
+		mg_uint256_set(&n, buf[i] >= 'A' ? buf[i] - 'A' + 10: buf[i] - '0');
+		mg_uint256_add(&tmp, &n);
+
+		v = tmp;
+		i++;
+	}
+	*value = v;
+}
