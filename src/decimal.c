@@ -1159,16 +1159,14 @@ static mg_decimal_error __mg_decimal_divide_impl(
 				break;
 
 			// fraction1 = fraction1 * 10^18
-			mg_uint256_mul_words(
-					fraction1, MG_UINT256_WORD_COUNT, 
-					v10e18, MG_UINT256_WORD_COUNT / 4, /*out*/tmp, /*out*/&overflow);
+			mg_uint256_mul256x64(
+					fraction1, v10e18, /*out*/tmp, /*out*/&overflow);
 			assert(overflow == 0);
 			mg_uint256_swap(&fraction1, &tmp);
 
 			// q = q * 10^18
-			mg_uint256_mul_words(
-					q, MG_UINT256_WORD_COUNT, 
-					v10e18, MG_UINT256_WORD_COUNT / 4, /*out*/tmp, /*out*/&overflow);
+			mg_uint256_mul256x64(
+					q, v10e18, /*out*/tmp, /*out*/&overflow);
 			assert(overflow == 0);
 			mg_uint256_swap(&q, &tmp);
 

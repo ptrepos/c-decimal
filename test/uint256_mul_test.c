@@ -52,6 +52,28 @@ static void mul128_test(const char *text1, const char *text2)
 	mg_assert(mg_uint256_compare(&v1, &v3) == 0);
 }
 
+static void mul256x64_test(const char *text1, const char *text2)
+{
+	mg_uint256 v1, v2, v3, v4;
+
+	mg_uint256_test_convert(text1, &v1);
+	mg_uint256_test_convert(text2, &v2);
+
+	int overflow;
+	mg_uint256_mul(&v1, &v2, &v3, /*out*/&overflow);
+	mg_assert(overflow == 0);
+
+	mg_uint256_mul256x64(&v1, &v2, &v4, /*out*/&overflow);
+
+	mg_assert(overflow == 0);
+	mg_assert(mg_uint256_compare(&v3, &v4) == 0);
+
+	mg_uint256_div(&v4, &v2, &v3);
+
+	mg_assert(mg_uint256_is_zero(&v4) != 0);
+	mg_assert(mg_uint256_compare(&v1, &v3) == 0);
+}
+
 void mg_uint256_mul_test()
 {
 	mul_test("135123333333333333314541", "46782741153131331");
@@ -79,6 +101,19 @@ void mg_uint256_mul_test()
 	mul128_test("340282366920938463463374607431768211455", "340282366920938463463374607431768211455");
 	mul128_test("340282366920938463463374607431768211455", "1");
 	mul128_test("18446744073709551616", "18446744073709551616");
+
+	mul256x64_test("18446744073709551616", "18446744073709551");
+	mul256x64_test("12346579123465791234657912346579123", "20");
+	mul256x64_test("135123333333333333314541", "5264180654151");
+	mul256x64_test("135123333333333333314541", "99999999999999");
+	mul256x64_test("135123333333333333314541", "2");
+	mul256x64_test("135123333333333333314541", "666");
+	mul256x64_test("13512333333314541", "99999999");
+	mul256x64_test("1351233", "99999999");
+	mul256x64_test("1351233333331454333333333331454133333333333145411", "99999999");
+	mul256x64_test("3145413333333333135123333333333333314541", "99999999999999");
+	mul256x64_test("3145413333333333135123333333333333314541", "9999999999999999");
+	mul256x64_test("9999999999999999999999999999999999999999", "99999999999999");
 
 	printf("TEST mg_uint256_mul(): OK\n");
 }

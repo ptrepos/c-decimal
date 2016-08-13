@@ -51,6 +51,7 @@ static inline void mg_uint256_add(/*inout*/mg_uint256 *op1, const mg_uint256 *op
 static inline void mg_uint256_sub(/*inout*/mg_uint256 *op1, const mg_uint256 *op2, /*out*/int *borrow);
 static inline void mg_uint256_neg(/*inout*/mg_uint256 *op1);
 static inline void mg_uint256_mul128(const mg_uint256 *op1, const mg_uint256 *op2, /*out*/mg_uint256 *ret); // multiply for low bits.
+static inline void mg_uint256_mul256x64(const mg_uint256 *op1, const mg_uint256 *op2, mg_uint256 *ret, int *overflow);
 static inline void mg_uint256_mul(const mg_uint256 *op1, const mg_uint256 *op2, /*out*/mg_uint256 *ret, /*out*/int *overflow);
 MG_PRIVATE mg_decimal_error mg_uint256_div(/*inout*/mg_uint256 *op1, const mg_uint256 *op2, /*out*/mg_uint256 *quotient);
 
@@ -217,43 +218,12 @@ static inline void mg_uint256_mul_words(const mg_uint256 *op1, int op1_words, co
 	if(op1_words <= 2 && op2_words <= 2) {
 		*overflow = 0;
 		mg_uint256_mul128(op1, op2, /*out*/ret);
-
 		return;
 	} else if(op2_words <= 1) {
-		mg_uint256_set_zero(ret);
-
-		carry2 = 0;
-
-		lo = mg_uint64_mul(op1->word[0], op2->word[0], &hi);
-
-		carry = mg_uint64_add(0, ret->word[0], lo, &ret->word[0]);
-		carry = mg_uint64_add(carry, ret->word[1], hi, &ret->word[1]);
-		carry2 = mg_uint64_add(carry, ret->word[2], carry2, &ret->word[2]);
-
-		lo = mg_uint64_mul(op1->word[1], op2->word[0], &hi);
-
-		carry = mg_uint64_add(0, ret->word[1], lo, &ret->word[1]);
-		carry = mg_uint64_add(carry, ret->word[2], hi, &ret->word[2]);
-		carry2 = mg_uint64_add(carry, ret->word[3], carry2, &ret->word[3]);
-
-		lo = mg_uint64_mul(op1->word[2], op2->word[0], &hi);
-
-		carry = mg_uint64_add(0, ret->word[2], lo, &ret->word[2]);
-		carry = mg_uint64_add(carry, ret->word[3], hi, &ret->word[3]);
-		if(carry != 0 || carry2 != 0) {
-			*overflow = 1;
-			return;
-		}
-
-		lo = mg_uint64_mul(op1->word[3], op2->word[0], &hi);
-
-		carry = mg_uint64_add(0, ret->word[3], lo, &ret->word[3]);
-		if(carry != 0 || hi != 0) {
-			*overflow = 1;
-			return;
-		}
-
-		*overflow = 0;
+		mg_uint256_mul256x64(op1, op2, /*out*/ret, /*out*/overflow);
+		return;
+	} else if(op1_words <= 1) {
+		mg_uint256_mul256x64(op2, op1, /*out*/ret, /*out*/overflow);
 		return;
 	}
 
@@ -297,6 +267,52 @@ static inline void mg_uint256_mul_words(const mg_uint256 *op1, int op1_words, co
 			carry2 = mg_uint64_add(carry, ret->word[k], carry2, &ret->word[k]);
 		}
 	}
+}
+
+static inline void mg_uint256_mul256x64(
+		const mg_uint256 *op1, 
+		const mg_uint256 *op2, 
+		mg_uint256 *ret,
+		int *overflow)
+{
+	unsigned char carry, carry2;
+	uint64_t hi, lo;
+
+	mg_uint256_set_zero(ret);
+
+	carry2 = 0;
+
+	lo = mg_uint64_mul(op1->word[0], op2->word[0], &hi);
+
+	carry = mg_uint64_add(0, ret->word[0], lo, &ret->word[0]);
+	carry = mg_uint64_add(carry, ret->word[1], hi, &ret->word[1]);
+	carry2 = mg_uint64_add(carry, ret->word[2], carry2, &ret->word[2]);
+
+	lo = mg_uint64_mul(op1->word[1], op2->word[0], &hi);
+
+	carry = mg_uint64_add(0, ret->word[1], lo, &ret->word[1]);
+	carry = mg_uint64_add(carry, ret->word[2], hi, &ret->word[2]);
+	carry2 = mg_uint64_add(carry, ret->word[3], carry2, &ret->word[3]);
+
+	lo = mg_uint64_mul(op1->word[2], op2->word[0], &hi);
+
+	carry = mg_uint64_add(0, ret->word[2], lo, &ret->word[2]);
+	carry = mg_uint64_add(carry, ret->word[3], hi, &ret->word[3]);
+	if(carry != 0 || carry2 != 0) {
+		*overflow = 1;
+		return;
+	}
+
+	lo = mg_uint64_mul(op1->word[3], op2->word[0], &hi);
+
+	carry = mg_uint64_add(0, ret->word[3], lo, &ret->word[3]);
+	if(carry != 0 || hi != 0) {
+		*overflow = 1;
+		return;
+	}
+
+	*overflow = 0;
+	return;
 }
 
 static inline void mg_uint256_mul128(const mg_uint256 *op1, const mg_uint256 *op2, mg_uint256 *ret)
