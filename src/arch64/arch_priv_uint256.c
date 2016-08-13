@@ -131,7 +131,7 @@ MG_PRIVATE int mg_uint256_get_digits(const mg_uint256 *value)
 	return low;
 }
 
-typedef double max_float_t;
+typedef long double max_float_t;
 
 #define DOUBLE_RSHIFT_64		(5.4210108624275221700372640043497e-20)
 #define DOUBLE_LSHIFT_64		(18446744073709551616.0)
