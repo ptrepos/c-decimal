@@ -166,7 +166,7 @@ void decimal_test()
 		clock_t tm1 = clock();
 
 		for(int i = 0; i < 10; i++) {
-			div_loop("-100000000.3", "99999999999999999999999999999");
+			div_loop("3333333333", "10");
 		}
 
 		printf("PERFORMANCE TEST mg_decimal_divide5(): %fs\n", (float)(clock() - tm1) / CLOCKS_PER_SEC);
@@ -175,7 +175,7 @@ void decimal_test()
 		clock_t tm1 = clock();
 
 		for(int i = 0; i < 10; i++) {
-			div_loop("-10.05", "99999999999999999999999");
+			div_loop("-100000000.3", "99999999999999999999999999999");
 		}
 
 		printf("PERFORMANCE TEST mg_decimal_divide6(): %fs\n", (float)(clock() - tm1) / CLOCKS_PER_SEC);
@@ -184,10 +184,19 @@ void decimal_test()
 		clock_t tm1 = clock();
 
 		for(int i = 0; i < 10; i++) {
-			div_loop("-10000000000.5", "99999");
+			div_loop("-10.05", "99999999999999999999999");
 		}
 
 		printf("PERFORMANCE TEST mg_decimal_divide7(): %fs\n", (float)(clock() - tm1) / CLOCKS_PER_SEC);
+	}
+	{
+		clock_t tm1 = clock();
+
+		for(int i = 0; i < 10; i++) {
+			div_loop("-10000000000.5", "99999");
+		}
+
+		printf("PERFORMANCE TEST mg_decimal_divide8(): %fs\n", (float)(clock() - tm1) / CLOCKS_PER_SEC);
 	}
 #endif
 }
