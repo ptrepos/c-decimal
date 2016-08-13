@@ -66,7 +66,7 @@ static inline int64_t mg_uint256_get_int64(mg_uint256 *op1);
 static inline const mg_uint256 *mg_uint256_get_10eN(int digits);
 MG_PRIVATE int mg_uint256_get_digits(const mg_uint256 *value);
 
-static inline void mg_uint256_modulus_by_scale(/*inout*/mg_uint256 *op1, int op2);
+static inline void mg_uint256_get_bits(/*inout*/mg_uint256 *op1, int op2);
 static inline int mg_uint256_get_max_bit_index(const mg_uint256 *value);
 
 MG_PRIVATE void mg_uint256_test_to_string(const mg_uint256 *value, char *buf);
@@ -405,7 +405,7 @@ static inline const mg_uint256 *mg_uint256_get_10eN(int digits)
 	return MG_UINT256_10eN_TABLE[digits];
 }
 
-static inline void mg_uint256_modulus_by_scale(/*inout*/mg_uint256 *op1, int op2)
+static inline void mg_uint256_get_bits(/*inout*/mg_uint256 *op1, int op2)
 {
 	int bytes = op2 / MG_UINT256_WORD_BITS;
 	int bits = op2 % MG_UINT256_WORD_BITS;

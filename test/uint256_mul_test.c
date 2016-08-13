@@ -17,7 +17,7 @@ static void mul_test(const char *text1, const char *text2)
 	int overflow;
 	mg_uint256_mul(&v1, &v2, /*out*/&v3, /*out*/&overflow);
 	mg_assert(overflow == 0);
-	mg_uint256_mul_with_words(&v1, MG_UINT256_WORD_COUNT, &v2, MG_UINT256_WORD_COUNT, /*out*/&v4, /*out*/&overflow);
+	mg_uint256_mul_words(&v1, MG_UINT256_WORD_COUNT, &v2, MG_UINT256_WORD_COUNT, /*out*/&v4, /*out*/&overflow);
 
 	mg_uint256_test_to_string(&v1, /*out*/strbuf);
 

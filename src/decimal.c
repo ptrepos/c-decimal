@@ -271,7 +271,7 @@ MG_DECIMAL_API mg_decimal_error mg_decimal_value_of_double(double value, /*out*/
 			mg_uint256 radix_conv;
 			
 			mg_uint256_set(/*out*/&decimal_part_bits, double_fraction);
-			mg_uint256_modulus_by_scale(/*inout*/&decimal_part_bits, -double_scale);
+			mg_uint256_get_bits(/*inout*/&decimal_part_bits, -double_scale);
 
 			__pow2(-double_scale, /*out*/&radix_conv);
 
@@ -1159,14 +1159,14 @@ static mg_decimal_error __mg_decimal_divide_impl(
 				break;
 
 			// fraction1 = fraction1 * 10^18
-			mg_uint256_mul_with_words(
+			mg_uint256_mul_words(
 					fraction1, MG_UINT256_WORD_COUNT, 
 					v10e18, MG_UINT256_WORD_COUNT / 4, /*out*/tmp, /*out*/&overflow);
 			assert(overflow == 0);
 			mg_uint256_swap(&fraction1, &tmp);
 
 			// q = q * 10^18
-			mg_uint256_mul_with_words(
+			mg_uint256_mul_words(
 					q, MG_UINT256_WORD_COUNT, 
 					v10e18, MG_UINT256_WORD_COUNT / 4, /*out*/tmp, /*out*/&overflow);
 			assert(overflow == 0);

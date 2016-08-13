@@ -234,7 +234,7 @@ static inline void mg_uint256_neg(mg_uint256 *op1)
 	c = mg_uint32_add(c, op1->word[7], 0, &op1->word[7]);
 }
 
-static inline void mg_uint256_mul_with_words(const mg_uint256 *op1, int op1_words, const mg_uint256 *op2, int op2_words, /*out*/mg_uint256 *ret, /*out*/int *overflow)
+static inline void mg_uint256_mul_words(const mg_uint256 *op1, int op1_words, const mg_uint256 *op2, int op2_words, /*out*/mg_uint256 *ret, /*out*/int *overflow)
 {
 	unsigned carry, carry2;
 	uint32_t lo, hi;
@@ -293,7 +293,7 @@ static inline void mg_uint256_mul128(const mg_uint256 *op1, const mg_uint256 *op
 		op2_digits--;
 
 	int overflow;
-	mg_uint256_mul_with_words(op1, op1_digits, op2, op2_digits, /*out*/ret, /*out*/&overflow);
+	mg_uint256_mul_words(op1, op1_digits, op2, op2_digits, /*out*/ret, /*out*/&overflow);
 #else
 	unsigned c1, c2;
 	uint32_t lo, hi;
@@ -408,7 +408,7 @@ static inline void mg_uint256_mul(const mg_uint256 *op1, const mg_uint256 *op2, 
 	while(op2_digits > 0 && op2->word[op2_digits-1] == 0)
 		op2_digits--;
 
-	mg_uint256_mul_with_words(op1, op1_digits, op2, op2_digits, /*out*/ret, /*out*/overflow);
+	mg_uint256_mul_words(op1, op1_digits, op2, op2_digits, /*out*/ret, /*out*/overflow);
 }
 
 
@@ -519,7 +519,7 @@ static inline const mg_uint256 *mg_uint256_get_10eN(int digits)
 	return MG_UINT256_10eN_TABLE[digits];
 }
 
-static inline void mg_uint256_modulus_by_scale(/*inout*/mg_uint256 *op1, int op2)
+static inline void mg_uint256_get_bits(/*inout*/mg_uint256 *op1, int op2)
 {
 	int bytes = op2 / MG_UINT256_WORD_BITS;
 	int bits = op2 % MG_UINT256_WORD_BITS;
