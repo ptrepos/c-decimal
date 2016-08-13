@@ -133,8 +133,8 @@ MG_PRIVATE int mg_uint256_get_digits(const mg_uint256 *value)
 
 typedef long double max_float_t;
 
-#define DOUBLE_RSHIFT_64		(1.0/4294967296.0)
-#define DOUBLE_LSHIFT_64		(4294967296.0)
+#define DOUBLE_RSHIFT_32		(1.0/4294967296.0)
+#define DOUBLE_LSHIFT_32		(4294967296.0)
 #define DOUBLE_CORRECT			(0.9999)
 
 static inline void set_double(mg_uint256 *op1, max_float_t value, int n)
@@ -145,26 +145,26 @@ static inline void set_double(mg_uint256 *op1, max_float_t value, int n)
 	} else if(n == 1) {
 		op1->word[n] = (uint32_t) value;
 		value -= op1->word[n];
-		value *= DOUBLE_LSHIFT_64;
+		value *= DOUBLE_LSHIFT_32;
 		op1->word[n - 1] = (uint32_t)value;
 	} else if(n == 2) {
 		op1->word[n] = (uint32_t) value;
 		value -= op1->word[n];
-		value *= DOUBLE_LSHIFT_64;
+		value *= DOUBLE_LSHIFT_32;
 		op1->word[n - 1] = (uint32_t)value;
 		value -= op1->word[n - 1];
-		value *= DOUBLE_LSHIFT_64;
+		value *= DOUBLE_LSHIFT_32;
 		op1->word[n - 2] = (uint32_t)value;
 	} else {
 		op1->word[n] = (uint32_t) value;
 		value -= op1->word[n];
-		value *= DOUBLE_LSHIFT_64;
+		value *= DOUBLE_LSHIFT_32;
 		op1->word[n - 1] = (uint32_t)value;
 		value -= op1->word[n - 1];
-		value *= DOUBLE_LSHIFT_64;
+		value *= DOUBLE_LSHIFT_32;
 		op1->word[n - 2] = (uint32_t)value;
 		value -= op1->word[n - 2];
-		value *= DOUBLE_LSHIFT_64;
+		value *= DOUBLE_LSHIFT_32;
 		op1->word[n - 3] = (uint32_t)value;
 	}
 }
@@ -197,7 +197,9 @@ MG_PRIVATE mg_decimal_error mg_uint256_div(mg_uint256 *op1, const mg_uint256 *op
 
 	op2_v = (max_float_t)op2->word[op2_digits -1];
 	if(op2_digits >= 2)
-		op2_v += (max_float_t)op2->word[op2_digits-2] * DOUBLE_RSHIFT_64;
+		op2_v += (max_float_t)op2->word[op2_digits-2] * DOUBLE_RSHIFT_32;
+	if(op2_digits >= 3)
+		op2_v += (max_float_t)op2->word[op2_digits-3] * DOUBLE_RSHIFT_32 * DOUBLE_RSHIFT_32;
 
 	if(op2_v == 0.0) {
 		err = MG_DECIMAL_ERROR_ZERODIVIDE;
@@ -217,7 +219,9 @@ MG_PRIVATE mg_decimal_error mg_uint256_div(mg_uint256 *op1, const mg_uint256 *op
 
 		op1_v = (max_float_t)op1->word[op1_digits-1];
 		if(op1_digits >= 2)
-			op1_v += (max_float_t)op1->word[op1_digits-2] * DOUBLE_RSHIFT_64;
+			op1_v += (max_float_t)op1->word[op1_digits-2] * DOUBLE_RSHIFT_32;
+		if(op1_digits >= 3)
+			op1_v += (max_float_t)op2->word[op1_digits-3] * DOUBLE_RSHIFT_32 * DOUBLE_RSHIFT_32;
 
 		q_n = op1_digits - op2_digits;
 		q_tmp = op1_v / op2_v;
@@ -226,7 +230,7 @@ MG_PRIVATE mg_decimal_error mg_uint256_div(mg_uint256 *op1, const mg_uint256 *op
 		}
 
 		// オーバーフロー防止
-		if(q_tmp >= DOUBLE_LSHIFT_64) {
+		if(q_tmp >= DOUBLE_LSHIFT_32) {
 			q_tmp *= DOUBLE_CORRECT;
 		}
 		set_double(q, q_tmp, q_n);
