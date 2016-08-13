@@ -524,7 +524,7 @@ static inline void mg_uint256_get_bits(/*inout*/mg_uint256 *op1, int op2)
 	int bytes = op2 / MG_UINT256_WORD_BITS;
 	int bits = op2 % MG_UINT256_WORD_BITS;
 
-	for(int i = bytes + 1; i < MG_UINT256_WORD_COUNT; i++) {
+	for(int i = bytes + (bits > 0 ? 1 : 0); i < MG_UINT256_WORD_COUNT; i++) {
 		op1->word[i] = 0;
 	}
 

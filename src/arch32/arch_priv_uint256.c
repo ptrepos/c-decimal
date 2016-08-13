@@ -215,14 +215,14 @@ MG_PRIVATE mg_decimal_error mg_uint256_div(mg_uint256 *op1, const mg_uint256 *op
 		set_double(q, q_tmp, q_n);
 
 		int overflow;
-		mg_uint256_mul_with_words(
+		mg_uint256_mul_words(
 			op2, op2_digits, q, q_n + 1, /*out*/qv, /*out*/&overflow);
 
 		while(overflow || mg_uint256_compare(op1, qv) < 0) {
 			q_tmp *= DOUBLE_CORRECT;
 			set_double(q, q_tmp, q_n);
 
-			mg_uint256_mul_with_words(
+			mg_uint256_mul_words(
 				op2, op2_digits, q, q_n + 1, /*out*/qv, /*out*/&overflow);
 		}
 

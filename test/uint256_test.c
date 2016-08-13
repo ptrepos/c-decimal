@@ -14,6 +14,8 @@ void mg_uint256_div_test();
 void mg_uint256_div_pattern_test();
 void mg_uint256_left_shift_test();
 void mg_uint256_right_shift_test();
+void mg_uint256_get_bits_test();
+void mg_uint256_get_max_bit_index_test();
 
 void mg_uint256_test()
 {
@@ -29,6 +31,8 @@ void mg_uint256_test()
 #endif
 	mg_uint256_left_shift_test();
 	mg_uint256_right_shift_test();
+	mg_uint256_get_bits_test();
+	mg_uint256_get_max_bit_index_test();
 
 	printf("mg_uint256 test: %fs\n", (float)(clock() - tm) / CLOCKS_PER_SEC);
 }
