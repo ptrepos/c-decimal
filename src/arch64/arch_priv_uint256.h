@@ -212,9 +212,6 @@ static inline void mg_uint256_neg(mg_uint256 *op1)
 
 static inline void mg_uint256_mul_words(const mg_uint256 *op1, int op1_words, const mg_uint256 *op2, int op2_words, /*out*/mg_uint256 *ret, /*out*/int *overflow)
 {
-	unsigned carry, carry2;
-	uint64_t lo, hi;
-	
 	if(op1_words <= 2 && op2_words <= 2) {
 		*overflow = 0;
 		mg_uint256_mul128(op1, op2, /*out*/ret);
@@ -227,46 +224,29 @@ static inline void mg_uint256_mul_words(const mg_uint256 *op1, int op1_words, co
 		return;
 	}
 
-	*overflow = 0;
-	mg_uint256_set_zero(ret);
-	
-	for(int i = 0; i < op1_words; i++) {
-		carry2 = 0;
-		for(int j = 0; j < op2_words; j++) {
-			int k = i + j;
-			if(k >= MG_UINT256_WORD_COUNT) {
-				if(!((op1->word[i] == 0 || op2->word[j] == 0) && carry2 == 0)) {
-					*overflow = 1;
-					return;
-				}
-				break;
-			}
+	unsigned carry, carry2;
+	uint64_t lo, hi;
+	uint64_t buf[MG_UINT256_WORD_COUNT*2] = {0};
 
+	for(int j = 0; j < op2_words; j++) {
+		carry2 = 0;
+		for(int i = 0; i < op1_words; i++) {
+			int k = i + j;
 			lo = mg_uint64_mul(op1->word[i], op2->word[j], &hi);
 
-			carry = mg_uint64_add(0, ret->word[k], lo, &ret->word[k]);
-
-			k++;
-			if(k >= MG_UINT256_WORD_COUNT) {
-				if(!(hi == 0 && carry == 0)) {
-					*overflow = 1;
-					return;
-				}
-				continue;
-			}
-			carry = mg_uint64_add(carry, ret->word[k], hi, &ret->word[k]);
-
-			k++;
-			if(k >= MG_UINT256_WORD_COUNT) {
-				if(!(carry2 == 0 && carry == 0)) {
-					*overflow = 1;
-					return;
-				}
-				continue;
-			}
-			carry2 = mg_uint64_add(carry, ret->word[k], carry2, &ret->word[k]);
+			carry = mg_uint64_add(0, buf[k], lo, &buf[k]);
+			carry = mg_uint64_add(carry, buf[k+1], hi, &buf[k+1]);
+			carry2 = mg_uint64_add(carry, buf[k+2], carry2, &buf[k+2]);
 		}
 	}
+
+	if((buf[4] | buf[5] | buf[6] | buf[7]) != 0) {
+		*overflow = 1;
+		return;
+	}
+
+	*overflow = 0;
+	memcpy(ret->word, buf, sizeof(buf[0]) * MG_UINT256_WORD_COUNT);
 }
 
 static inline void mg_uint256_mul256x64(
