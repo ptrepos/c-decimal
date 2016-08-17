@@ -238,9 +238,9 @@ static inline void mg_uint256_neg(mg_uint256 *op1)
 
 static inline void mg_uint256_mul_words(const mg_uint256 *op1, int op1_words, const mg_uint256 *op2, int op2_words, /*out*/mg_uint256 *ret, /*out*/int *overflow)
 {
-	unsigned carry, carry2;
+	uint8_t carry, carry2;
 	uint32_t lo, hi;
-	uint32_t buf[MG_UINT256_WORD_COUNT*2] = {0};
+	uint32_t buf[MG_UINT256_WORD_COUNT*2+1] = {0};
 
 	for(int j = 0; j < op2_words; j++) {
 		carry2 = 0;

@@ -224,9 +224,9 @@ static inline void mg_uint256_mul_words(const mg_uint256 *op1, int op1_words, co
 		return;
 	}
 
-	unsigned carry, carry2;
+	uint8_t carry, carry2;
 	uint64_t lo, hi;
-	uint64_t buf[MG_UINT256_WORD_COUNT*2] = {0};
+	uint64_t buf[MG_UINT256_WORD_COUNT*2+1] = {0};
 
 	for(int j = 0; j < op2_words; j++) {
 		carry2 = 0;
