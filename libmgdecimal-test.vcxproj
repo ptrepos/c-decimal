@@ -23,7 +23,13 @@
     <ClCompile Include="test\decimal_abs_test.c" />
     <ClCompile Include="test\decimal_add_test.c" />
     <ClCompile Include="test\decimal_compare_test.c" />
-    <ClCompile Include="test\decimal_convert_test.c" />
+    <ClCompile Include="test\decimal_convert_double_test.c" />
+    <ClCompile Include="test\decimal_convert_float_test.c" />
+    <ClCompile Include="test\decimal_convert_int.c" />
+    <ClCompile Include="test\decimal_convert_int64.c" />
+    <ClCompile Include="test\decimal_convert_string_test.c" />
+    <ClCompile Include="test\decimal_convert_uint.c" />
+    <ClCompile Include="test\decimal_convert_uint64.c" />
     <ClCompile Include="test\decimal_divide_and_modulus_test.c" />
     <ClCompile Include="test\decimal_divide_test.c" />
     <ClCompile Include="test\decimal_get_binary_test.c" />

@@ -45,9 +45,6 @@
     <ClCompile Include="test\decimal_divide_and_modulus_test.c">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="test\decimal_convert_test.c">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="test\decimal_compare_test.c">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -106,6 +103,27 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="test\uint256_get_bits_test.c">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="test\decimal_convert_double_test.c">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="test\decimal_convert_int64.c">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="test\decimal_convert_string_test.c">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="test\decimal_convert_int.c">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="test\decimal_convert_uint64.c">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="test\decimal_convert_uint.c">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="test\decimal_convert_float_test.c">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
