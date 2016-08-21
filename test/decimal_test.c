@@ -42,7 +42,13 @@ static void div_loop(const char *text1, const char *text2)
 	}
 }
 
-void decimal_convert_test();
+void decimal_convert_string_test();
+void decimal_convert_int_test();
+void decimal_convert_uint_test();
+void decimal_convert_int64_test();
+void decimal_convert_uint64_test();
+void decimal_convert_float_test();
+void decimal_convert_double_test();
 void decimal_zero_test();
 void decimal_compare_test();
 void decimal_add_test();
@@ -64,7 +70,13 @@ void decimal_test()
 {
 	clock_t tm = clock();
 	
-	decimal_convert_test();
+	decimal_convert_string_test();
+	decimal_convert_int_test();
+	decimal_convert_uint_test();
+	decimal_convert_int64_test();
+	decimal_convert_uint64_test();
+	decimal_convert_float_test();
+	decimal_convert_double_test();
 	decimal_zero_test();
 	decimal_compare_test();
 	decimal_add_test();
