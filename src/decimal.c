@@ -78,11 +78,11 @@ MG_DECIMAL_API mg_decimal_error mg_decimal_value_of_int(int value, /*out*/mg_dec
 
 	if(value < 0) {
 		sign = SIGN_NEGATIVE;
-		value = -value;
+		mg_uint256_set(&fraction, ((uint32_t)-(value + 1)) + 1);
 	} else {
 		sign = SIGN_POSITIVE;
+		mg_uint256_set(&fraction, value);
 	}
-	mg_uint256_set(&fraction, value);
 
 	err = __mg_set_decimal(ret, sign, 0, &fraction);
 	assert(err == 0);
@@ -111,11 +111,11 @@ MG_DECIMAL_API mg_decimal_error mg_decimal_value_of_int64(int64_t value, /*out*/
 
 	if(value < 0) {
 		sign = SIGN_NEGATIVE;
-		value = -value;
+		mg_uint256_set(&fraction, ((uint64_t)-(value + 1)) + 1);
 	} else {
 		sign = SIGN_POSITIVE;
+		mg_uint256_set(&fraction, value);
 	}
-	mg_uint256_set(&fraction, value);
 
 	err = __mg_set_decimal(ret, sign, 0, &fraction);
 	assert(err == 0);
