@@ -321,7 +321,7 @@ MG_DECIMAL_API mg_decimal_error mg_decimal_to_int(const mg_decimal *value, /*out
 	}
 
 	if (sign == SIGN_NEGATIVE) {
-		mg_uint256_set(/*out*/tmp, -INT64_MIN);
+		mg_uint256_set(/*out*/tmp, (uint64_t)INT32_MAX + 1);
 
 		// out of int64.
 		if (mg_uint256_compare(fraction, tmp) > 0) {
@@ -330,7 +330,7 @@ MG_DECIMAL_API mg_decimal_error mg_decimal_to_int(const mg_decimal *value, /*out
 		}
 	}
 	else {
-		mg_uint256_set(/*out*/tmp, INT64_MAX);
+		mg_uint256_set(/*out*/tmp, INT32_MAX);
 
 		// out of int64.
 		if (mg_uint256_compare(fraction, tmp) > 0) {
@@ -417,7 +417,7 @@ MG_DECIMAL_API mg_decimal_error mg_decimal_to_int64(const mg_decimal *value, /*o
 	}
 
 	if (sign == SIGN_NEGATIVE) {
-		mg_uint256_set(/*out*/tmp, -INT64_MIN);
+		mg_uint256_set(/*out*/tmp, (uint64_t)INT64_MAX + 1);
 
 		// out of int64.
 		if (mg_uint256_compare(fraction, tmp) > 0) {

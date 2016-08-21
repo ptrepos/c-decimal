@@ -7,10 +7,9 @@
  */
 #pragma once
 
-#include <assert.h>
 #include <stdint.h>
-#include <stdbool.h>
 #include <memory.h>
+#include <assert.h>
 
 #include <magica/decimal/decimal.h>
 #include "intop.h"

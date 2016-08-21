@@ -6,6 +6,8 @@
  */
 #pragma once
 
+#include <stdint.h>
+
 #define DOUBLE_SIGN_POSITIVE		(0)
 #define DOUBLE_SIGN_NEGATIVE		(1)
 #define DOUBLE_EXP_INF				(2047)
