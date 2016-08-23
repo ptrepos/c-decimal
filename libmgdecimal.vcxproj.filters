@@ -50,6 +50,12 @@
     <ClCompile Include="src\priv_uint256.c">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="src\mg_uint256_conversion.c">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="src\arch64\mg_uint256_mul_words.c">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="src\x86\mg_uint256_mul_words.nas" />
