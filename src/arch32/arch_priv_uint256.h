@@ -250,9 +250,17 @@ static inline void mg_uint256_neg(mg_uint256 *op1)
 
 static inline int mg_uint256_mul256x64(const mg_uint256 *op1, const mg_uint256 *op2, /*out*/mg_uint256 *ret)
 {
+	int op1_digits = MG_UINT256_WORD_COUNT;
+	while(op1_digits > 0 && op1->word[op1_digits-1] == 0)
+		op1_digits--;
+
+	int op2_digits = MG_UINT256_WORD_COUNT / 4;
+	while(op2_digits > 0 && op2->word[op2_digits-1] == 0)
+		op2_digits--;
+
 	return mg_uint256_mul_words(
-		op1, MG_UINT256_WORD_COUNT, 
-		op2, MG_UINT256_WORD_COUNT / 4, 
+		op1, op1_digits, 
+		op2, op2_digits, 
 		/*out*/ret);
 }
 
