@@ -130,10 +130,22 @@ static inline int mg_uint256_is_zero(const mg_uint256 *op1)
 
 static inline int mg_uint256_compare(const mg_uint256 *op1, const mg_uint256 *op2)
 {
-	for(int i = MG_UINT256_WORD_COUNT; i > 0; i--) {
-		if(op1->word[i-1] != op2->word[i-1]) 
-			return op1->word[i-1] < op2->word[i-1] ? -1: 1;
-	}
+	if(op1->word[7] != op2->word[7]) 
+		return op1->word[7] < op2->word[7] ? -1: 1;
+	if(op1->word[6] != op2->word[6]) 
+		return op1->word[6] < op2->word[6] ? -1: 1;
+	if(op1->word[5] != op2->word[5]) 
+		return op1->word[5] < op2->word[5] ? -1: 1;
+	if(op1->word[4] != op2->word[4]) 
+		return op1->word[4] < op2->word[4] ? -1: 1;
+	if(op1->word[3] != op2->word[3]) 
+		return op1->word[3] < op2->word[3] ? -1: 1;
+	if(op1->word[2] != op2->word[2]) 
+		return op1->word[2] < op2->word[2] ? -1: 1;
+	if(op1->word[1] != op2->word[1]) 
+		return op1->word[1] < op2->word[1] ? -1: 1;
+	if(op1->word[0] != op2->word[0]) 
+		return op1->word[0] < op2->word[0] ? -1: 1;
 	return 0;
 }
 
