@@ -235,16 +235,15 @@ MG_PRIVATE mg_decimal_error mg_uint256_div(mg_uint256 *op1, const mg_uint256 *op
 		}
 		set_double(q, q_tmp, q_n);
 
-		int overflow;
-		mg_uint256_mul_words(
-			op2, op2_digits, q, q_n + 1, /*out*/qv, /*out*/&overflow);
+		int overflow = mg_uint256_mul_words(
+			op2, op2_digits, q, q_n + 1, /*out*/qv);
 
 		while(overflow || mg_uint256_compare(op1, qv) < 0) {
 			q_tmp *= DOUBLE_CORRECT;
 			set_double(q, q_tmp, q_n);
 
-			mg_uint256_mul_words(
-				op2, op2_digits, q, q_n + 1, /*out*/qv, /*out*/&overflow);
+			overflow = mg_uint256_mul_words(
+				op2, op2_digits, q, q_n + 1, /*out*/qv);
 		}
 
 		mg_uint256_sub(op1, qv, &underflow);
@@ -294,8 +293,7 @@ MG_PRIVATE void mg_uint256_test_convert(const char *buf, mg_uint256 *value)
 
 	int i = 0;
 	while(buf[i] != 0) {
-		int overflow;
-		mg_uint256_mul(&v, v10, &tmp, &overflow);
+		int overflow = mg_uint256_mul(&v, v10, &tmp);
 
 		mg_uint256_set(&n, buf[i] - '0');
 		mg_uint256_add(&tmp, &n);
@@ -345,8 +343,7 @@ MG_PRIVATE void mg_uint256_test_hex_convert(const char *buf, mg_uint256 *value)
 
 	int i = 0;
 	while(buf[i] != 0) {
-		int overflow;
-		mg_uint256_mul(&v, &v16, /*out*/&tmp, /*out*/&overflow);
+		int overflow = mg_uint256_mul(&v, &v16, /*out*/&tmp);
 		assert(overflow == 0);
 
 		mg_uint256_set(&n, buf[i] >= 'A' ? buf[i] - 'A' + 10: buf[i] - '0');

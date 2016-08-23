@@ -137,11 +137,8 @@
     <ClInclude Include="src\arch32\uint256.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="src\arch64\intop.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="src\arch32\intop.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="src\x86\mg_uint256_mul_words.nas" />
   </ItemGroup>
 </Project>

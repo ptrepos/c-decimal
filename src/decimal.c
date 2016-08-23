@@ -174,14 +174,14 @@ static void __pow2(int exponent, /*out*/mg_uint256 *ret)
 		
 		int overflow;
 		mg_uint256 tmp;
-		mg_uint256_mul(&c, &c, /*out*/&tmp, /*out*/&overflow);
+		overflow = mg_uint256_mul(&c, &c, /*out*/&tmp);
 		
 		if(b == 0) {
 			*ret = tmp;
 		} else {
 			mg_uint256 n2;
 			mg_uint256_set(&n2, 2);
-			mg_uint256_mul(&tmp, &n2, /*out*/ret, /*out*/&overflow);
+			overflow = mg_uint256_mul(&tmp, &n2, /*out*/ret);
 		}
 	}
 }
@@ -1159,14 +1159,14 @@ static mg_decimal_error __mg_decimal_divide_impl(
 				break;
 
 			// fraction1 = fraction1 * 10^18
-			mg_uint256_mul256x64(
-					fraction1, v10e18, /*out*/tmp, /*out*/&overflow);
+			overflow = mg_uint256_mul256x64(
+					fraction1, v10e18, /*out*/tmp);
 			assert(overflow == 0);
 			mg_uint256_swap(&fraction1, &tmp);
 
 			// q = q * 10^18
-			mg_uint256_mul256x64(
-					q, v10e18, /*out*/tmp, /*out*/&overflow);
+			overflow = mg_uint256_mul256x64(
+					q, v10e18, /*out*/tmp);
 			assert(overflow == 0);
 			mg_uint256_swap(&q, &tmp);
 

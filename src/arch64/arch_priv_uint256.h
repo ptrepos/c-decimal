@@ -29,45 +29,45 @@ typedef struct mg_uint256
 /** 
  * value setter function.
  */
-static inline int mg_uint256_set_zero(mg_uint256 *op1);
-static inline int mg_uint256_set(mg_uint256 *op1, uint64_t value);
+int mg_uint256_set_zero(mg_uint256 *op1);
+int mg_uint256_set(mg_uint256 *op1, uint64_t value);
 
 /** 
  * comparison functions
  */
-static inline int mg_uint256_is_zero(const mg_uint256 *op1);
-static inline int mg_uint256_compare(const mg_uint256 *op1, const mg_uint256 *op2);
+int mg_uint256_is_zero(const mg_uint256 *op1);
+int mg_uint256_compare(const mg_uint256 *op1, const mg_uint256 *op2);
 
 /** 
  * swap pointer
  */
-static inline void mg_uint256_swap(mg_uint256 **a, mg_uint256 **b);
+void mg_uint256_swap(mg_uint256 **a, mg_uint256 **b);
 
 /**
  * arithmetric functions
  */
-static inline void mg_uint256_add(/*inout*/mg_uint256 *op1, const mg_uint256 *op2);
-static inline void mg_uint256_sub(/*inout*/mg_uint256 *op1, const mg_uint256 *op2, /*out*/int *borrow);
-static inline void mg_uint256_neg(/*inout*/mg_uint256 *op1);
-static inline void mg_uint256_mul128(const mg_uint256 *op1, const mg_uint256 *op2, /*out*/mg_uint256 *ret); // multiply for low bits.
-static inline void mg_uint256_mul256x64(const mg_uint256 *op1, const mg_uint256 *op2, mg_uint256 *ret, int *overflow);
-static inline void mg_uint256_mul(const mg_uint256 *op1, const mg_uint256 *op2, /*out*/mg_uint256 *ret, /*out*/int *overflow);
+void mg_uint256_add(/*inout*/mg_uint256 *op1, const mg_uint256 *op2);
+void mg_uint256_sub(/*inout*/mg_uint256 *op1, const mg_uint256 *op2, /*out*/int *borrow);
+void mg_uint256_neg(/*inout*/mg_uint256 *op1);
+void mg_uint256_mul128(const mg_uint256 *op1, const mg_uint256 *op2, /*out*/mg_uint256 *ret); // multiply for low bits.
+int mg_uint256_mul256x64(const mg_uint256 *op1, const mg_uint256 *op2, mg_uint256 *ret);
+int mg_uint256_mul(const mg_uint256 *op1, const mg_uint256 *op2, /*out*/mg_uint256 *ret);
 MG_PRIVATE mg_decimal_error mg_uint256_div(/*inout*/mg_uint256 *op1, const mg_uint256 *op2, /*out*/mg_uint256 *quotient);
 
-static inline void mg_uint256_or(/*inout*/mg_uint256 *op1, const mg_uint256 *op2);
-static inline void mg_uint256_left_shift(/*inout*/mg_uint256 *op1, int op2);
-static inline void mg_uint256_right_shift(/*inout*/mg_uint256 *op1, int op2);
+void mg_uint256_or(/*inout*/mg_uint256 *op1, const mg_uint256 *op2);
+void mg_uint256_left_shift(/*inout*/mg_uint256 *op1, int op2);
+void mg_uint256_right_shift(/*inout*/mg_uint256 *op1, int op2);
 
 /**
  * These functions includes for mg_decimal.
  */
-static inline bool mg_uint256_is_overflow_int64(const mg_uint256 *op1);
-static inline int64_t mg_uint256_get_int64(mg_uint256 *op1);
-static inline const mg_uint256 *mg_uint256_get_10eN(int digits);
+bool mg_uint256_is_overflow_int64(const mg_uint256 *op1);
+int64_t mg_uint256_get_int64(mg_uint256 *op1);
+const mg_uint256 *mg_uint256_get_10eN(int digits);
 MG_PRIVATE int mg_uint256_get_digits(const mg_uint256 *value);
 
-static inline void mg_uint256_get_bits(/*inout*/mg_uint256 *op1, int op2);
-static inline int mg_uint256_get_max_bit_index(const mg_uint256 *value);
+void mg_uint256_get_bits(/*inout*/mg_uint256 *op1, int op2);
+int mg_uint256_get_max_bit_index(const mg_uint256 *value);
 
 MG_PRIVATE void mg_uint256_test_to_string(const mg_uint256 *value, char *buf);
 MG_PRIVATE void mg_uint256_test_convert(const char *buf, mg_uint256 *value);
@@ -213,18 +213,15 @@ static inline void mg_uint256_neg(mg_uint256 *op1)
 	c = mg_uint64_add(c, op1->word[3], 0, &op1->word[3]);
 }
 
-static inline void mg_uint256_mul_words(const mg_uint256 *op1, int op1_words, const mg_uint256 *op2, int op2_words, /*out*/mg_uint256 *ret, /*out*/int *overflow)
+static inline int mg_uint256_mul_words(const mg_uint256 *op1, int op1_words, const mg_uint256 *op2, int op2_words, /*out*/mg_uint256 *ret)
 {
 	if(op1_words <= 2 && op2_words <= 2) {
-		*overflow = 0;
 		mg_uint256_mul128(op1, op2, /*out*/ret);
-		return;
+		return 0;
 	} else if(op2_words <= 1) {
-		mg_uint256_mul256x64(op1, op2, /*out*/ret, /*out*/overflow);
-		return;
+		return mg_uint256_mul256x64(op1, op2, /*out*/ret);
 	} else if(op1_words <= 1) {
-		mg_uint256_mul256x64(op2, op1, /*out*/ret, /*out*/overflow);
-		return;
+		return mg_uint256_mul256x64(op2, op1, /*out*/ret);
 	}
 
 	uint8_t carry, carry2;
@@ -244,19 +241,17 @@ static inline void mg_uint256_mul_words(const mg_uint256 *op1, int op1_words, co
 	}
 
 	if((buf[4] | buf[5] | buf[6] | buf[7]) != 0) {
-		*overflow = 1;
-		return;
+		return 1;
 	}
 
-	*overflow = 0;
 	memcpy(ret->word, buf, sizeof(buf[0]) * MG_UINT256_WORD_COUNT);
+	return 0;
 }
 
-static inline void mg_uint256_mul256x64(
+static inline int mg_uint256_mul256x64(
 		const mg_uint256 *op1, 
 		const mg_uint256 *op2, 
-		mg_uint256 *ret,
-		int *overflow)
+		mg_uint256 *ret)
 {
 	unsigned char carry, carry2;
 	uint64_t hi, lo;
@@ -282,20 +277,17 @@ static inline void mg_uint256_mul256x64(
 	carry = mg_uint64_add(0, ret->word[2], lo, &ret->word[2]);
 	carry = mg_uint64_add(carry, ret->word[3], hi, &ret->word[3]);
 	if(carry != 0 || carry2 != 0) {
-		*overflow = 1;
-		return;
+		return 1;
 	}
 
 	lo = mg_uint64_mul(op1->word[3], op2->word[0], &hi);
 
 	carry = mg_uint64_add(0, ret->word[3], lo, &ret->word[3]);
 	if(carry != 0 || hi != 0) {
-		*overflow = 1;
-		return;
+		return 1;
 	}
 
-	*overflow = 0;
-	return;
+	return 0;
 }
 
 static inline void mg_uint256_mul128(const mg_uint256 *op1, const mg_uint256 *op2, mg_uint256 *ret)
@@ -328,7 +320,7 @@ static inline void mg_uint256_mul128(const mg_uint256 *op1, const mg_uint256 *op
 	c = mg_uint64_add(c, ret->word[3], 0, &ret->word[3]);
 }
 
-static inline void mg_uint256_mul(const mg_uint256 *op1, const mg_uint256 *op2, /*out*/mg_uint256 *ret, /*out*/int *overflow)
+static inline int mg_uint256_mul(const mg_uint256 *op1, const mg_uint256 *op2, /*out*/mg_uint256 *ret)
 {
 	int op1_digits = MG_UINT256_WORD_COUNT;
 	while(op1_digits > 0 && op1->word[op1_digits-1] == 0)
@@ -338,7 +330,7 @@ static inline void mg_uint256_mul(const mg_uint256 *op1, const mg_uint256 *op2, 
 	while(op2_digits > 0 && op2->word[op2_digits-1] == 0)
 		op2_digits--;
 
-	mg_uint256_mul_words(op1, op1_digits, op2, op2_digits, /*out*/ret, /*out*/overflow);
+	return mg_uint256_mul_words(op1, op1_digits, op2, op2_digits, /*out*/ret);
 }
 
 static inline void mg_uint256_or(/*inout*/mg_uint256 *op1, const mg_uint256 *op2)

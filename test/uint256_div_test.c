@@ -34,8 +34,7 @@ static void div_mul_test(const char *text1, const char *text2)
 
 	mg_uint256_div(&v1, &v2, &v3);
 
-	int overflow;
-	mg_uint256_mul(&v2, &v3, &v4, &overflow);
+	int overflow = mg_uint256_mul(&v2, &v3, &v4);
 	mg_assert(overflow == 0);
 	mg_uint256_add(&v1, &v4);
 
