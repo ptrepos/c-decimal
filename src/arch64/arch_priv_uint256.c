@@ -191,7 +191,7 @@ MG_PRIVATE mg_decimal_error mg_uint256_div(mg_uint256 *op1, const mg_uint256 *op
 
 	mg_uint256_set_zero(/*out*/quotient);
 
-	while (mg_uint256_compare(op1, op2) >= 0) {
+	while (op1_digits >= op2_digits && mg_uint256_compare(op1, op2) >= 0) {
 		if(op2_digits <= 1 && op1_digits <= 1) {
 			mg_uint256_set(/*out*/q, op1->word[0] / op2->word[0]);
 			mg_uint256_set(/*out*/op1, op1->word[0] % op2->word[0]);
