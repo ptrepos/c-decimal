@@ -154,6 +154,12 @@ MG_PRIVATE mg_decimal_error mg_uint256_div(mg_uint256 *op1, const mg_uint256 *op
 	int op1_digits = MG_UINT256_WORD_COUNT;
 	while(op1_digits > 0 && op1->word[op1_digits-1] == 0)
 		op1_digits--;
+
+	if(op1_digits <= 0) {
+		mg_uint256_set_zero(quotient);
+		goto _EXIT;
+	}
+
 	int op2_digits = MG_UINT256_WORD_COUNT;
 	while(op2_digits > 0 && op2->word[op2_digits-1] == 0)
 		op2_digits--;
@@ -164,15 +170,12 @@ MG_PRIVATE mg_decimal_error mg_uint256_div(mg_uint256 *op1, const mg_uint256 *op
 			goto _ERROR;
 		}
 		if(op1_digits <= 1) {
-			mg_uint256_set(quotient, op1->word[0] / op2->word[0]);
-			mg_uint256_set(op1, op1->word[0] % op2->word[0]);
+			uint64_t q = op1->word[0] / op2->word[0];
+			uint64_t r = op1->word[0] % op2->word[0];
+			mg_uint256_set(quotient, q);
+			mg_uint256_set(op1, r);
 			goto _EXIT;
 		}
-	}
-
-	if(op1_digits <= 0) {
-		mg_uint256_set_zero(quotient);
-		goto _EXIT;
 	}
 
 	if (op1_digits - op2_digits <= 1) {
@@ -224,10 +227,11 @@ MG_PRIVATE mg_decimal_error mg_uint256_div_restoring_method(
 	mg_uint256_left_shift(/*inout*/&qv, n);
 	
 	if(mg_uint256_compare(op1, /*out*/&qv) >= 0) {
-		mg_uint256_set_bit(/*inout*/q, n);
 		int underflow;
 		mg_uint256_sub(/*inout*/op1, &qv, /*out*/&underflow);
 		assert(underflow == 0);
+
+		mg_uint256_set_bit(/*inout*/q, n);
 	}
 	n--;
 	
@@ -235,10 +239,11 @@ MG_PRIVATE mg_decimal_error mg_uint256_div_restoring_method(
 		mg_uint256_right_shift_1(/*inout*/&qv);
 
 		if(mg_uint256_compare(op1, /*out*/&qv) >= 0) {
-			mg_uint256_set_bit(/*inout*/q, n);
 			int underflow;
 			mg_uint256_sub(/*inout*/op1, &qv, /*out*/&underflow);
 			assert(underflow == 0);
+
+			mg_uint256_set_bit(/*inout*/q, n);
 		}
 		n--;
 	}
@@ -297,8 +302,10 @@ MG_PRIVATE mg_decimal_error mg_uint256_div_long_division(
 
 	while (op1_digits >= op2_digits && mg_uint256_compare(op1, op2) >= 0) {
 		if(op2_digits <= 1 && op1_digits <= 1) {
-			mg_uint256_set(/*out*/q, op1->word[0] / op2->word[0]);
-			mg_uint256_set(/*out*/op1, op1->word[0] % op2->word[0]);
+			uint64_t iq = op1->word[0] / op2->word[0];
+			uint64_t ir = op1->word[0] % op2->word[0];
+			mg_uint256_set(q, iq);
+			mg_uint256_set(op1, ir);
 
 			mg_uint256_add(/*out*/quotient, q);
 			goto _EXIT;
