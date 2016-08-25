@@ -181,7 +181,7 @@ MG_PRIVATE mg_decimal_error mg_uint256_div(mg_uint256 *op1, const mg_uint256 *op
 	if (op1_digits - op2_digits <= 1) {
 		int op1_bits = ((op1_digits - 1) * 64 + mg_uint64_get_max_bit_index(op1->word[op1_digits - 1])) + 1;
 		int op2_bits = ((op2_digits - 1) * 64 + mg_uint64_get_max_bit_index(op2->word[op2_digits - 1])) + 1;
-		if(op1_bits - op2_bits < 48) {
+		if(op1_bits - op2_bits < 32) {
 			err = mg_uint256_div_restoring_method(
 					/*inout*/op1, op1_bits, 
 					op2, op2_bits,
