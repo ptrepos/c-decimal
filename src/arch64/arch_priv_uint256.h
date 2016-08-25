@@ -46,8 +46,10 @@ void mg_uint256_swap(mg_uint256 **a, mg_uint256 **b);
 /**
  * arithmetric functions
  */
-void mg_uint256_add(/*inout*/mg_uint256 *op1, const mg_uint256 *op2);
-void mg_uint256_sub(/*inout*/mg_uint256 *op1, const mg_uint256 *op2, /*out*/int *borrow);
+int mg_uint256_add128(/*inout*/mg_uint256 *op1, const mg_uint256 *op2);
+int mg_uint256_add(/*inout*/mg_uint256 *op1, const mg_uint256 *op2);
+int mg_uint256_sub128(/*inout*/mg_uint256 *op1, const mg_uint256 *op2);
+int mg_uint256_sub(/*inout*/mg_uint256 *op1, const mg_uint256 *op2);
 void mg_uint256_neg(/*inout*/mg_uint256 *op1);
 int mg_uint256_mul_words(const mg_uint256 *op1, int op1_words, const mg_uint256 *op2, int op2_words, /*out*/mg_uint256 *ret);
 void mg_uint256_mul128(const mg_uint256 *op1, const mg_uint256 *op2, /*out*/mg_uint256 *ret); // multiply for low bits.
@@ -141,16 +143,18 @@ static inline int mg_uint256_compare(const mg_uint256 *op1, const mg_uint256 *op
 	return 0;
 }
 
-static inline void mg_uint256_add128(mg_uint256 *op1, const mg_uint256 *op2)
+static inline int mg_uint256_add128(mg_uint256 *op1, const mg_uint256 *op2)
 {
 	unsigned char c;
 
 	c = 0;
 	c = mg_uint64_add(c, op1->word[0], op2->word[0], &op1->word[0]);
 	c = mg_uint64_add(c, op1->word[1], op2->word[1], &op1->word[1]);
+
+	return c;
 }
 
-static inline void mg_uint256_add(mg_uint256 *op1, const mg_uint256 *op2)
+static inline int mg_uint256_add(mg_uint256 *op1, const mg_uint256 *op2)
 {
 	unsigned char c;
 	
@@ -159,9 +163,11 @@ static inline void mg_uint256_add(mg_uint256 *op1, const mg_uint256 *op2)
 	c = mg_uint64_add(c, op1->word[1], op2->word[1], &op1->word[1]);
 	c = mg_uint64_add(c, op1->word[2], op2->word[2], &op1->word[2]);
 	c = mg_uint64_add(c, op1->word[3], op2->word[3], &op1->word[3]);
+
+	return c;
 }
 
-static inline void mg_uint256_sub128(mg_uint256 *op1, const mg_uint256 *op2, /*out*/int *borrow)
+static inline int mg_uint256_sub128(mg_uint256 *op1, const mg_uint256 *op2)
 {
 	unsigned char b;
 
@@ -169,10 +175,10 @@ static inline void mg_uint256_sub128(mg_uint256 *op1, const mg_uint256 *op2, /*o
 	b = mg_uint64_sub(b, op1->word[0], op2->word[0], &op1->word[0]);
 	b = mg_uint64_sub(b, op1->word[1], op2->word[1], &op1->word[1]);
 
-	*borrow = b;
+	return b;
 }
 
-static inline void mg_uint256_sub(mg_uint256 *op1, const mg_uint256 *op2, /*out*/int *borrow)
+static inline int mg_uint256_sub(mg_uint256 *op1, const mg_uint256 *op2)
 {
 	unsigned char b;
 
@@ -182,7 +188,7 @@ static inline void mg_uint256_sub(mg_uint256 *op1, const mg_uint256 *op2, /*out*
 	b = mg_uint64_sub(b, op1->word[2], op2->word[2], &op1->word[2]);
 	b = mg_uint64_sub(b, op1->word[3], op2->word[3], &op1->word[3]);
 
-	*borrow = b;
+	return b;
 }
 
 static inline void mg_uint256_neg128(mg_uint256 *op1)
