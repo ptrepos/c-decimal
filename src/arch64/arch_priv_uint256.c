@@ -131,6 +131,124 @@ MG_PRIVATE int mg_uint256_get_digits(const mg_uint256 *value)
 	return low;
 }
 
+// •œŒ³–@‚É‚æ‚éŽÀ‘•
+MG_PRIVATE mg_decimal_error mg_uint256_div_restoring_method(
+	mg_uint256 *op1,
+	int op1_bits,
+	const mg_uint256 *op2,
+	int op2_bits,
+	/*out*/mg_uint256 *q);
+
+// ’·œ–@‚É‚æ‚éŽÀ‘•
+MG_PRIVATE mg_decimal_error mg_uint256_div_long_division(
+	mg_uint256 *op1, 
+	int op1_digits, 
+	const mg_uint256 *op2, 
+	int op2_digits, 
+	mg_uint256 *quotient);
+
+MG_PRIVATE mg_decimal_error mg_uint256_div(mg_uint256 *op1, const mg_uint256 *op2, mg_uint256 *quotient)
+{
+	mg_decimal_error err = 0;
+
+	int op1_digits = MG_UINT256_WORD_COUNT;
+	while(op1_digits > 0 && op1->word[op1_digits-1] == 0)
+		op1_digits--;
+	int op2_digits = MG_UINT256_WORD_COUNT;
+	while(op2_digits > 0 && op2->word[op2_digits-1] == 0)
+		op2_digits--;
+
+	if(op2_digits <= 1) {
+		if(op2_digits <= 0) {
+			err = MG_DECIMAL_ERROR_ZERODIVIDE;
+			goto _ERROR;
+		}
+		if(op1_digits <= 1) {
+			mg_uint256_set(quotient, op1->word[0] / op2->word[0]);
+			mg_uint256_set(op1, op1->word[0] % op2->word[0]);
+			goto _EXIT;
+		}
+	}
+
+	if(op1_digits <= 0) {
+		mg_uint256_set_zero(quotient);
+		goto _EXIT;
+	}
+
+	if (op1_digits - op2_digits <= 1) {
+		int op1_bits = ((op1_digits - 1) * 64 + mg_uint64_get_max_bit_index(op1->word[op1_digits - 1])) + 1;
+		int op2_bits = ((op2_digits - 1) * 64 + mg_uint64_get_max_bit_index(op2->word[op2_digits - 1])) + 1;
+		if(op1_bits - op2_bits < 24) {
+			err = mg_uint256_div_restoring_method(
+					/*inout*/op1, op1_bits, 
+					op2, op2_bits,
+					/*out*/quotient);
+			if (err != 0)
+				goto _ERROR;
+			goto _EXIT;
+		}
+	}
+
+	err = mg_uint256_div_long_division(
+			/*inout*/op1, op1_digits, 
+			op2, op2_digits,
+			/*out*/quotient);
+	if (err != 0)
+		goto _ERROR;
+	goto _EXIT;
+	
+_EXIT:
+	return 0;
+_ERROR:
+	return err;
+}
+
+MG_PRIVATE mg_decimal_error mg_uint256_div_restoring_method(
+	mg_uint256 *op1,
+	int op1_bits,
+	const mg_uint256 *op2,
+	int op2_bits,
+	/*out*/mg_uint256 *q)
+{
+	//mg_decimal_error err;
+
+	if (op1_bits < op2_bits) {
+		mg_uint256_set(/*out*/q, 0);
+		goto _EXIT;
+	}
+	int n = op1_bits - op2_bits;
+
+	mg_uint256_set_zero(/*out*/q);
+
+	mg_uint256 qv = *op2;
+	mg_uint256_left_shift(/*inout*/&qv, n);
+	
+	if(mg_uint256_compare(op1, /*out*/&qv) >= 0) {
+		mg_uint256_set_bit(/*inout*/q, n);
+		int underflow;
+		mg_uint256_sub(/*inout*/op1, &qv, /*out*/&underflow);
+		assert(underflow == 0);
+	}
+	n--;
+	
+	while(n >= 0) {
+		mg_uint256_right_shift_1(/*inout*/&qv);
+
+		if(mg_uint256_compare(op1, /*out*/&qv) >= 0) {
+			mg_uint256_set_bit(/*inout*/q, n);
+			int underflow;
+			mg_uint256_sub(/*inout*/op1, &qv, /*out*/&underflow);
+			assert(underflow == 0);
+		}
+		n--;
+	}
+	
+_EXIT:
+	return 0;
+//_ERROR:
+//	return err;
+}
+
 typedef long double max_float_t;
 
 #define DOUBLE_RSHIFT_64		(5.4210108624275221700372640043497e-20)
@@ -159,32 +277,18 @@ static inline void set_double(mg_uint256 *op1, max_float_t value, int n)
 	}
 }
 
-MG_PRIVATE mg_decimal_error mg_uint256_div(mg_uint256 *op1, const mg_uint256 *op2, mg_uint256 *quotient)
+
+MG_PRIVATE mg_decimal_error mg_uint256_div_long_division(
+				mg_uint256 *op1, 
+				int op1_digits, 
+				const mg_uint256 *op2, 
+				int op2_digits, 
+				mg_uint256 *quotient)
 {
-	mg_decimal_error err = 0;
+	//mg_decimal_error err = 0;
 	mg_uint256 buf1, buf2, buf3;
 	mg_uint256 *q = &buf1, *qv = &buf2, *qv_hi = &buf3;
-	int q_n, underflow;
 
-	int op1_digits = MG_UINT256_WORD_COUNT;
-	while(op1_digits > 0 && op1->word[op1_digits-1] == 0)
-		op1_digits--;
-	int op2_digits = MG_UINT256_WORD_COUNT;
-	while(op2_digits > 0 && op2->word[op2_digits-1] == 0)
-		op2_digits--;
-
-	if(op2_digits <= 1) {
-		if(op2_digits <= 0) {
-			err = MG_DECIMAL_ERROR_ZERODIVIDE;
-			goto _ERROR;
-		}
-		if(op1_digits <= 1) {
-			mg_uint256_set(quotient, op1->word[0] / op2->word[0]);
-			mg_uint256_set(op1, op1->word[0] % op2->word[0]);
-			goto _EXIT;
-		}
-	}
-	
 	max_float_t op2_v = (max_float_t)op2->word[op2_digits -1];
 	if(op2_digits >= 2)
 		op2_v += (max_float_t)op2->word[op2_digits-2] * DOUBLE_RSHIFT_64;
@@ -204,7 +308,7 @@ MG_PRIVATE mg_decimal_error mg_uint256_div(mg_uint256 *op1, const mg_uint256 *op
 		if(op1_digits >= 2)
 			op1_v += (max_float_t)op1->word[op1_digits-2] * DOUBLE_RSHIFT_64;
 
-		q_n = op1_digits - op2_digits;
+		int q_n = op1_digits - op2_digits;
 		max_float_t q_tmp = op1_v / op2_v;
 		if((q_tmp < 1.0 && q_n == 0)) {
 			q_tmp = 1.0;
@@ -227,6 +331,7 @@ MG_PRIVATE mg_decimal_error mg_uint256_div(mg_uint256 *op1, const mg_uint256 *op
 				op2, op2_digits, q, q_n + 1, /*out*/qv);
 		}
 
+		int underflow;
 		mg_uint256_sub(op1, qv, &underflow);
 		mg_uint256_add(quotient, q);
 
@@ -235,6 +340,6 @@ MG_PRIVATE mg_decimal_error mg_uint256_div(mg_uint256 *op1, const mg_uint256 *op
 	}
 _EXIT:
 	return 0;
-_ERROR:
-	return err;
+//_ERROR:
+//	return err;
 }
