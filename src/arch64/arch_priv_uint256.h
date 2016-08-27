@@ -339,6 +339,26 @@ static inline void mg_uint256_left_shift(mg_uint256 *op1, int op2)
 	op1->word[3] = buf[3];
 }
 
+static inline void mg_uint256_left_shift128(mg_uint256 *op1, int op2)
+{
+	uint64_t buf[MG_UINT256_WORD_COUNT * 2] = { 0 };
+
+	int words = op2 / 64;
+	int bits = op2 % 64;
+
+	if (bits != 0) {
+		buf[0 + words] = (op1->word[0] << bits);
+		buf[1 + words] = (op1->word[0] >> (64 - bits)) | (op1->word[1] << bits);
+	}
+	else {
+		buf[0 + words] = op1->word[0];
+		buf[1 + words] = op1->word[1];
+	}
+
+	op1->word[0] = buf[0];
+	op1->word[1] = buf[1];
+}
+
 static inline void mg_uint256_right_shift(/*inout*/mg_uint256 *op1, int op2)
 {
 	int i;
@@ -385,15 +405,22 @@ static inline void mg_uint256_right_shift(/*inout*/mg_uint256 *op1, int op2)
 	}
 }
 
-static inline void mg_uint256_right_shift_1(mg_uint256 *op1)
+static inline void mg_uint256_right_shift_small(mg_uint256 *op1, int shift)
 {
 	mg_uint256 buf;
-	buf.word[0] = (op1->word[0] >> 1) | (op1->word[1] << (64 - 1));
-	buf.word[1] = (op1->word[1] >> 1) | (op1->word[2] << (64 - 1));
-	buf.word[2] = (op1->word[2] >> 1) | (op1->word[3] << (64 - 1));
-	buf.word[3] = (op1->word[3] >> 1);
+
+	buf.word[0] = (op1->word[0] >> shift) | (op1->word[1] << (64 - shift));
+	buf.word[1] = (op1->word[1] >> shift) | (op1->word[2] << (64 - shift));
+	buf.word[2] = (op1->word[2] >> shift) | (op1->word[3] << (64 - shift));
+	buf.word[3] = (op1->word[3] >> shift);
 
 	*op1 = buf;
+}
+
+static inline void mg_uint256_right_shift128_small(const mg_uint256 *op1, int shift, mg_uint256 *ret)
+{
+	ret->word[0] = (op1->word[0] >> shift) | (op1->word[1] << (64 - shift));
+	ret->word[1] = (op1->word[1] >> shift);
 }
 
 static inline const mg_uint256 *mg_uint256_get_10eN(int digits)
