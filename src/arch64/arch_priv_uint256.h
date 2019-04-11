@@ -143,6 +143,15 @@ static inline int mg_uint256_compare(const mg_uint256 *op1, const mg_uint256 *op
 	return 0;
 }
 
+static inline int mg_uint256_compare128(const mg_uint256 *op1, const mg_uint256 *op2)
+{
+	if(op1->word[1] != op2->word[1])
+		return op1->word[1] < op2->word[1] ? -1 : 1;
+	if(op1->word[0] != op2->word[0])
+		return op1->word[0] < op2->word[0] ? -1 : 1;
+	return 0;
+}
+
 static inline int mg_uint256_add128(mg_uint256 *op1, const mg_uint256 *op2)
 {
 	unsigned char c;

@@ -103,17 +103,17 @@ MG_PRIVATE int mg_uint256_get_digits(const mg_uint256 *value)
 {
 	int digits = 0;
 
-	assert(value != NULL);
+	//assert(value != NULL);
 
 	if (mg_uint256_is_zero(value)) {
 		return 0;
 	}
 
-	assert(mg_uint256_compare(value, MG_UINT256_10eN_TABLE[77]) <= 0);
+	//assert(mg_uint256_compare(value, MG_UINT256_10eN_TABLE[77]) <= 0);
 
 	int high = 77;
 	int low = 0;
-	while(low < high) {
+	do {
 		int middle = (low + high) / 2;
 		int cmp = mg_uint256_compare(value, MG_UINT256_10eN_TABLE[middle]);
 		if(cmp < 0) {
@@ -124,34 +124,12 @@ MG_PRIVATE int mg_uint256_get_digits(const mg_uint256 *value)
 			low = middle;
 			break;
 		}
-	}
+	} while(low < high);
 
 	if(mg_uint256_compare(value, MG_UINT256_10eN_TABLE[low]) >= 0)
 		return low + 1;
 	return low;
 }
-
-// ïúå≥ñ@Ç…ÇÊÇÈé¿ëï
-MG_PRIVATE mg_decimal_error mg_uint256_div_restoring_method(
-	mg_uint256 *op1,
-	int op1_bits,
-	const mg_uint256 *op2,
-	int op2_bits,
-	/*out*/mg_uint256 *q);
-MG_PRIVATE mg_decimal_error mg_uint256_div128_restoring_method(
-	mg_uint256 *op1,
-	int op1_bits,
-	const mg_uint256 *op2,
-	int op2_bits,
-	/*out*/mg_uint256 *q);
-	
-// SRTñ@ ïœë•
-MG_PRIVATE mg_decimal_error mg_uint256_div128_srt(
-	mg_uint256 *op1,
-	int op1_bits,
-	const mg_uint256 *op2,
-	int op2_bits,
-	/*out*/mg_uint256 *q);
 
 // í∑èúñ@Ç…ÇÊÇÈé¿ëï
 MG_PRIVATE mg_decimal_error mg_uint256_div_long_division(
@@ -192,20 +170,6 @@ MG_PRIVATE mg_decimal_error mg_uint256_div(mg_uint256 *op1, const mg_uint256 *op
 		}
 	}
 
-	if (op1_digits <= 2) {
-		int op1_bits = ((op1_digits - 1) * 64 + mg_uint64_get_max_bit_index(op1->word[op1_digits - 1])) + 1;
-		int op2_bits = ((op2_digits - 1) * 64 + mg_uint64_get_max_bit_index(op2->word[op2_digits - 1])) + 1;
-		if(op1_bits - op2_bits < 32) {
-			err = mg_uint256_div128_srt(
-					/*inout*/op1, op1_bits, 
-					op2, op2_bits,
-					/*out*/quotient);
-			if (err != 0)
-				goto _ERROR;
-			goto _EXIT;
-		}
-	}
-
 	err = mg_uint256_div_long_division(
 			/*inout*/op1, op1_digits, 
 			op2, op2_digits,
@@ -219,200 +183,12 @@ _EXIT:
 _ERROR:
 	return err;
 }
-#if 0
-MG_PRIVATE mg_decimal_error mg_uint256_div_restoring_method(
-	mg_uint256 *op1,
-	int op1_bits,
-	const mg_uint256 *op2,
-	int op2_bits,
-	/*out*/mg_uint256 *q)
-{
-	//mg_decimal_error err;
-
-	if (op1_bits < op2_bits) {
-		mg_uint256_set(/*out*/q, 0);
-		goto _EXIT;
-	}
-	int n = op1_bits - op2_bits;
-
-	mg_uint256_set_zero(/*out*/q);
-
-	mg_uint256 d;
-	mg_uint256 tmp;
-	
-	d = *op2;
-	mg_uint256_left_shift(/*inout*/&d, n);
-
-	tmp = *op1;
-	int borrow = mg_uint256_sub(/*inout*/op1, &d);
-	if(borrow == 0) {
-		mg_uint256_set_bit(/*inout*/q, n);
-	} else {
-		*op1 = tmp;
-	}
-	n--;
-
-	while(n >= 0) {
-		mg_uint256_right_shift_1(/*inout*/&d);
-
-		tmp = *op1;
-		int borrow = mg_uint256_sub(/*inout*/op1, &d);
-		if(borrow == 0) {
-			mg_uint256_set_bit(/*inout*/q, n);
-		} else {
-			*op1 = tmp;
-		}
-		n--;
-	}
-	
-_EXIT:
-	return 0;
-//_ERROR:
-//	return err;
-}
-#endif
-
-MG_PRIVATE mg_decimal_error mg_uint256_div128_restoring_method(
-	mg_uint256 *op1,
-	int op1_bits,
-	const mg_uint256 *op2,
-	int op2_bits,
-	/*out*/mg_uint256 *q)
-{
-	//mg_decimal_error err;
-
-	if (op1_bits < op2_bits) {
-		mg_uint256_set(/*out*/q, 0);
-		goto _EXIT;
-	}
-	int n = op1_bits - op2_bits;
-
-	mg_uint256_set_zero(/*out*/q);
-
-	mg_uint256 d;
-	mg_uint256 tmp;
-
-	d = *op2;
-	mg_uint256_left_shift128(/*inout*/&d, n);
-
-	tmp = *op1;
-	int borrow = mg_uint256_sub128(/*inout*/op1, &d);
-	if(borrow == 0) {
-		mg_uint256_set_bit(/*inout*/q, n);
-	} else {
-		*op1 = tmp;
-	}
-	n--;
-
-	while(n >= 0) {
-		mg_uint256_right_shift128_small(&d, 1, /*out*/&tmp);
-		d = tmp;
-
-		tmp = *op1;
-		borrow = mg_uint256_sub128(/*inout*/op1, &d);
-		if(borrow == 0) {
-			mg_uint256_set_bit(/*inout*/q, n);
-		} else {
-			*op1 = tmp;
-		}
-
-		n--;
-	}
-
-_EXIT:
-	return 0;
-	//_ERROR:
-	//	return err;
-}
-
-MG_PRIVATE mg_decimal_error mg_uint256_div128_srt(
-	mg_uint256 *op1,
-	int op1_bits,
-	const mg_uint256 *op2,
-	int op2_bits,
-	/*out*/mg_uint256 *q)
-{
-	//mg_decimal_error err;
-
-	if (op1_bits < op2_bits) {
-		mg_uint256_set(/*out*/q, 0);
-		goto _EXIT;
-	}
-	int n = op1_bits - op2_bits;
-
-	mg_uint256_set_zero(/*out*/q);
-
-	mg_uint256 d;
-	mg_uint256 tmp;
-
-	d = *op2;
-	mg_uint256_left_shift128(/*inout*/&d, n);
-
-	tmp = *op1;
-	if(mg_uint256_sub128(/*inout*/op1, &d) == 0) {
-		mg_uint256_set_bit(/*inout*/q, n);
-	} else {
-		*op1 = tmp;
-	}
-	n--;
-
-	mg_uint256 d1 = {0};
-	mg_uint256 d2 = {0};
-	mg_uint256 d3 = {0};
-	while(n >= 1) {
-		
-		mg_uint256_right_shift128_small(/*inout*/&d, 2, &d1);
-		mg_uint256_right_shift128_small(/*inout*/&d, 1, &d2);
-		d3 = d1;
-		mg_uint256_add(/*inout*/&d3, &d2);
-
-		tmp = *op1;
-		if(mg_uint256_sub128(/*inout*/op1, &d3) == 0) {
-			mg_uint256_set_bit(/*inout*/q, n);
-			mg_uint256_set_bit(/*inout*/q, n-1);
-		} else {
-			*op1 = tmp;
-			if(mg_uint256_sub128(/*inout*/op1, &d2) == 0) {
-				mg_uint256_set_bit(/*inout*/q, n);
-			} else {
-				*op1 = tmp;
-				if(mg_uint256_sub128(/*inout*/op1, &d1) == 0) {
-					mg_uint256_set_bit(/*inout*/q, n-1);
-				} else {
-					*op1 = tmp;
-				}
-			}
-		}
-		d = d1;
-		n -= 2;
-	}
-	
-	if(n >= 0) {
-		mg_uint256 d1 = {0};
-		mg_uint256_right_shift128_small(/*inout*/&d, 1, &d1);
-
-		tmp = *op1;
-		if(mg_uint256_sub128(/*inout*/op1, &d1) == 0) {
-			mg_uint256_set_bit(/*inout*/q, n);
-		} else {
-			*op1 = tmp;
-		}
-		n--;
-	}
-
-_EXIT:
-	return 0;
-	//_ERROR:
-	//	return err;
-}
-
-typedef long double max_float_t;
 
 #define DOUBLE_RSHIFT_64		(5.4210108624275221700372640043497e-20)
 #define DOUBLE_LSHIFT_64		(18446744073709551616.0)
 #define DOUBLE_CORRECT			(0.99999995)
 
-static inline void set_double(mg_uint256 *op1, max_float_t value, int n)
+static inline void set_double(mg_uint256 *op1, double value, int n)
 {
 	mg_uint256_set_zero(op1);
 
@@ -434,7 +210,6 @@ static inline void set_double(mg_uint256 *op1, max_float_t value, int n)
 	}
 }
 
-
 MG_PRIVATE mg_decimal_error mg_uint256_div_long_division(
 				mg_uint256 *op1, 
 				int op1_digits, 
@@ -446,9 +221,9 @@ MG_PRIVATE mg_decimal_error mg_uint256_div_long_division(
 	mg_uint256 buf1, buf2, buf3;
 	mg_uint256 *q = &buf1, *qv = &buf2, *qv_hi = &buf3;
 
-	max_float_t op2_v = (max_float_t)op2->word[op2_digits -1];
+	double op2_v = (double)op2->word[op2_digits -1];
 	if(op2_digits >= 2)
-		op2_v += (max_float_t)op2->word[op2_digits-2] * DOUBLE_RSHIFT_64;
+		op2_v += (double)op2->word[op2_digits-2] * DOUBLE_RSHIFT_64;
 
 	mg_uint256_set_zero(/*out*/quotient);
 
@@ -463,12 +238,12 @@ MG_PRIVATE mg_decimal_error mg_uint256_div_long_division(
 			goto _EXIT;
 		}
 
-		max_float_t op1_v = (max_float_t)op1->word[op1_digits-1];
+		double op1_v = (double)op1->word[op1_digits-1];
 		if(op1_digits >= 2)
-			op1_v += (max_float_t)op1->word[op1_digits-2] * DOUBLE_RSHIFT_64;
+			op1_v += (double)op1->word[op1_digits-2] * DOUBLE_RSHIFT_64;
 
 		int q_n = op1_digits - op2_digits;
-		max_float_t q_tmp = op1_v / op2_v;
+		double q_tmp = op1_v / op2_v;
 		if((q_tmp < 1.0 && q_n == 0)) {
 			q_tmp = 1.0;
 		}

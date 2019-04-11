@@ -949,7 +949,7 @@ MG_DECIMAL_API mg_decimal_error mg_decimal_add(const mg_decimal *op1, const mg_d
 			mg_uint256_add128(fraction1, fraction2);
 			sign = sign1;
 		} else {
-			mg_uint256_sub128(fraction1, fraction2, &borrow);
+			borrow = mg_uint256_sub128(fraction1, fraction2);
 			if (borrow == 0)
 				sign = sign1;
 			else {
@@ -971,14 +971,14 @@ MG_DECIMAL_API mg_decimal_error mg_decimal_add(const mg_decimal *op1, const mg_d
 		}
 
 		if (sign1 == sign2) {
-			mg_uint256_add(fraction1, fraction2);
+			mg_uint256_add128(fraction1, fraction2);
 			sign = sign1;
 		} else {
-			mg_uint256_sub(fraction1, fraction2, &borrow);
+			borrow = mg_uint256_sub128(fraction1, fraction2);
 			if (borrow == 0)
 				sign = sign1;
 			else {
-				mg_uint256_neg(fraction1);
+				mg_uint256_neg128(fraction1);
 				sign = sign1 == SIGN_POSITIVE ? SIGN_NEGATIVE : SIGN_POSITIVE;
 			}
 		}
@@ -1151,12 +1151,15 @@ static mg_decimal_error __mg_decimal_divide_impl(
 
 	if(!mg_uint256_is_zero(fraction1)) {
 		int baseDigits = 0;
-		while(!mg_uint256_is_zero(fraction1)) {
+		do {
 			if(scale - baseDigits < SCALE_MIN)
 				break;
-			int digits = mg_uint256_get_digits(q);
-			if(digits > DIGIT_MAX)
+			if(q->word[3] != 0 || q->word[2] != 0) {
 				break;
+			}
+			//int digits = mg_uint256_get_digits(q);
+			//if(digits > DIGIT_MAX)
+			//	break;
 
 			// fraction1 = fraction1 * 10^18
 			overflow = mg_uint256_mul256x64(
@@ -1178,7 +1181,7 @@ static mg_decimal_error __mg_decimal_divide_impl(
 			mg_uint256_add(/*inout*/q, tmp);
 
 			baseDigits += 18;
-		}
+		} while(!mg_uint256_is_zero(fraction1));
 		scale -= baseDigits;
 
 		int rounded_scale;
@@ -1358,8 +1361,7 @@ static mg_decimal_error cutoff_invalid_digits(mg_uint256 *value, int scale, int 
 		if (err != 0)
 			return err;
 		cutted = -vShift;
-		mg_uint256_swap(&work, &tmp);
-		*value = *work;
+		*value = *tmp;
 	}
 
 	*cuttedDigits = cutted;

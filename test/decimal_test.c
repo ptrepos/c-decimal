@@ -211,4 +211,5 @@ void decimal_test()
 		printf("PERFORMANCE TEST mg_decimal_divide8(): %fs\n", (float)(clock() - tm1) / CLOCKS_PER_SEC);
 	}
 #endif
+
 }

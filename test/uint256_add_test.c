@@ -16,7 +16,7 @@ static void add_sub_test(const char *text1, const char *text2)
 	mg_uint256_test_convert(text2, &v2);
 
 	mg_uint256_add(&v1, &v2);
-	mg_uint256_sub(&v1, &v2, &borrow);
+	borrow = mg_uint256_sub(&v1, &v2);
 
 	mg_uint256_test_to_string(&v1, strbuf);
 
@@ -33,7 +33,7 @@ static void add128_sub128_test(const char *text1, const char *text2)
 	mg_uint256_test_convert(text2, &v2);
 
 	mg_uint256_add128(&v1, &v2);
-	mg_uint256_sub128(&v1, &v2, &borrow);
+	borrow = mg_uint256_sub128(&v1, &v2);
 
 	mg_uint256_test_to_string(&v1, strbuf);
 

@@ -7,19 +7,47 @@
 */
 #include "arch_priv_uint256.h"
 
+#define _JMP(op1, op2) ((op1) * 8 + (op2))
+
 MG_PRIVATE int mg_uint256_mul_words(const mg_uint256 *op1, int op1_words, const mg_uint256 *op2, int op2_words, /*out*/mg_uint256 *ret)
 {
-	if(op1_words <= 2 && op2_words <= 2) {
+	uint64_t hi, lo;
+
+	switch(_JMP(op1_words, op2_words)) {
+	case _JMP(0, 0):
+	case _JMP(0, 1):
+	case _JMP(0, 2):
+	case _JMP(0, 3):
+	case _JMP(0, 4):
+	case _JMP(1, 0):
+	case _JMP(2, 0):
+	case _JMP(3, 0):
+	case _JMP(4, 0):
+		mg_uint256_set_zero(ret);
+		return 0;
+	case _JMP(1, 1):
+		lo = mg_uint64_mul(op1->word[0], op2->word[0], &hi);
+		ret->word[3] = 0;
+		ret->word[2] = 0;
+		ret->word[1] = hi;
+		ret->word[0] = lo;
+		return 0;
+	case _JMP(1, 2):
+	case _JMP(2, 1):
+	case _JMP(2, 2):
 		mg_uint256_mul128(op1, op2, /*out*/ret);
 		return 0;
-	} else if(op2_words <= 1) {
-		return mg_uint256_mul256x64(op1, op2, /*out*/ret);
-	} else if(op1_words <= 1) {
+	case _JMP(1, 3):
+	case _JMP(1, 4):
 		return mg_uint256_mul256x64(op2, op1, /*out*/ret);
+	case _JMP(3, 1):
+	case _JMP(4, 1):
+		return mg_uint256_mul256x64(op1, op2, /*out*/ret);
+	default:
+		break;
 	}
 
 	uint8_t carry, carry2;
-	uint64_t lo, hi;
 	uint64_t buf[MG_UINT256_WORD_COUNT*2+1] = {0};
 
 	for(int j = 0; j < op2_words; j++) {
