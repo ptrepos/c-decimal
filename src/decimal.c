@@ -1168,7 +1168,7 @@ static mg_decimal_error __mg_decimal_divide_impl(
 			mg_uint256_swap(&fraction1, &tmp);
 
 			// q = q * 10^18
-			overflow = mg_uint256_mul256x64(
+			overflow = mg_uint256_mul128x64(
 					q, v10e18, /*out*/tmp);
 			assert(overflow == 0);
 			mg_uint256_swap(&q, &tmp);

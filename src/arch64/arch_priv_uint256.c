@@ -224,10 +224,11 @@ MG_PRIVATE mg_decimal_error mg_uint256_div_long_division(
 	double op2_v = (double)op2->word[op2_digits -1];
 	if(op2_digits >= 2)
 		op2_v += (double)op2->word[op2_digits-2] * DOUBLE_RSHIFT_64;
+	double op2_vr = 1.0 / op2_v;
 
 	mg_uint256_set_zero(/*out*/quotient);
 
-	while (op1_digits >= op2_digits && mg_uint256_compare(op1, op2) >= 0) {
+	while (op1_digits >= op2_digits && !mg_uint256_less_than(op1, op2)) {
 		if(op2_digits <= 1 && op1_digits <= 1) {
 			uint64_t iq = op1->word[0] / op2->word[0];
 			uint64_t ir = op1->word[0] % op2->word[0];
@@ -243,26 +244,22 @@ MG_PRIVATE mg_decimal_error mg_uint256_div_long_division(
 			op1_v += (double)op1->word[op1_digits-2] * DOUBLE_RSHIFT_64;
 
 		int q_n = op1_digits - op2_digits;
-		double q_tmp = op1_v / op2_v;
+		double q_tmp = op1_v * op2_vr;
 		if((q_tmp < 1.0 && q_n == 0)) {
 			q_tmp = 1.0;
 		}
-		// オーバーフロー防止
-		if(q_tmp >= DOUBLE_LSHIFT_64) {
-			q_tmp *= DOUBLE_CORRECT;
-		}
 
-		set_double(q, q_tmp, q_n);
-
-		int overflow = mg_uint256_mul_words(
-			op2, op2_digits, q, q_n + 1, /*out*/qv);
-
-		while(overflow || mg_uint256_compare(op1, qv) < 0) {
-			q_tmp *= DOUBLE_CORRECT;
+		for(;;) {
 			set_double(q, q_tmp, q_n);
 
-			overflow = mg_uint256_mul_words(
+			int overflow = mg_uint256_mul_words(
 				op2, op2_digits, q, q_n + 1, /*out*/qv);
+
+			if(!(overflow || mg_uint256_less_than(op1, qv))) {
+				break;
+			}
+
+			q_tmp *= DOUBLE_CORRECT;
 		}
 
 		int borrow = mg_uint256_sub(op1, qv);

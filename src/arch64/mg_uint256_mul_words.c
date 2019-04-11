@@ -7,7 +7,7 @@
 */
 #include "arch_priv_uint256.h"
 
-#define _JMP(op1, op2) ((op1) * 8 + (op2))
+#define _JMP(op1, op2) ((op1) * 5 + (op2))
 
 MG_PRIVATE int mg_uint256_mul_words(const mg_uint256 *op1, int op1_words, const mg_uint256 *op2, int op2_words, /*out*/mg_uint256 *ret)
 {
@@ -35,7 +35,7 @@ MG_PRIVATE int mg_uint256_mul_words(const mg_uint256 *op1, int op1_words, const 
 	case _JMP(1, 2):
 	case _JMP(2, 1):
 	case _JMP(2, 2):
-		mg_uint256_mul128(op1, op2, /*out*/ret);
+		mg_uint256_mul128(op1, op2, ret);
 		return 0;
 	case _JMP(1, 3):
 	case _JMP(1, 4):
