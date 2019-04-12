@@ -971,14 +971,14 @@ MG_DECIMAL_API mg_decimal_error mg_decimal_add(const mg_decimal *op1, const mg_d
 		}
 
 		if (sign1 == sign2) {
-			mg_uint256_add128(fraction1, fraction2);
+			mg_uint256_add(fraction1, fraction2);
 			sign = sign1;
 		} else {
-			borrow = mg_uint256_sub128(fraction1, fraction2);
+			borrow = mg_uint256_sub(fraction1, fraction2);
 			if (borrow == 0)
 				sign = sign1;
 			else {
-				mg_uint256_neg128(fraction1);
+				mg_uint256_neg(fraction1);
 				sign = sign1 == SIGN_POSITIVE ? SIGN_NEGATIVE : SIGN_POSITIVE;
 			}
 		}
