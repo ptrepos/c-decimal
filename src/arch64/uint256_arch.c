@@ -5,7 +5,7 @@
  * 256 bit integer for decimal.
  * this source includes decimal implementation.
  */
-#include "arch_priv_uint256.h"
+#include "uint256_arch.h"
 
 static const mg_uint256_t V_10e0 = { 0x1 };
 static const mg_uint256_t V_10e1 = { 0xa };

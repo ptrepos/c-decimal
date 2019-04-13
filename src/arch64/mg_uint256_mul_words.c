@@ -5,7 +5,7 @@
 * 256 bit integer for decimal.
 * this source includes decimal implementation.
 */
-#include "arch_priv_uint256.h"
+#include "uint256_arch.h"
 
 #define _JMP(op1, op2) ((op1) * 5 + (op2))
 

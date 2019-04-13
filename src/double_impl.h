@@ -22,7 +22,7 @@
 #define DOUBLE_STATUS_INFINITY		(3)
 #define DOUBLE_STATUS_NAN			(4)
 
-static inline void __double_parse(
+static inline void _double_parse(
 		double value, 
 		int *sign, 
 		int *scale, 
@@ -56,7 +56,7 @@ static inline void __double_parse(
 	}
 }
 
-static inline void __double_set(
+static inline void _double_set(
 		double *value, 
 		int sign, 
 		int scale, 

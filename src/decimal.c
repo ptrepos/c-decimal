@@ -11,12 +11,10 @@
 #include <memory.h>
 #include <magica/decimal/decimal.h>
 
-#include <arch_priv_uint256.h>
-#include <arch_priv_decimal.h>
-#include <priv_double.h>
-#include <priv_decimal.h>
-
-#include <arch_decimal.c>
+#include <uint256_arch.h>
+#include <double_impl.h>
+#include <decimal_impl_arch.h>
+#include <decimal_impl.h>
 
 static mg_decimal_error _truncate_max_digits(
 		mg_uint256_t *value, 
@@ -33,6 +31,30 @@ static mg_decimal_error _divide_internal(
 		const mg_uint256_t *_fraction2, 
 		/*inout*/int *_scale,
 		/*inout*/mg_uint256_t *_q);
+
+#if defined(_M_X64) || defined(_M_ARM64) || defined(__amd64__) || defined(__arm64__)
+
+MG_DECIMAL_API void mg_decimal_set_binary(
+	mg_decimal *value,
+	uint64_t high,
+	uint64_t low)
+{
+	value->w[1] = high;
+	value->w[0] = low;
+}
+
+MG_DECIMAL_API void mg_decimal_get_binary(
+	const mg_decimal *value,
+	/*out*/uint64_t *high,
+	/*out*/uint64_t *low)
+{
+	*high = value->w[1];
+	*low = value->w[0];
+}
+
+#else
+#error "Not implements mg_decimal_set_binary"
+#endif
 
 #define ZERO_HIGH			(0x0000000000000000ULL)
 #define ZERO_LOW			(0x0000000000000000ULL)
@@ -195,7 +217,7 @@ MG_DECIMAL_API mg_decimal_error mg_decimal_value_of_double(double value, /*out*/
 	uint64_t double_fraction;
 	int double_status;
 	
-	__double_parse(
+	_double_parse(
 		value, 
 		&double_sign, 
 		&double_scale, 
@@ -537,7 +559,7 @@ MG_DECIMAL_API mg_decimal_error mg_decimal_to_double(const mg_decimal *value, /*
 		}
 		double_scale = index;
 
-		__double_set(/*out*/ret, 
+		_double_set(/*out*/ret, 
 			double_sign, 
 			double_scale, 
 			mg_uint256_get_uint64(&fraction));
@@ -596,7 +618,7 @@ MG_DECIMAL_API mg_decimal_error mg_decimal_to_double(const mg_decimal *value, /*
 
 			fraction = integer_part;
 		}
-		__double_set(/*out*/ret, 
+		_double_set(/*out*/ret, 
 			double_sign, 
 			double_scale, 
 			mg_uint256_get_uint64(&fraction));
