@@ -72,9 +72,8 @@ MG_DECIMAL_API int mg_decimal_compare(const mg_decimal *op1, const mg_decimal *o
 #define MG_DECIMAL_ROUND_DOWN		(0)
 #define MG_DECIMAL_ROUND_UP			(1)
 #define MG_DECIMAL_ROUND_OFF		(2)
-
-#define MG_DECIMAL_ROUND_CEILING	MG_DECIMAL_ROUND_UP
-#define MG_DECIMAL_ROUND_FLOOR		MG_DECIMAL_ROUND_DOWN
+#define MG_DECIMAL_CEILING			(3)
+#define MG_DECIMAL_FLOOR			(4)
 
 MG_DECIMAL_API mg_decimal_error mg_decimal_round(/*inout*/mg_decimal *value, int precision, int type);
 

@@ -1362,6 +1362,23 @@ MG_DECIMAL_API mg_decimal_error mg_decimal_round(/*inout*/mg_decimal *value, int
 		} else {
 			mg_uint256_swap(&fraction, &tmp);
 		}
+		break;
+	case MG_DECIMAL_CEILING:
+		if(sign == SIGN_POSITIVE) {
+			mg_uint256_set(fraction, 1);
+			mg_uint256_add(fraction, tmp);
+		} else {
+			mg_uint256_swap(&fraction, &tmp);
+		}
+		break;
+	case MG_DECIMAL_FLOOR:
+		if(sign == SIGN_POSITIVE) {
+			mg_uint256_swap(&fraction, &tmp);
+		} else {
+			mg_uint256_set(fraction, 1);
+			mg_uint256_add(fraction, tmp);
+		}
+		break;
 	default:
 		assert(type <= MG_DECIMAL_ROUND_OFF);
 	}
