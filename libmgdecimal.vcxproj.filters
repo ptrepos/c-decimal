@@ -77,8 +77,6 @@
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="src\x64-win64\uint256_mul_digits.nas" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="src\x86\uint256_mul_digits.nas" />
+    <CustomBuild Include="src\x86\uint256_mul_digits.nas" />
   </ItemGroup>
 </Project>

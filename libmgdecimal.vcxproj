@@ -53,7 +53,15 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <None Include="src\x86\uint256_mul_digits.nas" />
+    <CustomBuild Include="src\x86\uint256_mul_digits.nas">
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </CustomBuild>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{222F2A3F-643B-4B0E-A176-36BEA0466D97}</ProjectGuid>
@@ -138,6 +146,13 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <CustomBuild>
+      <Message>nasm win32</Message>
+    </CustomBuild>
+    <CustomBuild>
+      <Outputs>$(IntermediateOutputPath)%(Identity).obj</Outputs>
+      <Command>nasm -f win32 %(Identity) -o $(IntermediateOutputPath)%(Identity).obj</Command>
+    </CustomBuild>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -179,6 +194,13 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
+    <CustomBuild>
+      <Message>nasm win32</Message>
+    </CustomBuild>
+    <CustomBuild>
+      <Outputs>$(IntermediateOutputPath)%(Identity).obj</Outputs>
+      <Command>nasm -f win32 %(Identity) -o $(IntermediateOutputPath)%(Identity).obj</Command>
+    </CustomBuild>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
