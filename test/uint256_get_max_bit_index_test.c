@@ -8,7 +8,7 @@
 
 static void get_max_bit_index_test(const char *text1, int ret)
 {
-	mg_uint256 v1;
+	mg_uint256_t v1;
 
 	mg_uint256_test_hex_convert(text1, &v1);
 

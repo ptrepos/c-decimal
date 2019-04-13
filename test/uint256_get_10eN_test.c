@@ -9,7 +9,7 @@
 static void get_10eN_test(int digits, const char *text)
 {
 	char strbuf[1024];
-	const mg_uint256 *v = mg_uint256_get_10eN(digits);
+	const mg_uint256_t *v = mg_uint256_get_10eN(digits);
 	
 	mg_uint256_test_to_string(v, strbuf);
 

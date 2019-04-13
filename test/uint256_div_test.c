@@ -10,7 +10,7 @@ static void div_test(const char *text1, const char *text2, const char *ret1, con
 {
 	char strbuf1[1024];
 	char strbuf2[1024];
-	mg_uint256 v1, v2, v3;
+	mg_uint256_t v1, v2, v3;
 
 	mg_uint256_test_convert(text1, &v1);
 	mg_uint256_test_convert(text2, &v2);
@@ -27,7 +27,7 @@ static void div_test(const char *text1, const char *text2, const char *ret1, con
 static void div_mul_test(const char *text1, const char *text2)
 {
 	char strbuf[1024];
-	mg_uint256 v1, v2, v3, v4;
+	mg_uint256_t v1, v2, v3, v4;
 
 	mg_uint256_test_convert(text1, &v1);
 	mg_uint256_test_convert(text2, &v2);

@@ -9,7 +9,7 @@
 static void add_sub_test(const char *text1, const char *text2)
 {
 	char strbuf[1024];
-	mg_uint256 v1, v2;
+	mg_uint256_t v1, v2;
 	int borrow;
 
 	mg_uint256_test_convert(text1, &v1);
@@ -26,7 +26,7 @@ static void add_sub_test(const char *text1, const char *text2)
 static void add128_sub128_test(const char *text1, const char *text2)
 {
 	char strbuf[1024];
-	mg_uint256 v1, v2;
+	mg_uint256_t v1, v2;
 	int borrow;
 
 	mg_uint256_test_convert(text1, &v1);

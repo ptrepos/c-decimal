@@ -9,7 +9,7 @@
 static void right_shift_test(const char *text1, int shift, const char *ret)
 {
 	char strbuf[1024];
-	mg_uint256 v1;
+	mg_uint256_t v1;
 
 	mg_uint256_test_hex_convert(text1, &v1);
 

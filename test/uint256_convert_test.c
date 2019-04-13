@@ -9,7 +9,7 @@
 static void convert_test(const char *text)
 {
 	char strbuf[1024];
-	mg_uint256 v;
+	mg_uint256_t v;
 
 	mg_uint256_test_convert(text, &v);
 

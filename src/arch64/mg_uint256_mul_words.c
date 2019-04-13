@@ -9,7 +9,7 @@
 
 #define _JMP(op1, op2) ((op1) * 5 + (op2))
 
-MG_PRIVATE int mg_uint256_mul_words(const mg_uint256 *op1, int op1_words, const mg_uint256 *op2, int op2_words, /*out*/mg_uint256 *ret)
+MG_PRIVATE int mg_uint256_mul_words(const mg_uint256_t *op1, int op1_words, const mg_uint256_t *op2, int op2_words, /*out*/mg_uint256_t *ret)
 {
 	uint64_t hi, lo;
 
@@ -48,7 +48,7 @@ MG_PRIVATE int mg_uint256_mul_words(const mg_uint256 *op1, int op1_words, const 
 	}
 
 	uint8_t carry, carry2;
-	uint64_t buf[MG_UINT256_WORD_COUNT*2+1] = {0};
+	uint64_t buf[mgUINT256_WORD_COUNT*2+1] = {0};
 
 	for(int j = 0; j < op2_words; j++) {
 		carry2 = 0;
@@ -66,6 +66,6 @@ MG_PRIVATE int mg_uint256_mul_words(const mg_uint256 *op1, int op1_words, const 
 		return 1;
 	}
 
-	memcpy(ret->word, buf, sizeof(buf[0]) * MG_UINT256_WORD_COUNT);
+	memcpy(ret->word, buf, sizeof(buf[0]) * mgUINT256_WORD_COUNT);
 	return 0;
 }
