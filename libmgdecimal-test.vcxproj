@@ -34,6 +34,7 @@
     <ClCompile Include="test\decimal_divide_and_modulus_test.c" />
     <ClCompile Include="test\decimal_divide_test.c" />
     <ClCompile Include="test\decimal_get_binary_test.c" />
+    <ClCompile Include="test\decimal_is_zero_test.c" />
     <ClCompile Include="test\decimal_max_test.c" />
     <ClCompile Include="test\decimal_min_test.c" />
     <ClCompile Include="test\decimal_modulus_test.c" />

@@ -8,8 +8,8 @@
 
 #include <magica/decimal/decimal.h>
 
-#include <arch_priv_uint256.h>
-#include <priv_decimal.h>
+#include <uint256_arch.h>
+#include <decimal_impl.h>
 
 #define WORD_COUNT			(sizeof(mg_decimal) / sizeof(uint32_t))
 #define INFO_INDEX			(WORD_COUNT-1)
@@ -21,56 +21,56 @@
 #define FRACTION_MASK		(0x00FFFFFF)
 #define FRACTION_BITINDEX	(0)
 
-static inline int __mg_decimal_is_overflow(const mg_uint256 *value)
+static inline int _decimal_is_overflow(const mg_uint256_t *value)
 {
 	return mg_uint256_compare(value, mg_uint256_get_10eN(DIGIT_MAX)) >= 0;
 }
 
-static inline uint32_t __mg_decimal_get_bits(uint32_t dest, uint32_t mask, int bitindex)
+static inline uint32_t _decimal_get_bits(uint32_t dest, uint32_t mask, int bitindex)
 {
 	return (dest & mask) >> bitindex;
 }
 
-static inline uint32_t __mg_deciaml_set_bits(uint32_t dest, uint32_t value, uint32_t mask, int bitindex)
+static inline uint32_t _deciaml_set_bits(uint32_t dest, uint32_t value, uint32_t mask, int bitindex)
 {
 	return (dest & ~mask) | ((value << bitindex) & mask);
 }
 
-static inline int __mg_decimal_get_sign(const mg_decimal *value)
+static inline int _decimal_get_sign(const mg_decimal *value)
 {
-	return (int)__mg_decimal_get_bits(
+	return (int)_decimal_get_bits(
 		value->w[INFO_INDEX], SIGN_MASK, SIGN_BITINDEX);
 }
 
-static inline void __mg_decimal_set_sign(mg_decimal *value, int sign)
+static inline void _decimal_set_sign(mg_decimal *value, int sign)
 {
-	value->w[INFO_INDEX] = __mg_deciaml_set_bits(
+	value->w[INFO_INDEX] = _deciaml_set_bits(
 		value->w[INFO_INDEX],
 		sign,
 		SIGN_MASK,
 		SIGN_BITINDEX);
 }
 
-static inline int __mg_decimal_get_scale(const mg_decimal *value)
+static inline int _decimal_get_scale(const mg_decimal *value)
 {
-	int bits = (int)__mg_decimal_get_bits(
+	int bits = (int)_decimal_get_bits(
 		value->w[INFO_INDEX], SCALE_MASK, SCALE_BITINDEX);
 	return (bits & SCALE_SIGNEXPAND) == 0 ? bits: (short)(bits | SCALE_SIGNEXPAND);
 }
 
-static inline void __mg_decimal_get_fraction(const mg_decimal *value, mg_uint256 *buf)
+static inline void _decimal_get_fraction(const mg_decimal *value, mg_uint256_t *buf)
 {
 	buf->word[0] = value->w[0];
 	buf->word[1] = value->w[1];
 	buf->word[2] = value->w[2];
-	buf->word[3] = (uint32_t)__mg_decimal_get_bits(value->w[3], FRACTION_MASK, FRACTION_BITINDEX);
+	buf->word[3] = (uint32_t)_decimal_get_bits(value->w[3], FRACTION_MASK, FRACTION_BITINDEX);
 	buf->word[4] = 0;
 	buf->word[5] = 0;
 	buf->word[6] = 0;
 	buf->word[7] = 0;
 }
 
-static inline mg_decimal_error __mg_set_decimal(mg_decimal *value, int sign, int scale, const mg_uint256 *fraction)
+static inline mg_decimal_error _decimal_set(mg_decimal *value, int sign, int scale, const mg_uint256_t *fraction)
 {
 	mg_decimal_error err;
 
@@ -81,7 +81,7 @@ static inline mg_decimal_error __mg_set_decimal(mg_decimal *value, int sign, int
 		goto _ERROR;
 	}
 
-	if(__mg_decimal_is_overflow(fraction)) {
+	if(_decimal_is_overflow(fraction)) {
 		err = MG_DECIMAL_ERROR_OVERFLOW;
 		goto _ERROR;
 	}
@@ -99,9 +99,9 @@ _ERROR:
 	return err;
 }
 
-static inline void __mg_set_decimal2(mg_decimal *value, int sign, int scale, const mg_uint256 *fraction)
+static inline void _decimal_set2(mg_decimal *value, int sign, int scale, const mg_uint256_t *fraction)
 {
-	assert(__mg_decimal_is_overflow(fraction) == 0);
+	assert(_decimal_is_overflow(fraction) == 0);
 	assert(SCALE_MIN <= scale && scale <= SCALE_MAX);
 	assert(sign == 0 || sign == 1);
 

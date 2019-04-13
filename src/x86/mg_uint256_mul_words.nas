@@ -1,8 +1,8 @@
-	global _mg_uint256_mul_words
+	global _mg_uint256_mul_digits
 
 section .text
 
-;int mg_uint256_mul_words()
+;int mg_uint256_mul_digits()
 ;	[ebp+8]		op1				const mg_uint256 *
 ;	[ebp+12]	op1_digits		int
 ;	[ebp+16]	op2				const mg_uint256 *
@@ -11,7 +11,7 @@ section .text
 ;
 ;	return		unoverflow: 0, overflow: 1
 
-_mg_uint256_mul_words:
+_mg_uint256_mul_digits:
 	push		ebp
 	mov			ebp, esp
 	

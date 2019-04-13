@@ -129,6 +129,9 @@
     <ClCompile Include="src\arch64\uint256_arch.c">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="test\decimal_is_zero_test.c">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="test\mg_assert.h">

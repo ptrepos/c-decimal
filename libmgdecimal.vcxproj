@@ -26,6 +26,9 @@
     <ClInclude Include="include\magica\math\decimal.h" />
     <ClInclude Include="include\magica\math\libmgmath.h" />
     <ClInclude Include="include\magica\math\mgcompat.h" />
+    <ClInclude Include="src\arch32\decimal_impl_arch.h" />
+    <ClInclude Include="src\arch32\intop.h" />
+    <ClInclude Include="src\arch32\uint256_arch.h" />
     <ClInclude Include="src\arch64\decimal_impl_arch.h" />
     <ClInclude Include="src\arch64\intop.h" />
     <ClInclude Include="src\arch64\uint256_arch.h" />
@@ -33,7 +36,11 @@
     <ClInclude Include="src\double_impl.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\arch64\uint256_arch.c" />
+    <ClCompile Include="src\arch32\uint256_arch.c" />
+    <ClCompile Include="src\arch64\uint256_arch.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="src\decimal.c" />
     <ClCompile Include="src\mg_uint256_conversion.c" />
   </ItemGroup>

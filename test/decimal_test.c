@@ -65,6 +65,7 @@ void decimal_abs_test();
 void decimal_max_test();
 void decimal_min_test();
 void decimal_get_binary_test();
+void decimal_is_zero_test();
 
 void decimal_test()
 {
@@ -93,6 +94,7 @@ void decimal_test()
 	decimal_max_test();
 	decimal_min_test();
 	decimal_get_binary_test();
+	decimal_is_zero_test();
 
 	printf("TEST mg_decimal all: %fs\n", (float)(clock() - tm) / CLOCKS_PER_SEC);
 
