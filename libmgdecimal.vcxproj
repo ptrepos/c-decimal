@@ -36,7 +36,10 @@
     <ClInclude Include="src\double_impl.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\arch32\uint256_arch.c" />
+    <ClCompile Include="src\arch32\uint256_arch.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="src\arch64\uint256_arch.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -45,20 +48,12 @@
     <ClCompile Include="src\mg_uint256_conversion.c" />
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="src\x86\mg_uint256_mul_words.nas">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">nasm -f win32 %(Identity) -o $(IntDir)%(Filename).obj</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename).obj</Outputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">nasm -f win32 %(Identity) -o $(IntDir)%(Filename).obj</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename).obj</Outputs>
-    </CustomBuild>
-  </ItemGroup>
-  <ItemGroup>
     <CustomBuild Include="src\x64-win64\uint256_mul_digits.nas">
       <FileType>Document</FileType>
     </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="src\x86\uint256_mul_digits.nas" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{222F2A3F-643B-4B0E-A176-36BEA0466D97}</ProjectGuid>
