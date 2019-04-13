@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include "arch_priv_uint256.h"
+#include "uint256_arch.h"
 
 #include "mg_assert.h"
 

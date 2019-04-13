@@ -51,7 +51,7 @@ int mg_uint256_add(/*inout*/mg_uint256_t *op1, const mg_uint256_t *op2);
 int mg_uint256_sub128(/*inout*/mg_uint256_t *op1, const mg_uint256_t *op2);
 int mg_uint256_sub(/*inout*/mg_uint256_t *op1, const mg_uint256_t *op2);
 void mg_uint256_neg(/*inout*/mg_uint256_t *op1);
-int mg_uint256_mul_words(const mg_uint256_t *op1, int op1_words, const mg_uint256_t *op2, int op2_words, /*out*/mg_uint256_t *ret);
+int mg_uint256_mul_digits(const mg_uint256_t *op1, int op1_words, const mg_uint256_t *op2, int op2_words, /*out*/mg_uint256_t *ret);
 void mg_uint256_mul128(const mg_uint256_t *op1, const mg_uint256_t *op2, /*out*/mg_uint256_t *ret); // multiply for low bits.
 int mg_uint256_mul256x64(const mg_uint256_t *op1, const mg_uint256_t *op2, mg_uint256_t *ret);
 int mg_uint256_mul(const mg_uint256_t *op1, const mg_uint256_t *op2, /*out*/mg_uint256_t *ret);
@@ -155,6 +155,11 @@ static inline bool mg_uint256_less_than(const mg_uint256_t *op1, const mg_uint25
 	b = mg_uint64_sub(b, op1->word[3], op2->word[3], &tmp);
 
 	return b != 0;
+}
+
+static inline bool mg_uint256_is_overflow128(const mg_uint256_t *op1)
+{
+	return (op1->word[2] | op1->word[3]) != 0;
 }
 
 static inline int mg_uint256_compare128(const mg_uint256_t *op1, const mg_uint256_t *op2)
@@ -352,7 +357,7 @@ static inline int mg_uint256_mul(const mg_uint256_t *op1, const mg_uint256_t *op
 	while(op2_digits > 0 && op2->word[op2_digits-1] == 0)
 		op2_digits--;
 
-	return mg_uint256_mul_words(op1, op1_digits, op2, op2_digits, /*out*/ret);
+	return mg_uint256_mul_digits(op1, op1_digits, op2, op2_digits, /*out*/ret);
 }
 
 static inline void mg_uint256_or(/*inout*/mg_uint256_t *op1, const mg_uint256_t *op2)

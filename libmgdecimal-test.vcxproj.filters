@@ -90,9 +90,6 @@
     <ClCompile Include="test\uint256_div_pattern_test .c">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="src\priv_uint256.c">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="test\uint256_left_shift_test.c">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -129,7 +126,7 @@
     <ClCompile Include="src\mg_uint256_conversion.c">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="src\arch64\mg_uint256_mul_words.c">
+    <ClCompile Include="src\arch64\uint256_arch.c">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -143,8 +140,12 @@
     <ClInclude Include="src\arch32\uint256.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="src\arch64\uint256_arch.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="src\x86\mg_uint256_mul_words.nas" />
+    <CustomBuild Include="src\x64-win64\uint256_mul_digits.nas" />
   </ItemGroup>
 </Project>

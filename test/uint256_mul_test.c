@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include "arch_priv_uint256.h"
+#include "uint256_arch.h"
 
 #include "mg_assert.h"
 
@@ -16,7 +16,7 @@ static void mul_test(const char *text1, const char *text2)
 
 	int overflow = mg_uint256_mul(&v1, &v2, /*out*/&v3);
 	mg_assert(overflow == 0);
-	overflow = mg_uint256_mul_words(&v1, mgUINT256_WORD_COUNT, &v2, mgUINT256_WORD_COUNT, /*out*/&v4);
+	overflow = mg_uint256_mul_digits(&v1, mgUINT256_WORD_COUNT, &v2, mgUINT256_WORD_COUNT, /*out*/&v4);
 
 	mg_uint256_test_to_string(&v1, /*out*/strbuf);
 

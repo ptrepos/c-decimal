@@ -36,10 +36,19 @@
     <ClInclude Include="include\magica\decimal\libmgdecimal.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="src\priv_decimal.h">
+    <ClInclude Include="src\decimal_impl.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="src\priv_double.h">
+    <ClInclude Include="src\arch64\uint256_arch.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="src\arch64\intop.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="src\arch64\decimal_impl_arch.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="src\double_impl.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
@@ -47,17 +56,15 @@
     <ClCompile Include="src\decimal.c">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="src\priv_uint256.c">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="src\mg_uint256_conversion.c">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="src\arch64\mg_uint256_mul_words.c">
+    <ClCompile Include="src\arch64\uint256_arch.c">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="src\x86\mg_uint256_mul_words.nas" />
+    <CustomBuild Include="src\x64-win64\uint256_mul_digits.nas" />
   </ItemGroup>
 </Project>

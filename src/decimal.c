@@ -734,7 +734,7 @@ _ERROR:
 	return err;
 }
 
-static inline void put_c(char *buf, int bufSize, int index, char value)
+static inline void _put_c(char *buf, int bufSize, int index, char value)
 {
 	if (buf != NULL && index < bufSize)
 		buf[index] = value;
@@ -774,32 +774,32 @@ MG_DECIMAL_API mg_decimal_error mg_decimal_to_string(const mg_decimal *value, /*
 		if(mg_uint256_is_zero(tmp)) {
 			while(subfraction > 0) {
 				int c = subfraction % 10ULL;
-				put_c(buf, bufSize, index++, (char) ('0' + c));
+				_put_c(buf, bufSize, index++, (char) ('0' + c));
 				if (++scale == 0)
-					put_c(buf, bufSize, index++, '.');
+					_put_c(buf, bufSize, index++, '.');
 				subfraction /= 10ULL;
 			}
 		} else {
 			for (i = 0; i < 18; i++) {
 				int c = subfraction % 10ULL;
-				put_c(buf, bufSize, index++, (char) ('0' + c));
+				_put_c(buf, bufSize, index++, (char) ('0' + c));
 				if (++scale == 0)
-					put_c(buf, bufSize, index++, '.');
+					_put_c(buf, bufSize, index++, '.');
 				subfraction /= 10ULL;
 			}
 		}
 		mg_uint256_swap(&fraction, &tmp);
 	}
 	while(scale < 0) {
-		put_c(buf, bufSize, index++, '0');
+		_put_c(buf, bufSize, index++, '0');
 		if (++scale == 0)
-			put_c(buf, bufSize, index++, '.');
+			_put_c(buf, bufSize, index++, '.');
 	}
 	if(scale == 0)
-		put_c(buf, bufSize, index++, '0');
+		_put_c(buf, bufSize, index++, '0');
 
 	if(sign == SIGN_NEGATIVE)
-		put_c(buf, bufSize, index++, '-');
+		_put_c(buf, bufSize, index++, '-');
 
 	if(buf != NULL && index <= bufSize) {
 		for(i = 0; i < index / 2; i++) {
@@ -808,7 +808,7 @@ MG_DECIMAL_API mg_decimal_error mg_decimal_to_string(const mg_decimal *value, /*
 			buf[index - i - 1] = c;
 		}
 	}
-	put_c(buf, bufSize, index++, 0);
+	_put_c(buf, bufSize, index++, 0);
 
 	*requireBufSize = index;
 
@@ -1176,7 +1176,7 @@ static mg_decimal_error _divide_internal(
 		do {
 			if(scale - baseDigits < SCALE_MIN)
 				break;
-			if(q->word[3] != 0 || q->word[2] != 0) {
+			if(mg_uint256_is_overflow128(q)) {
 				break;
 			}
 			//int digits = mg_uint256_get_digits(q);
@@ -1190,7 +1190,7 @@ static mg_decimal_error _divide_internal(
 			mg_uint256_swap(&fraction1, &tmp);
 
 			// q = q * 10^18
-			overflow = mg_uint256_mul128x64(
+			overflow = mg_uint256_mul256x64(
 					q, v10e18, /*out*/tmp);
 			assert(overflow == 0);
 			mg_uint256_swap(&q, &tmp);

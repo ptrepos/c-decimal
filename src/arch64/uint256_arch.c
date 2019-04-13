@@ -103,8 +103,6 @@ MG_PRIVATE int mg_uint256_get_digits(const mg_uint256_t *value)
 {
 	int digits = 0;
 
-	//assert(value != NULL);
-
 	if (mg_uint256_is_zero(value)) {
 		return 0;
 	}
@@ -252,7 +250,7 @@ MG_PRIVATE mg_decimal_error mg_uint256_div_long_division(
 		for(;;) {
 			set_double(q, q_tmp, q_n);
 
-			int overflow = mg_uint256_mul_words(
+			int overflow = mg_uint256_mul_digits(
 				op2, op2_digits, q, q_n + 1, /*out*/qv);
 
 			if(!(overflow || mg_uint256_less_than(op1, qv))) {

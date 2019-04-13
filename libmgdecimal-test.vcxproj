@@ -19,12 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\arch64\mg_uint256_mul_words.c">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
+    <ClCompile Include="src\arch64\uint256_arch.c" />
     <ClCompile Include="src\mg_uint256_conversion.c" />
-    <ClCompile Include="src\priv_uint256.c" />
     <ClCompile Include="test\decimal_abs_test.c" />
     <ClCompile Include="test\decimal_add_test.c" />
     <ClCompile Include="test\decimal_compare_test.c" />
@@ -65,6 +61,7 @@
   <ItemGroup>
     <ClInclude Include="src\arch32\uint256.h" />
     <ClInclude Include="src\arch64\uint256.h" />
+    <ClInclude Include="src\arch64\uint256_arch.h" />
     <ClInclude Include="test\mg_assert.h" />
   </ItemGroup>
   <ItemGroup>
@@ -76,6 +73,11 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename).obj</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">nasm -f win32 %(Identity) -o $(IntDir)%(Filename).obj</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename).obj</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="src\x64-win64\uint256_mul_digits.nas">
+      <FileType>Document</FileType>
     </CustomBuild>
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -183,6 +185,13 @@
       <AdditionalDependencies>libmgdecimal.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)bin\$(PlatformTarget)\$(Configuration)\</AdditionalLibraryDirectories>
     </Link>
+    <CustomBuild>
+      <Command>nasm -f win64 %(Identity) -o $(IntermediateOutputPath)%(Identity).obj</Command>
+    </CustomBuild>
+    <CustomBuild>
+      <Message>nasm win64</Message>
+      <Outputs>$(IntermediateOutputPath)%(Identity).obj</Outputs>
+    </CustomBuild>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -225,6 +234,13 @@
       <AdditionalDependencies>libmgdecimal.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)bin\$(PlatformTarget)\$(Configuration)\</AdditionalLibraryDirectories>
     </Link>
+    <CustomBuild>
+      <Command>nasm -f win64 %(Identity) -o $(IntermediateOutputPath)%(Identity).obj</Command>
+    </CustomBuild>
+    <CustomBuild>
+      <Message>nasm win64</Message>
+      <Outputs>$(IntermediateOutputPath)%(Identity).obj</Outputs>
+    </CustomBuild>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
