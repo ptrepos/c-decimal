@@ -76,7 +76,7 @@ void mg_uint256_div_pattern_test()
 			mg_assert(mg_uint256_compare(&op1, &value1) == 0);
 		}
 
-		printf("%lld\r", i);
+		//printf("%lld\r", i);
 	}
 	
 	printf("TEST mg_uint256_div() pattern: OK\n");

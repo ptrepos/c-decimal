@@ -199,6 +199,10 @@ void decimal_divide_test()
 	divide_test("10000000", "10000000", "1");
 	divide_test("10000", "10000000", "0.001");
 	divide_test("10", "10000000", "0.000001");
+	divide_test("10000000", "-10000000", "-1");
+	divide_test("10000000", "-10000", "-1000");
+	divide_test("10000000", "-10", "-1000000");
+	divide_test("10000000", "-10000000", "-1");
 	
 	printf("TEST mg_decimal_divide(): OK\n");
 }

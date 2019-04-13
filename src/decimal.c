@@ -11,10 +11,10 @@
 #include <memory.h>
 #include <magica/decimal/decimal.h>
 
+#include <decimal_impl.h>
+#include <decimal_impl_arch.h>
 #include <uint256_arch.h>
 #include <double_impl.h>
-#include <decimal_impl_arch.h>
-#include <decimal_impl.h>
 
 static mg_decimal_error _truncate_max_digits(
 		mg_uint256_t *value, 
@@ -202,7 +202,7 @@ static unsigned int _pow2_int(int exponent)
 	}
 }
 
-static void __pow2(int exponent, /*out*/mg_uint256_t *ret)
+static void _pow2(int exponent, /*out*/mg_uint256_t *ret)
 {
 	if(exponent < 32) {
 		mg_uint256_set(ret, _pow2_int(exponent));
@@ -212,7 +212,7 @@ static void __pow2(int exponent, /*out*/mg_uint256_t *ret)
 		int b = exponent % 2;
 		
 		mg_uint256_t c;
-		__pow2(a, /*out*/&c);
+		_pow2(a, /*out*/&c);
 		
 		int overflow;
 		mg_uint256_t tmp;
@@ -315,7 +315,7 @@ MG_DECIMAL_API mg_decimal_error mg_decimal_value_of_double(double value, /*out*/
 			mg_uint256_set(/*out*/&decimal_part_bits, double_fraction);
 			mg_uint256_get_bits(/*inout*/&decimal_part_bits, -double_scale);
 
-			__pow2(-double_scale, /*out*/&radix_conv);
+			_pow2(-double_scale, /*out*/&radix_conv);
 
 			int scale = 0;
 			mg_uint256_t q = {0};
@@ -923,9 +923,6 @@ MG_DECIMAL_API int mg_decimal_compare(const mg_decimal *op1, const mg_decimal *o
 	_decimal_get_fraction(op1, fraction1);
 	_decimal_get_fraction(op2, fraction2);
 
-	//if (mg_uint256_is_zero128(fraction1) && mg_uint256_is_zero128(fraction2))
-	//	return 0;
-
 	sign1 = _decimal_get_sign(op1);
 	sign2 = _decimal_get_sign(op2);
 
@@ -996,9 +993,9 @@ MG_DECIMAL_API mg_decimal_error mg_decimal_add(const mg_decimal *op1, const mg_d
 			sign = sign1;
 		} else {
 			borrow = mg_uint256_sub128(fraction1, fraction2);
-			if (borrow == 0)
+			if (borrow == 0) {
 				sign = sign1;
-			else {
+			} else {
 				mg_uint256_neg128(fraction1);
 				sign = sign1 == SIGN_POSITIVE ? SIGN_NEGATIVE : SIGN_POSITIVE;
 			}
