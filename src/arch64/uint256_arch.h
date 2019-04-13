@@ -130,6 +130,11 @@ static inline int mg_uint256_is_zero(const mg_uint256_t *op1)
 	return (op1->word[3] | op1->word[2] | op1->word[1] | op1->word[0]) == 0;
 }
 
+static inline int mg_uint256_is_zero128(const mg_uint256_t *op1)
+{
+	return (op1->word[1] | op1->word[0]) == 0;
+}
+
 static inline int mg_uint256_compare(const mg_uint256_t *op1, const mg_uint256_t *op2)
 {
 	if(op1->word[3] != op2->word[3]) 
