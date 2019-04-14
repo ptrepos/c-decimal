@@ -215,7 +215,6 @@ MG_PRIVATE mg_decimal_error mg_uint256_div_long_division(
 				int op2_digits, 
 				mg_uint256_t *quotient)
 {
-	//mg_decimal_error err = 0;
 	mg_uint256_t buf1, buf2, buf3;
 	mg_uint256_t *q = &buf1, *qv = &buf2, *qv_hi = &buf3;
 
