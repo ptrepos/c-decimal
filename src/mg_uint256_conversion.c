@@ -35,7 +35,7 @@ MG_PRIVATE void mg_uint256_test_to_string(const mg_uint256_t *value, char *buf)
 
 MG_PRIVATE void mg_uint256_test_convert(const char *buf, mg_uint256_t *value)
 {
-	mg_uint256_t v, tmp, n;
+	mg_uint256_t v, n;
 	const mg_uint256_t *v10 = mg_uint256_get_10eN(1);
 
 	mg_uint256_set_zero(&v);
@@ -83,7 +83,7 @@ MG_PRIVATE void mg_uint256_test_to_hex_string(const mg_uint256_t *value, char *b
 
 MG_PRIVATE void mg_uint256_test_hex_convert(const char *buf, mg_uint256_t *value)
 {
-	mg_uint256_t v, tmp, n;
+	mg_uint256_t v, n;
 	mg_uint256_t v16;
 
 	mg_uint256_set(&v16, 16);
