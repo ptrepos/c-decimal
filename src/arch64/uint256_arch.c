@@ -230,10 +230,8 @@ MG_PRIVATE mg_decimal_error mg_uint256_div_long_division(
 		if(op2_digits <= 1 && op1_digits <= 1) {
 			uint64_t iq = op1->word[0] / op2->word[0];
 			uint64_t ir = op1->word[0] % op2->word[0];
-			mg_uint256_set(q, iq);
 			mg_uint256_set(op1, ir);
-
-			mg_uint256_add(/*out*/quotient, q);
+			mg_uint256_add_ull(/*out*/quotient, iq);
 			goto _EXIT;
 		}
 
@@ -269,6 +267,4 @@ MG_PRIVATE mg_decimal_error mg_uint256_div_long_division(
 	}
 _EXIT:
 	return 0;
-//_ERROR:
-//	return err;
 }
