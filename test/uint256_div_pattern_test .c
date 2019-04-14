@@ -27,31 +27,27 @@ mg_uint256_t mg_create_uint256(uint64_t index)
 
 	mg_uint256_set(&value2, TABLE[index & 0x7]);
 	index >>= 3;
-	overflow = mg_uint256_mul(&value1, &shift, /*out*/&tmp);
+	overflow = mg_uint256_mul(&value1, &shift);
 	mg_assert(overflow == 0);
-	mg_uint256_add(/*inout*/&tmp, &value2);
-	value1 = tmp;
+	mg_uint256_add(/*inout*/&value1, &value2);
 
 	mg_uint256_set(&value2, TABLE[index & 0x7]);
 	index >>= 3;
-	overflow = mg_uint256_mul(&value1, &shift, /*out*/&tmp);
+	overflow = mg_uint256_mul(&value1, &shift);
 	mg_assert(overflow == 0);
-	mg_uint256_add(/*inout*/&tmp, &value2);
-	value1 = tmp;
+	mg_uint256_add(/*inout*/&value1, &value2);
 
 	mg_uint256_set(&value2, TABLE[index & 0x7]);
 	index >>= 3;
-	overflow = mg_uint256_mul(&value1, &shift, /*out*/&tmp);
+	overflow = mg_uint256_mul(&value1, &shift);
 	mg_assert(overflow == 0);
-	mg_uint256_add(/*inout*/&tmp, &value2);
-	value1 = tmp;
+	mg_uint256_add(/*inout*/&value1, &value2);
 
 	mg_uint256_set(&value2, TABLE[index & 0x7]);
 	index >>= 3;
-	overflow = mg_uint256_mul(&value1, &shift, /*out*/&tmp);
+	overflow = mg_uint256_mul(&value1, &shift);
 	mg_assert(overflow == 0);
-	mg_uint256_add(/*inout*/&tmp, &value2);
-	value1 = tmp;
+	mg_uint256_add(/*inout*/&value1, &value2);
 	
 	return value1;
 }
@@ -69,9 +65,9 @@ void mg_uint256_div_pattern_test()
 			mg_assert(mg_uint256_div(/*inout*/&op1, &op2, /*out*/&q) == 0);
 			
 			int overflow;
-			overflow = mg_uint256_mul(&q, &op2, /*out*/&tmp);
+			overflow = mg_uint256_mul(&q, &op2);
 			mg_assert(overflow == 0);
-			mg_uint256_add(/*inout*/&op1, &tmp);
+			mg_uint256_add(/*inout*/&op1, &q);
 			
 			mg_assert(mg_uint256_compare(&op1, &value1) == 0);
 		}

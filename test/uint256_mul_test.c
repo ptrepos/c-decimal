@@ -14,7 +14,8 @@ static void mul_test(const char *text1, const char *text2)
 	mg_uint256_test_convert(text1, /*out*/&v1);
 	mg_uint256_test_convert(text2, /*out*/&v2);
 
-	int overflow = mg_uint256_mul(&v1, &v2, /*out*/&v3);
+	v3 = v1;
+	int overflow = mg_uint256_mul(&v3, &v2);
 	mg_assert(overflow == 0);
 	overflow = mg_uint256_mul_digits(&v1, mgUINT256_WORD_COUNT, &v2, mgUINT256_WORD_COUNT, /*out*/&v4);
 
@@ -37,10 +38,12 @@ static void mul128_test(const char *text1, const char *text2)
 	mg_uint256_test_convert(text1, &v1);
 	mg_uint256_test_convert(text2, &v2);
 
-	int overflow = mg_uint256_mul(&v1, &v2, &v3);
+	v3 = v1;
+	int overflow = mg_uint256_mul(&v3, &v2);
 	mg_assert(overflow == 0);
 
-	mg_uint256_mul128(&v1, &v2, &v4);
+	v4 = v1;
+	mg_uint256_mul128(&v4, &v2);
 
 	mg_assert(mg_uint256_compare(&v3, &v4) == 0);
 	
@@ -57,10 +60,12 @@ static void mul256x64_test(const char *text1, const char *text2)
 	mg_uint256_test_convert(text1, &v1);
 	mg_uint256_test_convert(text2, &v2);
 
-	int overflow = mg_uint256_mul(&v1, &v2, &v3);
+	v3 = v1;
+	int overflow = mg_uint256_mul(&v3, &v2);
 	mg_assert(overflow == 0);
 
-	overflow = mg_uint256_mul256x64(&v1, &v2, &v4);
+	v4 = v1;
+	overflow = mg_uint256_mul256x64(&v4, &v2);
 
 	mg_assert(overflow == 0);
 	mg_assert(mg_uint256_compare(&v3, &v4) == 0);

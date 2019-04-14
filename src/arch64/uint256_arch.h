@@ -52,9 +52,9 @@ int mg_uint256_sub128(/*inout*/mg_uint256_t *op1, const mg_uint256_t *op2);
 int mg_uint256_sub(/*inout*/mg_uint256_t *op1, const mg_uint256_t *op2);
 void mg_uint256_neg(/*inout*/mg_uint256_t *op1);
 int mg_uint256_mul_digits(const mg_uint256_t *op1, int op1_words, const mg_uint256_t *op2, int op2_words, /*out*/mg_uint256_t *ret);
-void mg_uint256_mul128(const mg_uint256_t *op1, const mg_uint256_t *op2, /*out*/mg_uint256_t *ret); // multiply for low bits.
-int mg_uint256_mul256x64(const mg_uint256_t *op1, const mg_uint256_t *op2, mg_uint256_t *ret);
-int mg_uint256_mul(const mg_uint256_t *op1, const mg_uint256_t *op2, /*out*/mg_uint256_t *ret);
+void mg_uint256_mul128(mg_uint256_t *op1, const mg_uint256_t *op2); // multiply for low bits.
+int mg_uint256_mul256x64(mg_uint256_t *op1, const mg_uint256_t *op2);
+int mg_uint256_mul(mg_uint256_t *op1, const mg_uint256_t *op2);
 MG_PRIVATE mg_decimal_error mg_uint256_div(/*inout*/mg_uint256_t *op1, const mg_uint256_t *op2, /*out*/mg_uint256_t *quotient);
 
 void mg_uint256_or(/*inout*/mg_uint256_t *op1, const mg_uint256_t *op2);
@@ -254,48 +254,47 @@ static inline void mg_uint256_neg(mg_uint256_t *op1)
 }
 
 static inline int mg_uint256_mul256x64(
-		const mg_uint256_t *op1, 
-		const mg_uint256_t *op2, 
-		mg_uint256_t *ret)
+		mg_uint256_t *op1, 
+		const mg_uint256_t *op2)
 {
 	unsigned char carry, carry2;
 	uint64_t hi, lo;
-
-	mg_uint256_set_zero(ret);
+	uint64_t word0 = 0, word1 = 0, word2 = 0, word3 = 0;
 
 	carry2 = 0;
 
 	lo = mg_uint64_mul(op1->word[0], op2->word[0], &hi);
 
-	carry = mg_uint64_add(0, ret->word[0], lo, &ret->word[0]);
-	carry = mg_uint64_add(carry, ret->word[1], hi, &ret->word[1]);
-	carry2 = mg_uint64_add(carry, ret->word[2], carry2, &ret->word[2]);
-
-	lo = mg_uint64_mul(op1->word[1], op2->word[0], &hi);
-
-	carry = mg_uint64_add(0, ret->word[1], lo, &ret->word[1]);
-	carry = mg_uint64_add(carry, ret->word[2], hi, &ret->word[2]);
-	carry2 = mg_uint64_add(carry, ret->word[3], carry2, &ret->word[3]);
+	word0 = lo;
+	word1 = hi;
 
 	lo = mg_uint64_mul(op1->word[2], op2->word[0], &hi);
 
-	carry = mg_uint64_add(0, ret->word[2], lo, &ret->word[2]);
-	carry = mg_uint64_add(carry, ret->word[3], hi, &ret->word[3]);
-	if(carry != 0 || carry2 != 0) {
-		return 1;
-	}
+	word2 = lo;
+	word3 = hi;
+
+	lo = mg_uint64_mul(op1->word[1], op2->word[0], &hi);
+
+	carry = mg_uint64_add(0, word1, lo, &word1);
+	carry = mg_uint64_add(carry, word2, hi, &word2);
+	carry2 = mg_uint64_add(carry, word3, 0, &word3);
 
 	lo = mg_uint64_mul(op1->word[3], op2->word[0], &hi);
 
-	carry = mg_uint64_add(0, ret->word[3], lo, &ret->word[3]);
-	if(carry != 0 || hi != 0) {
+	carry = mg_uint64_add(0, word3, lo, &word3);
+	if(carry != 0 || carry2 != 0 || hi != 0) {
 		return 1;
 	}
+
+	op1->word[0] = word0;
+	op1->word[1] = word1;
+	op1->word[2] = word2;
+	op1->word[3] = word3;
 
 	return 0;
 }
 
-static inline int mg_uint256_mul(const mg_uint256_t *op1, const mg_uint256_t *op2, /*out*/mg_uint256_t *ret)
+static inline int mg_uint256_mul(mg_uint256_t *op1, const mg_uint256_t *op2)
 {
 	int op1_digits = mgUINT256_WORD_COUNT;
 	while(op1_digits > 0 && op1->word[op1_digits-1] == 0)
@@ -305,7 +304,7 @@ static inline int mg_uint256_mul(const mg_uint256_t *op1, const mg_uint256_t *op
 	while(op2_digits > 0 && op2->word[op2_digits-1] == 0)
 		op2_digits--;
 
-	return mg_uint256_mul_digits(op1, op1_digits, op2, op2_digits, /*out*/ret);
+	return mg_uint256_mul_digits(op1, op1_digits, op2, op2_digits, /*out*/op1);
 }
 
 static inline void mg_uint256_or(/*inout*/mg_uint256_t *op1, const mg_uint256_t *op2)

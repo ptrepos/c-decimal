@@ -42,13 +42,12 @@ MG_PRIVATE void mg_uint256_test_convert(const char *buf, mg_uint256_t *value)
 
 	int i = 0;
 	while(buf[i] != 0) {
-		int overflow = mg_uint256_mul(&v, v10, /*out*/&tmp);
+		int overflow = mg_uint256_mul(&v, v10);
 		assert(overflow == 0);
 
 		mg_uint256_set(&n, buf[i] - '0');
-		mg_uint256_add(&tmp, &n);
+		mg_uint256_add(&v, &n);
 
-		v = tmp;
 		i++;
 	}
 	*value = v;
@@ -93,13 +92,12 @@ MG_PRIVATE void mg_uint256_test_hex_convert(const char *buf, mg_uint256_t *value
 
 	int i = 0;
 	while(buf[i] != 0) {
-		int overflow = mg_uint256_mul(&v, &v16, /*out*/&tmp);
+		int overflow = mg_uint256_mul(&v, &v16);
 		assert(overflow == 0);
 
 		mg_uint256_set(&n, buf[i] >= 'A' ? buf[i] - 'A' + 10: buf[i] - '0');
-		mg_uint256_add(&tmp, &n);
+		mg_uint256_add(&v, &n);
 
-		v = tmp;
 		i++;
 	}
 	*value = v;
