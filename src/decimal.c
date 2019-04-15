@@ -12,8 +12,8 @@
 #include <magica/decimal/decimal.h>
 
 #include <decimal_impl.h>
-#include <decimal_impl_arch.h>
-#include <uint256_arch.h>
+#include <magica/arch/decimal_impl.h>
+#include <magica/arch/uint256.h>
 #include <double_impl.h>
 
 static mg_decimal_error _truncate_max_digits(
@@ -357,7 +357,7 @@ MG_DECIMAL_API mg_decimal_error mg_decimal_to_int(const mg_decimal *value, /*out
 	_decimal_get_fraction(value, fraction);
 
 	if (scale < 0) {
-		err = mg_uint256_div(fraction, mg_uint256_get_10eN(-scale), tmp);
+		err = (mg_decimal_error)mg_uint256_div(fraction, mg_uint256_get_10eN(-scale), tmp);
 		if (err != 0)
 			goto _ERROR;
 		mg_uint256_swap(&fraction, &tmp);
@@ -408,7 +408,7 @@ MG_DECIMAL_API mg_decimal_error mg_decimal_to_uint(const mg_decimal *value, /*ou
 	_decimal_get_fraction(value, fraction);
 
 	if (scale < 0) {
-		err = mg_uint256_div(fraction, mg_uint256_get_10eN(-scale), tmp);
+		err = (mg_decimal_error)mg_uint256_div(fraction, mg_uint256_get_10eN(-scale), tmp);
 		if (err != 0)
 			goto _ERROR;
 		mg_uint256_swap(&fraction, &tmp);
@@ -1002,13 +1002,13 @@ MG_DECIMAL_API mg_decimal_error mg_decimal_add(const mg_decimal *op1, const mg_d
 			}
 		}
 	} else {
-		if (scaleDiff > 0) {
+		if (scaleDiff == 0) {
+			scale = scale1;
+		} else if (scaleDiff > 0) {
 			scale = scale2;
-
 			mg_uint256_mul128(fraction1, mg_uint256_get_10eN(scaleDiff));
 		} else {
 			scale = scale1;
-
 			mg_uint256_mul128(fraction2, mg_uint256_get_10eN(-scaleDiff));
 		}
 

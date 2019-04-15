@@ -39,25 +39,28 @@
     <ClInclude Include="src\decimal_impl.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="src\arch64\uint256_arch.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="src\arch64\intop.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="src\arch64\decimal_impl_arch.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="src\double_impl.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="src\arch32\uint256_arch.h">
+    <ClInclude Include="src\gen64\include\magica\arch\def.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="src\arch32\decimal_impl_arch.h">
+    <ClInclude Include="src\gen64\include\magica\arch\decimal_impl.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="src\arch32\intop.h">
+    <ClInclude Include="src\gen64\include\magica\arch\uint256.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gen32\include\magica\arch\def.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gen32\include\magica\arch\uint256.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="src\x64-msc\include\magica\arch\uint256_add_ull.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gen32\include\magica\arch\decimal_impl.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
@@ -68,17 +71,21 @@
     <ClCompile Include="src\mg_uint256_conversion.c">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="src\arch64\uint256_arch.c">
+    <ClCompile Include="src\gen32\uint256.c">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="src\arch32\uint256_arch.c">
+    <ClCompile Include="src\gen64\uint256.c">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="src\x64-win64\uint256_mul_digits.nas" />
-    <CustomBuild Include="src\x86\uint256_mul_digits.nas" />
-    <CustomBuild Include="src\x64-win64\uint256_mul128.asm">
+    <CustomBuild Include="src\asm\x64-win64\uint256_mul128.asm">
+      <Filter>ソース ファイル</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\asm\x64-win64\uint256_mul_digits.asm">
+      <Filter>ソース ファイル</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\asm\x86\uint256_mul_digits.asm">
       <Filter>ソース ファイル</Filter>
     </CustomBuild>
   </ItemGroup>

@@ -8,7 +8,7 @@
 
 #include <magica/decimal/decimal.h>
 
-#include <uint256_arch.h>
+#include <magica/arch/uint256.h>
 #include <decimal_impl.h>
 
 #define WORD_COUNT			(sizeof(mg_decimal) / sizeof(uint64_t))
@@ -26,12 +26,12 @@ static inline int _decimal_is_overflow(const mg_uint256_t *value)
 	return !mg_uint256_less_than(value, mg_uint256_get_10eN(DIGIT_MAX));
 }
 
-static inline uint64_t _decimal_get_bits(uint64_t dest, uint64_t mask, int bitindex)
+static inline unsigned long long _decimal_get_bits(unsigned long long dest, unsigned long long mask, int bitindex)
 {
 	return (dest & mask) >> bitindex;
 }
 
-static inline uint64_t _deciaml_set_bits(uint64_t dest, uint64_t value, uint64_t mask, int bitindex)
+static inline unsigned long long _deciaml_set_bits(unsigned long long dest, unsigned long long value, unsigned long long mask, int bitindex)
 {
 	return (dest & ~mask) | ((value << bitindex) & mask);
 }

@@ -5,7 +5,7 @@
 * 256 bit integer for decimal.
 * this source includes decimal implementation.
 */
-#include "uint256_arch.h"
+#include <magica/arch/uint256.h>
 
 MG_PRIVATE void mg_uint256_test_to_string(const mg_uint256_t *value, char *buf)
 {

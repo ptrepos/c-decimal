@@ -1,10 +1,8 @@
 	bits 64
 	global mg_uint256_mul_digits
 
-section .data
-	JmpTable:	dq	_MUL_0x0, _MUL_1x1, _MUL_2xN, _MUL_3xN, _MUL_4xN, 0, 0, 0
-
 section .text
+	JmpTable:	dq	_MUL_0x0, _MUL_1x1, _MUL_2xN, _MUL_3xN, _MUL_4xN, 0, 0, 0
 
 ; int mg_uint256_mul_digits();
 ; RETURN

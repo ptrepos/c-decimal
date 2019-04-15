@@ -26,46 +26,43 @@
     <ClInclude Include="include\magica\math\decimal.h" />
     <ClInclude Include="include\magica\math\libmgmath.h" />
     <ClInclude Include="include\magica\math\mgcompat.h" />
-    <ClInclude Include="src\arch32\decimal_impl_arch.h" />
-    <ClInclude Include="src\arch32\intop.h" />
-    <ClInclude Include="src\arch32\uint256_arch.h" />
-    <ClInclude Include="src\arch64\decimal_impl_arch.h" />
-    <ClInclude Include="src\arch64\intop.h" />
-    <ClInclude Include="src\arch64\uint256_arch.h" />
     <ClInclude Include="src\decimal_impl.h" />
     <ClInclude Include="src\double_impl.h" />
+    <ClInclude Include="src\gen32\include\magica\arch\decimal_impl.h" />
+    <ClInclude Include="src\gen32\include\magica\arch\def.h" />
+    <ClInclude Include="src\gen32\include\magica\arch\uint256.h" />
+    <ClInclude Include="src\gen64\include\magica\arch\decimal_impl.h" />
+    <ClInclude Include="src\gen64\include\magica\arch\def.h" />
+    <ClInclude Include="src\gen64\include\magica\arch\uint256.h" />
+    <ClInclude Include="src\x64-msc\include\magica\arch\uint256_add_ull.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\arch32\uint256_arch.c">
+    <ClCompile Include="src\decimal.c" />
+    <ClCompile Include="src\gen32\uint256.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="src\arch64\uint256_arch.c">
+    <ClCompile Include="src\gen64\uint256.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="src\decimal.c" />
     <ClCompile Include="src\mg_uint256_conversion.c" />
-    <CustomBuild Include="src\x64-win64\uint256_mul128.asm">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <FileType>Document</FileType>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="src\x64-win64\uint256_mul_digits.nas">
+    <CustomBuild Include="src\asm\x64-win64\uint256_mul128.asm">
       <FileType>Document</FileType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </CustomBuild>
+    <CustomBuild Include="src\asm\x64-win64\uint256_mul_digits.asm">
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="src\x86\uint256_mul_digits.nas">
+    <CustomBuild Include="src\asm\x86\uint256_mul_digits.asm">
       <FileType>Document</FileType>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-      </ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </CustomBuild>
@@ -146,7 +143,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;__MG_DECIMAL_DLL;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);__MG_DECIMAL_DLL</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>include;src;src/arch32</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>include;src;src/gen32/include;src/x86-msc/include</AdditionalIncludeDirectories>
       <TreatWarningAsError>false</TreatWarningAsError>
     </ClCompile>
     <Link>
@@ -167,7 +164,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;__MG_DECIMAL_DLL;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);__MG_DECIMAL_DLL</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>include;src;src/arch64</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>include;src;src/x64-msc/include;src/gen64/include</AdditionalIncludeDirectories>
       <TreatWarningAsError>false</TreatWarningAsError>
     </ClCompile>
     <Link>
@@ -192,7 +189,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;__MG_DECIMAL_DLL;NDEBUG;_CONSOLE;%(PreprocessorDefinitions);__MG_DECIMAL_DLL</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>include;src;src/arch32</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>include;src;src/gen32/include;src/x86-msc/include</AdditionalIncludeDirectories>
       <TreatWarningAsError>false</TreatWarningAsError>
     </ClCompile>
     <Link>
@@ -217,7 +214,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;__MG_DECIMAL_DLL;NDEBUG;_CONSOLE;%(PreprocessorDefinitions);__MG_DECIMAL_DLL</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>include;src;src/arch64</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>include;src;src/x64-msc/include;src/gen64/include</AdditionalIncludeDirectories>
       <TreatWarningAsError>false</TreatWarningAsError>
       <WholeProgramOptimization>true</WholeProgramOptimization>
     </ClCompile>
