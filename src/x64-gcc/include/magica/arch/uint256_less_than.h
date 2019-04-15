@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdbool.h>
+#include <magica/arch/def.h>
 
 static inline bool mg_uint256_less_than(const mg_uint256_t *op1, const mg_uint256_t *op2)
 {
@@ -19,11 +20,11 @@ static inline bool mg_uint256_less_than(const mg_uint256_t *op1, const mg_uint25
 		"sbbq 16(%%rdx), %%rax \n\t"
 		"movq %%r11, %%rax \n\t"
 		"sbbq 24(%%rdx), %%rax \n\t"
-		"movq $0, %%eax \n\t"
+		"movl $0, %%eax \n\t"
 		"setb %%al \n\t"
 		: "=&a"(ret)
-		: "d"(op2), ""r"(a0), "r"(a1), "r"(a2), "r"(a3)
-		:"rax"
+		: "d"(op2), "r"(a0), "r"(a1), "r"(a2), "r"(a3)
+		:
 	);
 	
 	return ret != 0;
