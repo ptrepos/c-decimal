@@ -25,6 +25,15 @@ static void int64_convert_test(int64_t value, const char *ret)
 	mg_assert(strcmp(strbuf, ret) == 0);
 }
 
+static void convert_overflow(const char *value)
+{
+	mg_decimal value1;
+	long long value3;
+
+	mg_assert(mg_decimal_parse_string(value, &value1) == 0);
+	mg_assert(mg_decimal_to_int64(&value1, /*out*/&value3) == MG_DECIMAL_ERROR_OVERFLOW);
+}
+
 void decimal_convert_int64_test()
 {
 	clock_t tm = clock();
@@ -37,6 +46,11 @@ void decimal_convert_int64_test()
 	int64_convert_test(9223372036854775807, "9223372036854775807");
 	int64_convert_test(-9223372036854775808LL, "-9223372036854775808");
 	int64_convert_test(0, "0");
+
+	convert_overflow("12345678912345678912345961");
+	convert_overflow("-12345678912345678912345961");
+	convert_overflow("9223372036854775808");
+	convert_overflow("-9223372036854775809");
 
 	{
 		mg_decimal value;

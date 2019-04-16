@@ -25,6 +25,27 @@ static void int_convert_test(int value, const char *ret)
 	mg_assert(strcmp(strbuf, ret) == 0);
 }
 
+static void convert(const char *ret, int value)
+{
+	mg_decimal value1;
+	int value3;
+
+	mg_assert(mg_decimal_parse_string(ret, &value1) == 0);
+
+	mg_assert(mg_decimal_to_int(&value1, /*out*/&value3) == 0);
+
+	mg_assert(value == value3);
+}
+
+static void convert_overflow(const char *ret)
+{
+	mg_decimal value1;
+	int value3;
+
+	mg_assert(mg_decimal_parse_string(ret, &value1) == 0);
+	mg_assert(mg_decimal_to_int(&value1, /*out*/&value3) == MG_DECIMAL_ERROR_OVERFLOW);
+}
+
 void decimal_convert_int_test()
 {
 	clock_t tm = clock();
@@ -36,6 +57,20 @@ void decimal_convert_int_test()
 	int_convert_test(-2147483647, "-2147483647");
 	int_convert_test(-2147483647-1, "-2147483648");
 	int_convert_test(2147483647, "2147483647");
+
+	convert("123456", 123456);
+	convert("99999999", 99999999);
+	convert("-123456", -123456);
+	convert("-99999999", -99999999);
+	convert("-123456.123456", -123456);
+	convert("-99999999.123456", -99999999);
+	convert("123456.123456", 123456);
+	convert("99999999.123456", 99999999);
+
+	convert_overflow("123456789123");
+	convert_overflow("-123456789123");
+	convert_overflow("2147483648");
+	convert_overflow("-2147483649");
 
 	printf("TEST mg_decimal convert int methods: OK\n");
 }
