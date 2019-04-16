@@ -189,6 +189,9 @@ _ERROR:
 static inline void set_double(mg_uint256_t *op1, double value, int n)
 {
 	mg_uint256_set_zero(op1);
+	
+	//printf("%lf\n", value);
+	assert(value <= (double)UINT64_MAX);
 
 	if(n == 0) {
 		op1->word[n] = (uint64_t)value;
@@ -242,6 +245,8 @@ MG_PRIVATE mg_decimal_error mg_uint256_div_long_division(
 		double q_tmp = op1_v * op2_vr;
 		if((q_tmp < 1.0 && q_n == 0)) {
 			q_tmp = 1.0;
+		} else if(q_tmp >= DOUBLE_LSHIFT_64) {
+			q_tmp *= DOUBLE_CORRECT;
 		}
 
 		for(;;) {

@@ -223,10 +223,7 @@ MG_PRIVATE mg_decimal_error mg_uint256_div(mg_uint256_t *op1, const mg_uint256_t
 		q_tmp = op1_v / op2_v;
 		if((q_tmp < 1.0 && q_n == 0)) {
 			q_tmp = 1.0;
-		}
-
-		// オーバーフロー防止
-		if(q_tmp >= DOUBLE_LSHIFT_32) {
+		} else if(q_tmp >= DOUBLE_LSHIFT_32) {
 			q_tmp *= DOUBLE_CORRECT;
 		}
 		set_double(q, q_tmp, q_n);

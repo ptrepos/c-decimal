@@ -46,7 +46,7 @@
     <ClCompile Include="test\decimal_min_test.c" />
     <ClCompile Include="test\decimal_modulus_test.c" />
     <ClCompile Include="test\decimal_multiply_test.c" />
-    <ClCompile Include="test\decimal_negative_test .c" />
+    <ClCompile Include="test\decimal_negative_test.c" />
     <ClCompile Include="test\decimal_round_test.c" />
     <ClCompile Include="test\decimal_subtract_test.c" />
     <ClCompile Include="test\decimal_test.c" />
@@ -56,7 +56,7 @@
     <ClCompile Include="test\main.c" />
     <ClCompile Include="test\uint256_add_test.c" />
     <ClCompile Include="test\uint256_convert_test.c" />
-    <ClCompile Include="test\uint256_div_pattern_test .c" />
+    <ClCompile Include="test\uint256_div_pattern_test.c" />
     <ClCompile Include="test\uint256_div_test.c" />
     <ClCompile Include="test\uint256_get_10eN_test.c" />
     <ClCompile Include="test\uint256_get_bits_test.c" />

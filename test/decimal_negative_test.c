@@ -36,6 +36,8 @@ void decimal_negative_test()
 	negative_test("3126545156416156412134111101544963", "-3126545156416156412134111101544963");
 	negative_test("-18446744073709551616", "18446744073709551616");
 	negative_test("18446744073709551616", "-18446744073709551616");
+	negative_test("-31265", "31265");
+	negative_test("31265", "-31265");
 
 	printf("TEST mg_decimal_negate(): OK\n");
 }
