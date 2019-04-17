@@ -10,7 +10,7 @@ static void divide_test(const char *text1, const char *text2, const char *ret)
 {
 	char strbuf[1000];
 	int size;
-	mg_decimal value1, value2, value3, value4, value5;
+	mg_decimal_t value1, value2, value3, value4, value5;
 
 	mg_assert(mg_decimal_parse_string(text1, &value1) == 0);
 	mg_assert(mg_decimal_parse_string(text2, &value2) == 0);
@@ -22,7 +22,7 @@ static void divide_test(const char *text1, const char *text2, const char *ret)
 	mg_assert(strcmp(ret, strbuf) == 0);
 
 	mg_assert(mg_decimal_divide_and_modulus(&value1, &value2, /*out*/&value4, /*out*/&value5) == 0);
-	mg_assert(mg_decimal_round(/*inout*/&value3, 0, MG_DECIMAL_ROUND_DOWN) == 0);
+	mg_assert(mg_decimal_round(/*inout*/&value3, 0, mgDECIMAL_ROUND_DOWN) == 0);
 
 	mg_assert(mg_decimal_compare(&value3, &value4) == 0);
 }

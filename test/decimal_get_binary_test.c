@@ -10,8 +10,8 @@ static void get_binary_test(const char *text1)
 {
 	char strbuf[1000];
 	int size;
-	mg_decimal value1, value2;
-	uint64_t high, low;
+	mg_decimal_t value1, value2;
+	unsigned long long high, low;
 
 	mg_assert(mg_decimal_parse_string(text1, &value1) == 0);
 	

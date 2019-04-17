@@ -10,7 +10,7 @@ static void zero_test()
 {
 	char strbuf[1000];
 	int size;
-	mg_decimal value1;
+	mg_decimal_t value1;
 
 	mg_decimal_zero(&value1);
 

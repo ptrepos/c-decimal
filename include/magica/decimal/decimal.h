@@ -22,65 +22,65 @@ typedef struct mg_decimal
 #else
 	unsigned long long w[2];
 #endif
-} mg_decimal;
+} mg_decimal_t;
 
-typedef struct _mg_decimal_error	*mg_decimal_error;
+typedef struct _mg_error	*mg_error_t;
 
-#define MG_DECIMAL_ERROR_BUFFER_NOT_ENOUGH		((mg_decimal_error)1)
-#define MG_DECIMAL_ERROR_CONVERT				((mg_decimal_error)2)
-#define MG_DECIMAL_ERROR_OVERFLOW				((mg_decimal_error)3)
-#define MG_DECIMAL_ERROR_ZERODIVIDE				((mg_decimal_error)4)
+#define mgE_OVERFLOW			((mg_error_t)2) /* number type overflow. */
+#define mgE_BUFFER_NOT_ENOUGH	((mg_error_t)5) /* buffer not enough */
+#define mgE_CONVERT				((mg_error_t)6) /* convert error. */
+#define mgE_ZERODIVIDE			((mg_error_t)7) /* zero divide error. */
 
-#define MG_DECIMAL_INITALIZER	{0,0}
+#define mgDECIMAL_INITALIZER	{0,0}
 
-MG_DECIMAL_API void mg_decimal_zero(/*out*/mg_decimal *value);
-MG_DECIMAL_API void mg_decimal_one(/*out*/mg_decimal *value);
-MG_DECIMAL_API void mg_decimal_minus_one(/*out*/mg_decimal *value);
-MG_DECIMAL_API void mg_decimal_min_value(/*out*/mg_decimal *value);
-MG_DECIMAL_API void mg_decimal_max_value(/*out*/mg_decimal *value);
+MG_DECIMAL_API void mg_decimal_zero(/*out*/mg_decimal_t *value);
+MG_DECIMAL_API void mg_decimal_one(/*out*/mg_decimal_t *value);
+MG_DECIMAL_API void mg_decimal_minus_one(/*out*/mg_decimal_t *value);
+MG_DECIMAL_API void mg_decimal_min_value(/*out*/mg_decimal_t *value);
+MG_DECIMAL_API void mg_decimal_max_value(/*out*/mg_decimal_t *value);
 
-MG_DECIMAL_API void mg_decimal_set_binary(/*out*/mg_decimal *value, unsigned long long high, unsigned long long low);
-MG_DECIMAL_API void mg_decimal_get_binary(const mg_decimal *value, /*out*/unsigned long long *high, /*out*/unsigned long long *low);
+MG_DECIMAL_API void mg_decimal_set_binary(/*out*/mg_decimal_t *value, unsigned long long high, unsigned long long low);
+MG_DECIMAL_API void mg_decimal_get_binary(const mg_decimal_t *value, /*out*/unsigned long long *high, /*out*/unsigned long long *low);
 
-MG_DECIMAL_API mg_decimal_error mg_decimal_value_of_int(int value, /*out*/mg_decimal *ret);
-MG_DECIMAL_API mg_decimal_error mg_decimal_value_of_uint(unsigned int value, /*out*/mg_decimal *ret);
-MG_DECIMAL_API mg_decimal_error mg_decimal_value_of_long_long(long long value, /*out*/mg_decimal *ret);
-MG_DECIMAL_API mg_decimal_error mg_decimal_value_of_ulong_long(unsigned long long value, /*out*/mg_decimal *ret);
-MG_DECIMAL_API mg_decimal_error mg_decimal_value_of_float(float value, /*out*/mg_decimal *ret);
-MG_DECIMAL_API mg_decimal_error mg_decimal_value_of_double(double value, /*out*/mg_decimal *ret);
-MG_DECIMAL_API mg_decimal_error mg_decimal_parse_string(const char *value, /*out*/mg_decimal *ret);
+MG_DECIMAL_API mg_error_t mg_decimal_value_of_int(int value, /*out*/mg_decimal_t *ret);
+MG_DECIMAL_API mg_error_t mg_decimal_value_of_uint(unsigned int value, /*out*/mg_decimal_t *ret);
+MG_DECIMAL_API mg_error_t mg_decimal_value_of_long_long(long long value, /*out*/mg_decimal_t *ret);
+MG_DECIMAL_API mg_error_t mg_decimal_value_of_ulong_long(unsigned long long value, /*out*/mg_decimal_t *ret);
+MG_DECIMAL_API mg_error_t mg_decimal_value_of_float(float value, /*out*/mg_decimal_t *ret);
+MG_DECIMAL_API mg_error_t mg_decimal_value_of_double(double value, /*out*/mg_decimal_t *ret);
+MG_DECIMAL_API mg_error_t mg_decimal_parse_string(const char *value, /*out*/mg_decimal_t *ret);
 
-MG_DECIMAL_API mg_decimal_error mg_decimal_to_int(const mg_decimal *value, /*out*/int *ret);
-MG_DECIMAL_API mg_decimal_error mg_decimal_to_uint(const mg_decimal *value, /*out*/unsigned int *ret);
-MG_DECIMAL_API mg_decimal_error mg_decimal_to_long_long(const mg_decimal *value, /*out*/long long *ret);
-MG_DECIMAL_API mg_decimal_error mg_decimal_to_ulong_long(const mg_decimal *value, /*out*/unsigned long long *ret);
-MG_DECIMAL_API mg_decimal_error mg_decimal_to_float(const mg_decimal *value, /*out*/float *ret);
-MG_DECIMAL_API mg_decimal_error mg_decimal_to_double(const mg_decimal *value, /*out*/double *ret);
-MG_DECIMAL_API mg_decimal_error mg_decimal_to_string(const mg_decimal *value, /*out*/char *buffer, int buffer_size, /*out*/int *required_buffer_size);
+MG_DECIMAL_API mg_error_t mg_decimal_to_int(const mg_decimal_t *value, /*out*/int *ret);
+MG_DECIMAL_API mg_error_t mg_decimal_to_uint(const mg_decimal_t *value, /*out*/unsigned int *ret);
+MG_DECIMAL_API mg_error_t mg_decimal_to_long_long(const mg_decimal_t *value, /*out*/long long *ret);
+MG_DECIMAL_API mg_error_t mg_decimal_to_ulong_long(const mg_decimal_t *value, /*out*/unsigned long long *ret);
+MG_DECIMAL_API mg_error_t mg_decimal_to_float(const mg_decimal_t *value, /*out*/float *ret);
+MG_DECIMAL_API mg_error_t mg_decimal_to_double(const mg_decimal_t *value, /*out*/double *ret);
+MG_DECIMAL_API mg_error_t mg_decimal_to_string(const mg_decimal_t *value, /*out*/char *buffer, int buffer_size, /*out*/int *required_buffer_size);
 
-MG_DECIMAL_API mg_decimal_error mg_decimal_negate(/*inout*/mg_decimal *op1);
-MG_DECIMAL_API mg_decimal_error mg_decimal_add(const mg_decimal *op1, const mg_decimal *op2, /*out*/mg_decimal *ret);
-MG_DECIMAL_API mg_decimal_error mg_decimal_subtract(const mg_decimal *op1, const mg_decimal *op2, /*out*/mg_decimal *ret);
-MG_DECIMAL_API mg_decimal_error mg_decimal_multiply(const mg_decimal *op1, const mg_decimal *op2, /*out*/mg_decimal *ret);
-MG_DECIMAL_API mg_decimal_error mg_decimal_divide(const mg_decimal *op1, const mg_decimal *op2, /*out*/mg_decimal *ret);
-MG_DECIMAL_API mg_decimal_error mg_decimal_divide_and_modulus(const mg_decimal *op1, const mg_decimal *op2, /*out*/mg_decimal *quotient, /*out*/mg_decimal *reminder);
-MG_DECIMAL_API mg_decimal_error mg_decimal_modulus(const mg_decimal *op1, const mg_decimal *op2, /*out*/mg_decimal *ret);
+MG_DECIMAL_API mg_error_t mg_decimal_negate(/*inout*/mg_decimal_t *op1);
+MG_DECIMAL_API mg_error_t mg_decimal_add(const mg_decimal_t *op1, const mg_decimal_t *op2, /*out*/mg_decimal_t *ret);
+MG_DECIMAL_API mg_error_t mg_decimal_subtract(const mg_decimal_t *op1, const mg_decimal_t *op2, /*out*/mg_decimal_t *ret);
+MG_DECIMAL_API mg_error_t mg_decimal_multiply(const mg_decimal_t *op1, const mg_decimal_t *op2, /*out*/mg_decimal_t *ret);
+MG_DECIMAL_API mg_error_t mg_decimal_divide(const mg_decimal_t *op1, const mg_decimal_t *op2, /*out*/mg_decimal_t *ret);
+MG_DECIMAL_API mg_error_t mg_decimal_divide_and_modulus(const mg_decimal_t *op1, const mg_decimal_t *op2, /*out*/mg_decimal_t *quotient, /*out*/mg_decimal_t *reminder);
+MG_DECIMAL_API mg_error_t mg_decimal_modulus(const mg_decimal_t *op1, const mg_decimal_t *op2, /*out*/mg_decimal_t *ret);
 
-MG_DECIMAL_API bool mg_decimal_is_zero(const mg_decimal *op1);
-MG_DECIMAL_API int mg_decimal_compare(const mg_decimal *op1, const mg_decimal *op2);
+MG_DECIMAL_API bool mg_decimal_is_zero(const mg_decimal_t *op1);
+MG_DECIMAL_API int mg_decimal_compare(const mg_decimal_t *op1, const mg_decimal_t *op2);
 
-#define MG_DECIMAL_ROUND_DOWN		(0)
-#define MG_DECIMAL_ROUND_UP			(1)
-#define MG_DECIMAL_ROUND_OFF		(2)
-#define MG_DECIMAL_CEILING			(3)
-#define MG_DECIMAL_FLOOR			(4)
+#define mgDECIMAL_ROUND_DOWN		(0)
+#define mgDECIMAL_ROUND_UP			(1)
+#define mgDECIMAL_ROUND_OFF			(2)
+#define mgDECIMAL_CEILING			(3)
+#define mgDECIMAL_FLOOR				(4)
 
-MG_DECIMAL_API mg_decimal_error mg_decimal_round(/*inout*/mg_decimal *value, int precision, int type);
+MG_DECIMAL_API mg_error_t mg_decimal_round(/*inout*/mg_decimal_t *value, int precision, int type);
 
-MG_DECIMAL_API mg_decimal_error mg_decimal_normalize(/*inout*/mg_decimal *value);
-MG_DECIMAL_API mg_decimal_error mg_decimal_abs(const mg_decimal *value, /*out*/mg_decimal *ret);
-MG_DECIMAL_API mg_decimal_error mg_decimal_min(const mg_decimal *value1, const mg_decimal *value2, /*out*/mg_decimal *ret);
-MG_DECIMAL_API mg_decimal_error mg_decimal_max(const mg_decimal *value1, const mg_decimal *value2, /*out*/mg_decimal *ret);
+MG_DECIMAL_API mg_error_t mg_decimal_normalize(/*inout*/mg_decimal_t *value);
+MG_DECIMAL_API mg_error_t mg_decimal_abs(const mg_decimal_t *value, /*out*/mg_decimal_t *ret);
+MG_DECIMAL_API mg_error_t mg_decimal_min(const mg_decimal_t *value1, const mg_decimal_t *value2, /*out*/mg_decimal_t *ret);
+MG_DECIMAL_API mg_error_t mg_decimal_max(const mg_decimal_t *value1, const mg_decimal_t *value2, /*out*/mg_decimal_t *ret);
 
 #ifdef __cplusplus
 }

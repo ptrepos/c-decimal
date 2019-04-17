@@ -10,7 +10,7 @@ static void abs_test(const char *text, const char *ret)
 {
 	char strbuf[1000];
 	int size;
-	mg_decimal value1, value2;
+	mg_decimal_t value1, value2;
 
 	mg_assert(mg_decimal_parse_string(text, &value1) == 0);
 

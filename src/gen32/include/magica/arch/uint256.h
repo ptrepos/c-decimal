@@ -83,7 +83,7 @@ static inline int mg_uint256_mul(mg_uint256_t *op1, const mg_uint256_t *op2)
 /**
  * uint256 divide
  */
-mg_decimal_error mg_uint256_div(mg_uint256_t *op1, const mg_uint256_t *op2, mg_uint256_t *quotient);
+mg_error_t mg_uint256_div(mg_uint256_t *op1, const mg_uint256_t *op2, mg_uint256_t *quotient);
 
 /**
  * 10^N constants table

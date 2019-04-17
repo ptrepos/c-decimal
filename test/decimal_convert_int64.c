@@ -7,12 +7,12 @@
 
 #include "mg_assert.h"
 
-static void int64_convert_test(int64_t value, const char *ret)
+static void int64_convert_test(long long value, const char *ret)
 {
 	char strbuf[1000];
 	int size;
-	mg_decimal value1;
-	int64_t value2;
+	mg_decimal_t value1;
+	long long value2;
 
 	mg_assert(mg_decimal_value_of_long_long(value, &value1) == 0);
 
@@ -27,11 +27,11 @@ static void int64_convert_test(int64_t value, const char *ret)
 
 static void convert_overflow(const char *value)
 {
-	mg_decimal value1;
+	mg_decimal_t value1;
 	long long value3;
 
 	mg_assert(mg_decimal_parse_string(value, &value1) == 0);
-	mg_assert(mg_decimal_to_long_long(&value1, /*out*/&value3) == MG_DECIMAL_ERROR_OVERFLOW);
+	mg_assert(mg_decimal_to_long_long(&value1, /*out*/&value3) == mgE_OVERFLOW);
 }
 
 void decimal_convert_int64_test()
@@ -53,8 +53,8 @@ void decimal_convert_int64_test()
 	convert_overflow("-9223372036854775809");
 
 	{
-		mg_decimal value;
-		mg_assert(mg_decimal_parse_string("1234567891234156498715634865156465151654152165453132416854114", &value) == MG_DECIMAL_ERROR_OVERFLOW);
+		mg_decimal_t value;
+		mg_assert(mg_decimal_parse_string("1234567891234156498715634865156465151654152165453132416854114", &value) == mgE_OVERFLOW);
 	}
 
 	printf("TEST mg_decimal convert int64 methods: OK\n");

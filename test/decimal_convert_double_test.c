@@ -11,14 +11,14 @@ static void double_convert_test(double value, const char *ret, int precision)
 {
 	char strbuf[1000];
 	int size;
-	mg_decimal value1;
+	mg_decimal_t value1;
 	double value2;
 
 	mg_assert(mg_decimal_value_of_double(value, /*out*/&value1) == 0);
 
 	mg_assert(mg_decimal_to_double(&value1, /*out*/&value2) == 0);
 
-	mg_assert(mg_decimal_round(/*inout*/&value1, precision, MG_DECIMAL_ROUND_OFF) == 0);
+	mg_assert(mg_decimal_round(/*inout*/&value1, precision, mgDECIMAL_ROUND_OFF) == 0);
 
 	mg_assert(mg_decimal_to_string(&value1, strbuf, 1000, &size) == 0);
 
@@ -30,7 +30,7 @@ static void double_convert_print(double value)
 {
 	char strbuf[1000];
 	int size;
-	mg_decimal value1;
+	mg_decimal_t value1;
 	double value2;
 
 	mg_assert(mg_decimal_value_of_double(value, /*out*/&value1) == 0);
@@ -115,16 +115,16 @@ void decimal_convert_double_test()
 	double_convert_print(1.0009);
 
 	{
-		mg_decimal value;
-		mg_assert(mg_decimal_value_of_double(1e+37, &value) == MG_DECIMAL_ERROR_OVERFLOW);
-		mg_assert(mg_decimal_value_of_double(1e+39, &value) == MG_DECIMAL_ERROR_OVERFLOW);
-		mg_assert(mg_decimal_value_of_double(1e+38, &value) == MG_DECIMAL_ERROR_OVERFLOW);
-		mg_assert(mg_decimal_value_of_double(1e+40, &value) == MG_DECIMAL_ERROR_OVERFLOW);
-		mg_assert(mg_decimal_value_of_double(1e+41, &value) == MG_DECIMAL_ERROR_OVERFLOW);
-		mg_assert(mg_decimal_value_of_double(1e+42, &value) == MG_DECIMAL_ERROR_OVERFLOW);
-		mg_assert(mg_decimal_value_of_double(1e+43, &value) == MG_DECIMAL_ERROR_OVERFLOW);
-		mg_assert(mg_decimal_value_of_double(1e+80, &value) == MG_DECIMAL_ERROR_OVERFLOW);
-		mg_assert(mg_decimal_value_of_double(1e+96, &value) == MG_DECIMAL_ERROR_OVERFLOW);
+		mg_decimal_t value;
+		mg_assert(mg_decimal_value_of_double(1e+37, &value) == mgE_OVERFLOW);
+		mg_assert(mg_decimal_value_of_double(1e+39, &value) == mgE_OVERFLOW);
+		mg_assert(mg_decimal_value_of_double(1e+38, &value) == mgE_OVERFLOW);
+		mg_assert(mg_decimal_value_of_double(1e+40, &value) == mgE_OVERFLOW);
+		mg_assert(mg_decimal_value_of_double(1e+41, &value) == mgE_OVERFLOW);
+		mg_assert(mg_decimal_value_of_double(1e+42, &value) == mgE_OVERFLOW);
+		mg_assert(mg_decimal_value_of_double(1e+43, &value) == mgE_OVERFLOW);
+		mg_assert(mg_decimal_value_of_double(1e+80, &value) == mgE_OVERFLOW);
+		mg_assert(mg_decimal_value_of_double(1e+96, &value) == mgE_OVERFLOW);
 	}
 
 	printf("TEST mg_decimal convert double methods: OK\n");

@@ -7,12 +7,12 @@
 
 #include "mg_assert.h"
 
-static void uint64_convert_test(int64_t value, const char *ret)
+static void uint64_convert_test(long long value, const char *ret)
 {
 	char strbuf[1000];
 	int size;
-	mg_decimal value1;
-	int64_t value2;
+	mg_decimal_t value1;
+	unsigned long long value2;
 
 	mg_assert(mg_decimal_value_of_ulong_long(value, &value1) == 0);
 
@@ -27,11 +27,11 @@ static void uint64_convert_test(int64_t value, const char *ret)
 
 static void convert_overflow(const char *value)
 {
-	mg_decimal value1;
+	mg_decimal_t value1;
 	unsigned long long value3;
 
 	mg_assert(mg_decimal_parse_string(value, &value1) == 0);
-	mg_assert(mg_decimal_to_ulong_long(&value1, /*out*/&value3) == MG_DECIMAL_ERROR_OVERFLOW);
+	mg_assert(mg_decimal_to_ulong_long(&value1, /*out*/&value3) == mgE_OVERFLOW);
 }
 
 void decimal_convert_uint64_test()

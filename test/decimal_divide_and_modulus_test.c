@@ -11,7 +11,7 @@ static void divide_and_modulus_test(const char *text1, const char *text2, const 
 	char strbuf[1000];
 	char strbuf2[1000];
 	int size;
-	mg_decimal value1, value2, value3, value4;
+	mg_decimal_t value1, value2, value3, value4;
 
 	mg_assert(mg_decimal_parse_string(text1, &value1) == 0);
 	mg_assert(mg_decimal_parse_string(text2, &value2) == 0);
@@ -27,8 +27,8 @@ static void divide_and_modulus_test(const char *text1, const char *text2, const 
 
 static void divide_and_modulus_test2(const char *text1, const char *text2)
 {
-	mg_decimal value1, value2;
-	mg_decimal q, r, tmp;
+	mg_decimal_t value1, value2;
+	mg_decimal_t q, r, tmp;
 
 	mg_assert(mg_decimal_parse_string(text1, &value1) == 0);
 	mg_assert(mg_decimal_parse_string(text2, &value2) == 0);

@@ -6,7 +6,7 @@
 
 #include "mg_assert.h"
 
-static void value_test(mg_decimal value, const char *text)
+static void value_test(mg_decimal_t value, const char *text)
 {
 	char strbuf[1000];
 	int size;
@@ -18,7 +18,7 @@ static void value_test(mg_decimal value, const char *text)
 
 void decimal_value_test()
 {
-	mg_decimal value;
+	mg_decimal_t value;
 
 	mg_decimal_zero(&value);
 	value_test(value, "0");

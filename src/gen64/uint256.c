@@ -130,16 +130,16 @@ MG_PRIVATE int mg_uint256_get_digits(const mg_uint256_t *value)
 }
 
 // ’·œ–@‚É‚æ‚éŽÀ‘•
-MG_PRIVATE mg_decimal_error mg_uint256_div_long_division(
+MG_PRIVATE mg_error_t mg_uint256_div_long_division(
 	mg_uint256_t *op1,
 	int op1_digits,
 	const mg_uint256_t *op2,
 	int op2_digits,
 	mg_uint256_t *quotient);
 
-MG_PRIVATE mg_decimal_error mg_uint256_div(mg_uint256_t *op1, const mg_uint256_t *op2, mg_uint256_t *quotient)
+MG_PRIVATE mg_error_t mg_uint256_div(mg_uint256_t *op1, const mg_uint256_t *op2, mg_uint256_t *quotient)
 {
-	mg_decimal_error err = 0;
+	mg_error_t err = 0;
 
 	int op1_digits = mgUINT256_WORD_COUNT;
 	while(op1_digits > 0 && op1->word[op1_digits - 1] == 0)
@@ -156,7 +156,7 @@ MG_PRIVATE mg_decimal_error mg_uint256_div(mg_uint256_t *op1, const mg_uint256_t
 
 	if(op2_digits <= 1) {
 		if(op2_digits <= 0) {
-			err = MG_DECIMAL_ERROR_ZERODIVIDE;
+			err = mgE_ZERODIVIDE;
 			goto _ERROR;
 		}
 		if(op1_digits <= 1) {
@@ -211,7 +211,7 @@ static inline void set_double(mg_uint256_t *op1, double value, int n)
 	}
 }
 
-MG_PRIVATE mg_decimal_error mg_uint256_div_long_division(
+MG_PRIVATE mg_error_t mg_uint256_div_long_division(
 	mg_uint256_t *op1,
 	int op1_digits,
 	const mg_uint256_t *op2,

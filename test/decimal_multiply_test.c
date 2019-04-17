@@ -10,7 +10,7 @@ static void multiply_test(const char *text1, const char *text2, const char *ret)
 {
 	char strbuf[1000];
 	int size;
-	mg_decimal value1, value2, value3;
+	mg_decimal_t value1, value2, value3;
 
 	mg_assert(mg_decimal_parse_string(text1, &value1) == 0);
 	mg_assert(mg_decimal_parse_string(text2, &value2) == 0);
@@ -24,12 +24,12 @@ static void multiply_test(const char *text1, const char *text2, const char *ret)
 
 static void overflow_test(const char *text1, const char *text2)
 {
-	mg_decimal value1, value2, value3;
+	mg_decimal_t value1, value2, value3;
 
 	mg_assert(mg_decimal_parse_string(text1, &value1) == 0);
 	mg_assert(mg_decimal_parse_string(text2, &value2) == 0);
 
-	mg_assert(mg_decimal_multiply(&value1, &value2, /*out*/&value3) == MG_DECIMAL_ERROR_OVERFLOW);
+	mg_assert(mg_decimal_multiply(&value1, &value2, /*out*/&value3) == mgE_OVERFLOW);
 }
 
 void decimal_multiply_test()

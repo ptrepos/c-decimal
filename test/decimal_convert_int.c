@@ -11,7 +11,7 @@ static void int_convert_test(int value, const char *ret)
 {
 	char strbuf[1000];
 	int size;
-	mg_decimal value1;
+	mg_decimal_t value1;
 	int value2;
 
 	mg_assert(mg_decimal_value_of_int(value, &value1) == 0);
@@ -27,7 +27,7 @@ static void int_convert_test(int value, const char *ret)
 
 static void convert(const char *ret, int value)
 {
-	mg_decimal value1;
+	mg_decimal_t value1;
 	int value3;
 
 	mg_assert(mg_decimal_parse_string(ret, &value1) == 0);
@@ -39,11 +39,11 @@ static void convert(const char *ret, int value)
 
 static void convert_overflow(const char *ret)
 {
-	mg_decimal value1;
+	mg_decimal_t value1;
 	int value3;
 
 	mg_assert(mg_decimal_parse_string(ret, &value1) == 0);
-	mg_assert(mg_decimal_to_int(&value1, /*out*/&value3) == MG_DECIMAL_ERROR_OVERFLOW);
+	mg_assert(mg_decimal_to_int(&value1, /*out*/&value3) == mgE_OVERFLOW);
 }
 
 void decimal_convert_int_test()

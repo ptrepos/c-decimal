@@ -11,8 +11,8 @@ static void uint_convert_test(unsigned int value, const char *ret)
 {
 	char strbuf[1000];
 	int size;
-	mg_decimal value1;
-	int value2;
+	mg_decimal_t value1;
+	unsigned int value2;
 
 	mg_assert(mg_decimal_value_of_uint(value, &value1) == 0);
 
@@ -27,11 +27,11 @@ static void uint_convert_test(unsigned int value, const char *ret)
 
 static void convert_overflow(const char *value)
 {
-	mg_decimal value1;
+	mg_decimal_t value1;
 	unsigned int value3;
 
 	mg_assert(mg_decimal_parse_string(value, &value1) == 0);
-	mg_assert(mg_decimal_to_uint(&value1, /*out*/&value3) == MG_DECIMAL_ERROR_OVERFLOW);
+	mg_assert(mg_decimal_to_uint(&value1, /*out*/&value3) == mgE_OVERFLOW);
 }
 
 void decimal_convert_uint_test()

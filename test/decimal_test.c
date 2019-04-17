@@ -8,7 +8,7 @@
 
 static void add_loop(const char *text1)
 {
-	mg_decimal value1, value2;
+	mg_decimal_t value1, value2;
 
 	mg_assert(mg_decimal_parse_string(text1, &value2) == 0);
 	mg_assert(mg_decimal_value_of_long_long(1000000000000000ULL, &value1) == 0);
@@ -20,7 +20,7 @@ static void add_loop(const char *text1)
 
 static void mul_loop(const char *text1)
 {
-	mg_decimal value1, value2, tmp;
+	mg_decimal_t value1, value2, tmp;
 
 	mg_assert(mg_decimal_parse_string(text1, &value1) == 0);
 	mg_assert(mg_decimal_parse_string(text1, &value2) == 0);
@@ -32,7 +32,7 @@ static void mul_loop(const char *text1)
 
 static void div_loop(const char *text1, const char *text2)
 {
-	mg_decimal value1, value2, tmp;
+	mg_decimal_t value1, value2, tmp;
 
 	mg_assert(mg_decimal_parse_string(text1, &value1) == 0);
 	mg_assert(mg_decimal_parse_string(text2, &value2) == 0);

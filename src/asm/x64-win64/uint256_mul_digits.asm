@@ -16,7 +16,7 @@ section .text
 %define RET_VALUE		rbp+48		; mg_uint256 *
 
 ; LOCAL
-%define BUFFER			rsp			; uint64_t[9]
+%define BUFFER			rsp			; unsigned long long[9]
 
 %define STACK_SIZE		72
 

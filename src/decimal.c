@@ -16,17 +16,17 @@
 #include <magica/arch/uint256.h>
 #include <double_impl.h>
 
-static mg_decimal_error _truncate_max_digits(
+static mg_error_t _truncate_max_digits(
 		mg_uint256_t *value, 
 		int scale, 
 		/*out*/int *rounded_scale);
 		
-static mg_decimal_error _truncate_zero_digits(
+static mg_error_t _truncate_zero_digits(
 		mg_uint256_t *value, 
 		int scale, 
 		/*out*/int *rounded_scale);
 
-static mg_decimal_error _divide_internal(
+static mg_error_t _divide_internal(
 		const mg_uint256_t *_fraction1, 
 		const mg_uint256_t *_fraction2, 
 		/*inout*/int *_scale,
@@ -35,7 +35,7 @@ static mg_decimal_error _divide_internal(
 #if defined(_M_X64) || defined(_M_ARM64) || defined(__amd64__) || defined(__arm64__)
 
 MG_DECIMAL_API void mg_decimal_set_binary(
-	mg_decimal *value,
+	mg_decimal_t *value,
 	unsigned long long high,
 	unsigned long long low)
 {
@@ -44,7 +44,7 @@ MG_DECIMAL_API void mg_decimal_set_binary(
 }
 
 MG_DECIMAL_API void mg_decimal_get_binary(
-	const mg_decimal *value,
+	const mg_decimal_t *value,
 	/*out*/unsigned long long *high,
 	/*out*/unsigned long long *low)
 {
@@ -55,7 +55,7 @@ MG_DECIMAL_API void mg_decimal_get_binary(
 #else
 
 MG_DECIMAL_API void mg_decimal_set_binary(
-	/*out*/mg_decimal *value,
+	/*out*/mg_decimal_t *value,
 	unsigned long long high,
 	unsigned long long low)
 {
@@ -66,12 +66,12 @@ MG_DECIMAL_API void mg_decimal_set_binary(
 }
 
 MG_DECIMAL_API void mg_decimal_get_binary(
-	const mg_decimal *value,
+	const mg_decimal_t *value,
 	/*out*/unsigned long long *high,
 	/*out*/unsigned long long *low)
 {
-	*high = ((uint64_t)value->w[3] << 32ULL) | (uint64_t)value->w[2];
-	*low = ((uint64_t)value->w[1] << 32ULL) | (uint64_t)value->w[0];
+	*high = ((unsigned long long)value->w[3] << 32ULL) | (unsigned long long)value->w[2];
+	*low = ((unsigned long long)value->w[1] << 32ULL) | (unsigned long long)value->w[0];
 }
 
 #endif
@@ -87,34 +87,34 @@ MG_DECIMAL_API void mg_decimal_get_binary(
 #define MIN_VALUE_HIGH		(0x80c097ce7bc90715ULL)
 #define MIN_VALUE_LOW		(0xb34b9f0fffffffffULL)
 
-MG_DECIMAL_API void mg_decimal_zero(/*out*/mg_decimal *value)
+MG_DECIMAL_API void mg_decimal_zero(/*out*/mg_decimal_t *value)
 {
 	mg_decimal_set_binary(value, ZERO_HIGH, ZERO_LOW);
 }
 
-MG_DECIMAL_API void mg_decimal_one(/*out*/mg_decimal *value)
+MG_DECIMAL_API void mg_decimal_one(/*out*/mg_decimal_t *value)
 {
 	mg_decimal_set_binary(value, ONE_HIGH, ONE_LOW);
 }
 
-MG_DECIMAL_API void mg_decimal_minus_one(/*out*/mg_decimal *value)
+MG_DECIMAL_API void mg_decimal_minus_one(/*out*/mg_decimal_t *value)
 {
 	mg_decimal_set_binary(value, MINUS_ONE_HIGH, MINUS_ONE_LOW);
 }
 
-MG_DECIMAL_API void mg_decimal_min_value(/*out*/mg_decimal *value)
+MG_DECIMAL_API void mg_decimal_min_value(/*out*/mg_decimal_t *value)
 {
 	mg_decimal_set_binary(value, MIN_VALUE_HIGH, MIN_VALUE_LOW);
 }
 
-MG_DECIMAL_API void mg_decimal_max_value(/*out*/mg_decimal *value)
+MG_DECIMAL_API void mg_decimal_max_value(/*out*/mg_decimal_t *value)
 {
 	mg_decimal_set_binary(value, MAX_VALUE_HIGH, MAX_VALUE_LOW);
 }
 
-MG_DECIMAL_API mg_decimal_error mg_decimal_value_of_int(int value, /*out*/mg_decimal *ret)
+MG_DECIMAL_API mg_error_t mg_decimal_value_of_int(int value, /*out*/mg_decimal_t *ret)
 {
-	mg_decimal_error err;
+	mg_error_t err;
 	int sign;
 	mg_uint256_t fraction;
 
@@ -132,9 +132,9 @@ MG_DECIMAL_API mg_decimal_error mg_decimal_value_of_int(int value, /*out*/mg_dec
 	return 0;
 }
 
-MG_DECIMAL_API mg_decimal_error mg_decimal_value_of_uint(unsigned int value, /*out*/mg_decimal *ret)
+MG_DECIMAL_API mg_error_t mg_decimal_value_of_uint(unsigned int value, /*out*/mg_decimal_t *ret)
 {
-	mg_decimal_error err;
+	mg_error_t err;
 	mg_uint256_t fraction;
 
 	mg_uint256_set(&fraction, value);
@@ -145,15 +145,15 @@ MG_DECIMAL_API mg_decimal_error mg_decimal_value_of_uint(unsigned int value, /*o
 	return 0;
 }
 
-MG_DECIMAL_API mg_decimal_error mg_decimal_value_of_long_long(long long value, /*out*/mg_decimal *ret)
+MG_DECIMAL_API mg_error_t mg_decimal_value_of_long_long(long long value, /*out*/mg_decimal_t *ret)
 {
-	mg_decimal_error err;
+	mg_error_t err;
 	int sign;
 	mg_uint256_t fraction;
 
 	if(value < 0) {
 		sign = SIGN_NEGATIVE;
-		mg_uint256_set(&fraction, ((uint64_t)-(value + 1)) + 1);
+		mg_uint256_set(&fraction, ((unsigned long long)-(value + 1)) + 1);
 	} else {
 		sign = SIGN_POSITIVE;
 		mg_uint256_set(&fraction, value);
@@ -165,9 +165,9 @@ MG_DECIMAL_API mg_decimal_error mg_decimal_value_of_long_long(long long value, /
 	return 0;
 }
 
-MG_DECIMAL_API mg_decimal_error mg_decimal_value_of_ulong_long(unsigned long long value, /*out*/mg_decimal *ret)
+MG_DECIMAL_API mg_error_t mg_decimal_value_of_ulong_long(unsigned long long value, /*out*/mg_decimal_t *ret)
 {
-	mg_decimal_error err;
+	mg_error_t err;
 	mg_uint256_t fraction;
 
 	mg_uint256_set(&fraction, value);
@@ -178,7 +178,7 @@ MG_DECIMAL_API mg_decimal_error mg_decimal_value_of_ulong_long(unsigned long lon
 	return 0;
 }
 
-MG_DECIMAL_API mg_decimal_error mg_decimal_value_of_float(float value, /*out*/mg_decimal *ret)
+MG_DECIMAL_API mg_error_t mg_decimal_value_of_float(float value, /*out*/mg_decimal_t *ret)
 {
 	return mg_decimal_value_of_double((double)value, ret);
 }
@@ -229,13 +229,13 @@ static void _pow2(int exponent, /*out*/mg_uint256_t *ret)
 	}
 }
 
-MG_DECIMAL_API mg_decimal_error mg_decimal_value_of_double(double value, /*out*/mg_decimal *ret)
+MG_DECIMAL_API mg_error_t mg_decimal_value_of_double(double value, /*out*/mg_decimal_t *ret)
 {
-	mg_decimal_error err;
+	mg_error_t err;
 	int sign;
 	int double_sign;
 	int double_scale;
-	uint64_t double_fraction;
+	unsigned long long double_fraction;
 	int double_status;
 	
 	_double_parse(
@@ -247,11 +247,11 @@ MG_DECIMAL_API mg_decimal_error mg_decimal_value_of_double(double value, /*out*/
 
 	if (double_status == DOUBLE_STATUS_INFINITY) {
 		// Inifinity
-		err = MG_DECIMAL_ERROR_OVERFLOW;
+		err = mgE_OVERFLOW;
 		goto _ERROR;
 	} else if (double_status == DOUBLE_STATUS_NAN) {
 		// NaN
-		err = MG_DECIMAL_ERROR_CONVERT;
+		err = mgE_CONVERT;
 		goto _ERROR;
 	} else if(double_status == DOUBLE_STATUS_ZERO) {
 		// ZERO
@@ -259,7 +259,7 @@ MG_DECIMAL_API mg_decimal_error mg_decimal_value_of_double(double value, /*out*/
 		goto _EXIT;
 	} else if(double_status == DOUBLE_STATUS_UNNORMAL) {
 		// UNNORMAL
-		err = MG_DECIMAL_ERROR_CONVERT;
+		err = mgE_CONVERT;
 		goto _ERROR;
 	}
 	
@@ -280,7 +280,7 @@ MG_DECIMAL_API mg_decimal_error mg_decimal_value_of_double(double value, /*out*/
 			goto _ERROR;
 	} else if (double_scale > 0) {
 		if(double_scale > 128) {
-			err = MG_DECIMAL_ERROR_OVERFLOW;
+			err = mgE_OVERFLOW;
 			goto _ERROR;
 		}
 		mg_uint256_t fraction;
@@ -298,7 +298,7 @@ MG_DECIMAL_API mg_decimal_error mg_decimal_value_of_double(double value, /*out*/
 		mg_uint256_right_shift(/*inout*/&fraction, -double_scale);
 		
 		// 整数部取得
-		mg_decimal integer_part;
+		mg_decimal_t integer_part;
 		err = _decimal_set(/*out*/&integer_part, sign, 0, &fraction);
 		if(err != 0)
 			goto _ERROR;
@@ -309,7 +309,7 @@ MG_DECIMAL_API mg_decimal_error mg_decimal_value_of_double(double value, /*out*/
 		} else {
 			// decimal_part = decimal_part_bits / (radix ^ scale);
 			// x = integer_part + decimal_part;
-			mg_decimal decimal_part;
+			mg_decimal_t decimal_part;
 			mg_uint256_t decimal_part_bits;
 			mg_uint256_t radix_conv;
 			
@@ -343,9 +343,9 @@ _ERROR:
 	return err;
 }
 
-MG_DECIMAL_API mg_decimal_error mg_decimal_to_int(const mg_decimal *value, /*out*/int *ret)
+MG_DECIMAL_API mg_error_t mg_decimal_to_int(const mg_decimal_t *value, /*out*/int *ret)
 {
-	mg_decimal_error err;
+	mg_error_t err;
 	int sign;
 	int scale;
 	mg_uint256_t buf1, buf2;
@@ -357,18 +357,18 @@ MG_DECIMAL_API mg_decimal_error mg_decimal_to_int(const mg_decimal *value, /*out
 	_decimal_get_fraction(value, fraction);
 
 	if (scale < 0) {
-		err = (mg_decimal_error)mg_uint256_div(fraction, mg_uint256_get_10eN(-scale), tmp);
+		err = (mg_error_t)mg_uint256_div(fraction, mg_uint256_get_10eN(-scale), tmp);
 		if (err != 0)
 			goto _ERROR;
 		mg_uint256_swap(&fraction, &tmp);
 	}
 
 	if (sign == SIGN_NEGATIVE) {
-		mg_uint256_set(/*out*/tmp, (uint64_t)INT32_MAX + 1);
+		mg_uint256_set(/*out*/tmp, (unsigned long long)INT32_MAX + 1);
 
 		// out of int64.
 		if (mg_uint256_compare(fraction, tmp) > 0) {
-			err = MG_DECIMAL_ERROR_OVERFLOW;
+			err = mgE_OVERFLOW;
 			goto _ERROR;
 		}
 	}
@@ -377,7 +377,7 @@ MG_DECIMAL_API mg_decimal_error mg_decimal_to_int(const mg_decimal *value, /*out
 
 		// out of int64.
 		if (mg_uint256_compare(fraction, tmp) > 0) {
-			err = MG_DECIMAL_ERROR_OVERFLOW;
+			err = mgE_OVERFLOW;
 			goto _ERROR;
 		}
 	}
@@ -395,9 +395,9 @@ _ERROR:
 	return err;
 }
 
-MG_DECIMAL_API mg_decimal_error mg_decimal_to_uint(const mg_decimal *value, /*out*/unsigned int *ret)
+MG_DECIMAL_API mg_error_t mg_decimal_to_uint(const mg_decimal_t *value, /*out*/unsigned int *ret)
 {
-	mg_decimal_error err;
+	mg_error_t err;
 	int sign;
 	int scale;
 	mg_uint256_t buf1, buf2;
@@ -408,7 +408,7 @@ MG_DECIMAL_API mg_decimal_error mg_decimal_to_uint(const mg_decimal *value, /*ou
 	_decimal_get_fraction(value, fraction);
 
 	if (scale < 0) {
-		err = (mg_decimal_error)mg_uint256_div(fraction, mg_uint256_get_10eN(-scale), tmp);
+		err = (mg_error_t)mg_uint256_div(fraction, mg_uint256_get_10eN(-scale), tmp);
 		if (err != 0)
 			goto _ERROR;
 		mg_uint256_swap(&fraction, &tmp);
@@ -418,7 +418,7 @@ MG_DECIMAL_API mg_decimal_error mg_decimal_to_uint(const mg_decimal *value, /*ou
 		mg_uint256_set(/*out*/tmp, 0);
 
 		if (mg_uint256_compare(fraction, tmp) > 0) {
-			err = MG_DECIMAL_ERROR_OVERFLOW;
+			err = mgE_OVERFLOW;
 			goto _ERROR;
 		}
 	}
@@ -427,7 +427,7 @@ MG_DECIMAL_API mg_decimal_error mg_decimal_to_uint(const mg_decimal *value, /*ou
 
 		// out of int64.
 		if (mg_uint256_compare(fraction, tmp) > 0) {
-			err = MG_DECIMAL_ERROR_OVERFLOW;
+			err = mgE_OVERFLOW;
 			goto _ERROR;
 		}
 	}
@@ -439,14 +439,14 @@ _ERROR:
 	return err;
 }
 
-MG_DECIMAL_API mg_decimal_error mg_decimal_to_long_long(const mg_decimal *value, /*out*/long long *ret)
+MG_DECIMAL_API mg_error_t mg_decimal_to_long_long(const mg_decimal_t *value, /*out*/long long *ret)
 {
-	mg_decimal_error err;
+	mg_error_t err;
 	int sign;
 	int scale;
 	mg_uint256_t buf1, buf2;
 	mg_uint256_t *fraction = &buf1, *tmp = &buf2;
-	int64_t work;
+	long long work;
 
 	sign = _decimal_get_sign(value);
 	scale = _decimal_get_scale(value);
@@ -460,11 +460,11 @@ MG_DECIMAL_API mg_decimal_error mg_decimal_to_long_long(const mg_decimal *value,
 	}
 
 	if (sign == SIGN_NEGATIVE) {
-		mg_uint256_set(/*out*/tmp, (uint64_t)INT64_MAX + 1);
+		mg_uint256_set(/*out*/tmp, (unsigned long long)INT64_MAX + 1);
 
 		// out of int64.
 		if (mg_uint256_compare(fraction, tmp) > 0) {
-			err = MG_DECIMAL_ERROR_OVERFLOW;
+			err = mgE_OVERFLOW;
 			goto _ERROR;
 		}
 	} else {
@@ -472,12 +472,12 @@ MG_DECIMAL_API mg_decimal_error mg_decimal_to_long_long(const mg_decimal *value,
 
 		// out of int64.
 		if (mg_uint256_compare(fraction, tmp) > 0) {
-			err = MG_DECIMAL_ERROR_OVERFLOW;
+			err = mgE_OVERFLOW;
 			goto _ERROR;
 		}
 	}
 
-	work = (int64_t)mg_uint256_get_uint64(fraction);
+	work = (long long)mg_uint256_get_uint64(fraction);
 
 	if(sign == SIGN_NEGATIVE) {
 		work = -work;
@@ -490,9 +490,9 @@ _ERROR:
 	return err;
 }
 
-MG_DECIMAL_API mg_decimal_error mg_decimal_to_ulong_long(const mg_decimal *value, /*out*/unsigned long long *ret)
+MG_DECIMAL_API mg_error_t mg_decimal_to_ulong_long(const mg_decimal_t *value, /*out*/unsigned long long *ret)
 {
-	mg_decimal_error err;
+	mg_error_t err;
 	int sign;
 	int scale;
 	mg_uint256_t buf1, buf2;
@@ -513,7 +513,7 @@ MG_DECIMAL_API mg_decimal_error mg_decimal_to_ulong_long(const mg_decimal *value
 		mg_uint256_set(/*out*/tmp, 0);
 
 		if (mg_uint256_compare(fraction, tmp) > 0) {
-			err = MG_DECIMAL_ERROR_OVERFLOW;
+			err = mgE_OVERFLOW;
 			goto _ERROR;
 		}
 	} else {
@@ -521,7 +521,7 @@ MG_DECIMAL_API mg_decimal_error mg_decimal_to_ulong_long(const mg_decimal *value
 
 		// out of int64.
 		if (mg_uint256_compare(fraction, tmp) > 0) {
-			err = MG_DECIMAL_ERROR_OVERFLOW;
+			err = mgE_OVERFLOW;
 			goto _ERROR;
 		}
 	}
@@ -533,9 +533,9 @@ _ERROR:
 	return err;
 }
 
-MG_DECIMAL_API mg_decimal_error mg_decimal_to_float(const mg_decimal *value, /*out*/float *ret)
+MG_DECIMAL_API mg_error_t mg_decimal_to_float(const mg_decimal_t *value, /*out*/float *ret)
 {
-	mg_decimal_error err;
+	mg_error_t err;
 	double v;
 	
 	err = mg_decimal_to_double(value, /*out*/&v);
@@ -549,9 +549,9 @@ _ERROR:
 	return err;
 }
 
-MG_DECIMAL_API mg_decimal_error mg_decimal_to_double(const mg_decimal *value, /*out*/double *ret)
+MG_DECIMAL_API mg_error_t mg_decimal_to_double(const mg_decimal_t *value, /*out*/double *ret)
 {
-	mg_decimal_error err;
+	mg_error_t err;
 	int sign;
 	int scale;
 	mg_uint256_t fraction;
@@ -651,9 +651,9 @@ _ERROR:
 	return err;
 }
 
-MG_DECIMAL_API mg_decimal_error mg_decimal_parse_string(const char *value, /*out*/mg_decimal *ret)
+MG_DECIMAL_API mg_error_t mg_decimal_parse_string(const char *value, /*out*/mg_decimal_t *ret)
 {
-	mg_decimal_error err;
+	mg_error_t err;
 	int sign;
 	int scale, digits;
 	mg_uint256_t buf1, buf2;
@@ -661,7 +661,7 @@ MG_DECIMAL_API mg_decimal_error mg_decimal_parse_string(const char *value, /*out
 	int c;
 
 	if(*value == 0) {
-		err = MG_DECIMAL_ERROR_CONVERT;
+		err = mgE_CONVERT;
 		goto _ERROR;
 	}
 	switch(*value) {
@@ -683,7 +683,7 @@ MG_DECIMAL_API mg_decimal_error mg_decimal_parse_string(const char *value, /*out
 	bool dot = false;
 
 	if(*value == 0) {
-		err = MG_DECIMAL_ERROR_CONVERT;
+		err = mgE_CONVERT;
 		goto _ERROR;
 	}
 
@@ -695,7 +695,7 @@ MG_DECIMAL_API mg_decimal_error mg_decimal_parse_string(const char *value, /*out
 		} else if(('1' <= c && c <= '9') || c == '.') {
 			break;
 		} else  {
-			err = MG_DECIMAL_ERROR_CONVERT;
+			err = mgE_CONVERT;
 			goto _ERROR;
 		}
 	}
@@ -718,7 +718,7 @@ MG_DECIMAL_API mg_decimal_error mg_decimal_parse_string(const char *value, /*out
 
 			value++;
 			if(*value == 0) {
-				err = MG_DECIMAL_ERROR_CONVERT;
+				err = mgE_CONVERT;
 				goto _ERROR;
 			}
 			while(*value != 0) {
@@ -735,13 +735,13 @@ MG_DECIMAL_API mg_decimal_error mg_decimal_parse_string(const char *value, /*out
 					}
 					value++;
 				} else {
-					err = MG_DECIMAL_ERROR_CONVERT;
+					err = mgE_CONVERT;
 					goto _ERROR;
 				}
 			}
 			break;
 		}  else {
-			err = MG_DECIMAL_ERROR_CONVERT;
+			err = mgE_CONVERT;
 			goto _ERROR;
 		}
 	}
@@ -761,9 +761,9 @@ static inline void _put_c(char *buf, int bufSize, int index, char value)
 		buf[index] = value;
 }
 
-MG_DECIMAL_API mg_decimal_error mg_decimal_to_string(const mg_decimal *value, /*out*/char *buf, int bufSize, /*out*/int *requireBufSize)
+MG_DECIMAL_API mg_error_t mg_decimal_to_string(const mg_decimal_t *value, /*out*/char *buf, int bufSize, /*out*/int *requireBufSize)
 {
-	mg_decimal_error err;
+	mg_error_t err;
 	int i, index;
 	int sign;
 	int scale;
@@ -771,7 +771,7 @@ MG_DECIMAL_API mg_decimal_error mg_decimal_to_string(const mg_decimal *value, /*
 	mg_uint256_t *fraction = &buf1, *tmp = &buf2;
 	const mg_uint256_t *v10e18;
 
-	mg_decimal normalized_value = *value;
+	mg_decimal_t normalized_value = *value;
 	err = mg_decimal_normalize(&normalized_value);
 	if(err != 0) 
 		goto _ERROR;
@@ -784,7 +784,7 @@ MG_DECIMAL_API mg_decimal_error mg_decimal_to_string(const mg_decimal *value, /*
 
 	index = 0;
 	while(!mg_uint256_is_zero(fraction)) {
-		uint64_t subfraction = 0;
+		unsigned long long subfraction = 0;
 
 		err = mg_uint256_div(fraction, v10e18, tmp);
 		if(err != 0)
@@ -834,7 +834,7 @@ MG_DECIMAL_API mg_decimal_error mg_decimal_to_string(const mg_decimal *value, /*
 	*requireBufSize = index;
 
 	if(bufSize < index) {
-		err = MG_DECIMAL_ERROR_BUFFER_NOT_ENOUGH;
+		err = mgE_BUFFER_NOT_ENOUGH;
 		goto _ERROR;
 	}
 
@@ -843,9 +843,9 @@ _ERROR:
 	return err;
 }
 
-MG_DECIMAL_API mg_decimal_error mg_decimal_normalize(/*inout*/mg_decimal *value)
+MG_DECIMAL_API mg_error_t mg_decimal_normalize(/*inout*/mg_decimal_t *value)
 {
-	mg_decimal_error err;
+	mg_error_t err;
 	int sign;
 	int scale, rounded_scale;
 	mg_uint256_t buf1;
@@ -874,7 +874,7 @@ _ERROR:
 	return err;
 }
 
-MG_DECIMAL_API mg_decimal_error mg_decimal_abs(const mg_decimal *value, /*out*/mg_decimal *ret)
+MG_DECIMAL_API mg_error_t mg_decimal_abs(const mg_decimal_t *value, /*out*/mg_decimal_t *ret)
 {
 	*ret = *value;
 
@@ -883,7 +883,7 @@ MG_DECIMAL_API mg_decimal_error mg_decimal_abs(const mg_decimal *value, /*out*/m
 	return 0;
 }
 
-MG_DECIMAL_API mg_decimal_error mg_decimal_max(const mg_decimal *value1, const mg_decimal *value2, /*out*/mg_decimal *ret)
+MG_DECIMAL_API mg_error_t mg_decimal_max(const mg_decimal_t *value1, const mg_decimal_t *value2, /*out*/mg_decimal_t *ret)
 {
 	if(mg_decimal_compare(value1, value2) < 0) {
 		*ret = *value2;
@@ -894,7 +894,7 @@ MG_DECIMAL_API mg_decimal_error mg_decimal_max(const mg_decimal *value1, const m
 	return 0;
 }
 
-MG_DECIMAL_API mg_decimal_error mg_decimal_min(const mg_decimal *value1, const mg_decimal *value2, /*out*/mg_decimal *ret)
+MG_DECIMAL_API mg_error_t mg_decimal_min(const mg_decimal_t *value1, const mg_decimal_t *value2, /*out*/mg_decimal_t *ret)
 {
 	if(mg_decimal_compare(value1, value2) < 0) {
 		*ret = *value1;
@@ -905,7 +905,7 @@ MG_DECIMAL_API mg_decimal_error mg_decimal_min(const mg_decimal *value1, const m
 	return 0;
 }
 
-MG_DECIMAL_API bool mg_decimal_is_zero(const mg_decimal *op1)
+MG_DECIMAL_API bool mg_decimal_is_zero(const mg_decimal_t *op1)
 {
 	mg_uint256_t fraction;
 
@@ -914,7 +914,7 @@ MG_DECIMAL_API bool mg_decimal_is_zero(const mg_decimal *op1)
 	return mg_uint256_is_zero(&fraction);
 }
 
-MG_DECIMAL_API int mg_decimal_compare(const mg_decimal *op1, const mg_decimal *op2)
+MG_DECIMAL_API int mg_decimal_compare(const mg_decimal_t *op1, const mg_decimal_t *op2)
 {
 	int sign1, sign2;
 	int scale1, scale2;
@@ -956,7 +956,7 @@ MG_DECIMAL_API int mg_decimal_compare(const mg_decimal *op1, const mg_decimal *o
 	}
 }
 
-MG_DECIMAL_API mg_decimal_error mg_decimal_negate(mg_decimal *op1)
+MG_DECIMAL_API mg_error_t mg_decimal_negate(mg_decimal_t *op1)
 {
 	if(mg_decimal_is_zero(op1))
 		return 0;
@@ -966,9 +966,9 @@ MG_DECIMAL_API mg_decimal_error mg_decimal_negate(mg_decimal *op1)
 	return 0;
 }
 
-MG_DECIMAL_API mg_decimal_error mg_decimal_add(const mg_decimal *op1, const mg_decimal *op2, /*out*/mg_decimal *ret)
+MG_DECIMAL_API mg_error_t mg_decimal_add(const mg_decimal_t *op1, const mg_decimal_t *op2, /*out*/mg_decimal_t *ret)
 {
-	mg_decimal_error err;
+	mg_error_t err;
 	int borrow;
 	int sign, sign1, sign2;
 	int scale, scaleDiff, scale1, scale2;
@@ -1034,7 +1034,7 @@ MG_DECIMAL_API mg_decimal_error mg_decimal_add(const mg_decimal *op1, const mg_d
 		scale = rounded_scale;
 
 		if(_decimal_is_overflow(fraction1)) {
-			err = MG_DECIMAL_ERROR_OVERFLOW;
+			err = mgE_OVERFLOW;
 			goto _ERROR;
 		}
 	}
@@ -1046,13 +1046,13 @@ _ERROR:
 	return err;
 }
 
-MG_DECIMAL_API mg_decimal_error mg_decimal_subtract(const mg_decimal *op1, const mg_decimal *op2, /*out*/mg_decimal *ret)
+MG_DECIMAL_API mg_error_t mg_decimal_subtract(const mg_decimal_t *op1, const mg_decimal_t *op2, /*out*/mg_decimal_t *ret)
 {
-	mg_decimal_error err;
+	mg_error_t err;
 
 	assert(ret != NULL);
 
-	mg_decimal nagated_op2 = *op2;
+	mg_decimal_t nagated_op2 = *op2;
 	err = mg_decimal_negate(/*inout*/&nagated_op2);
 	if(err != 0)
 		goto _ERROR;
@@ -1065,9 +1065,9 @@ _ERROR:
 	return err;
 }
 
-MG_DECIMAL_API mg_decimal_error mg_decimal_multiply(const mg_decimal *op1, const mg_decimal *op2, /*out*/mg_decimal *ret)
+MG_DECIMAL_API mg_error_t mg_decimal_multiply(const mg_decimal_t *op1, const mg_decimal_t *op2, /*out*/mg_decimal_t *ret)
 {
-	mg_decimal_error err;
+	mg_error_t err;
 	int sign, sign1, sign2;
 	int scale, scale1, scale2;
 	mg_uint256_t buf1, buf2, buf3;
@@ -1100,7 +1100,7 @@ MG_DECIMAL_API mg_decimal_error mg_decimal_multiply(const mg_decimal *op1, const
 		scale = rounded_scale;
 
 		if (_decimal_is_overflow(fraction1)) {
-			err = MG_DECIMAL_ERROR_OVERFLOW;
+			err = mgE_OVERFLOW;
 			goto _ERROR;
 		}
 	}
@@ -1112,9 +1112,9 @@ _ERROR:
 	return err;
 }
 
-MG_DECIMAL_API mg_decimal_error mg_decimal_divide(const mg_decimal *op1, const mg_decimal *op2, /*out*/mg_decimal *ret)
+MG_DECIMAL_API mg_error_t mg_decimal_divide(const mg_decimal_t *op1, const mg_decimal_t *op2, /*out*/mg_decimal_t *ret)
 {
-	mg_decimal_error err;
+	mg_error_t err;
 	int sign, sign1, sign2;
 	int scale, scale1, scale2;
 	mg_uint256_t buf1, buf2, buf3, buf4;
@@ -1131,7 +1131,7 @@ MG_DECIMAL_API mg_decimal_error mg_decimal_divide(const mg_decimal *op1, const m
 	_decimal_get_fraction(op2, fraction2);
 
 	if (mg_uint256_is_zero(fraction2)) {
-		err = MG_DECIMAL_ERROR_ZERODIVIDE;
+		err = mgE_ZERODIVIDE;
 		goto _ERROR;
 	}
 
@@ -1154,7 +1154,7 @@ MG_DECIMAL_API mg_decimal_error mg_decimal_divide(const mg_decimal *op1, const m
 		mg_uint256_mul128(q, mg_uint256_get_10eN(scale));
 		scale = 0;
 		if(_decimal_is_overflow(q)) {
-			err = MG_DECIMAL_ERROR_OVERFLOW;
+			err = mgE_OVERFLOW;
 			goto _ERROR;
 		}
 	}
@@ -1166,13 +1166,13 @@ _ERROR:
 	return err;
 }
 
-static mg_decimal_error _divide_internal(
+static mg_error_t _divide_internal(
 		const mg_uint256_t *_fraction1, 
 		const mg_uint256_t *_fraction2, 
 		/*inout*/int *_scale,
 		/*inout*/mg_uint256_t *_q)
 {
-	mg_decimal_error err;
+	mg_error_t err;
 	int overflow;
 	mg_uint256_t buf1, buf2, buf3, buf4;
 	mg_uint256_t *fraction1 = &buf1;
@@ -1235,9 +1235,9 @@ _ERROR:
 	return err;
 }
 
-MG_DECIMAL_API mg_decimal_error mg_decimal_divide_and_modulus(const mg_decimal *op1, const mg_decimal *op2, /*out*/mg_decimal *quotient, /*out*/mg_decimal *reminder)
+MG_DECIMAL_API mg_error_t mg_decimal_divide_and_modulus(const mg_decimal_t *op1, const mg_decimal_t *op2, /*out*/mg_decimal_t *quotient, /*out*/mg_decimal_t *reminder)
 {
-	mg_decimal_error err;
+	mg_error_t err;
 	int sign, sign1, sign2;
 	int scale, scale1, scale2;
 	mg_uint256_t buf1, buf2, buf3, buf4;
@@ -1255,7 +1255,7 @@ MG_DECIMAL_API mg_decimal_error mg_decimal_divide_and_modulus(const mg_decimal *
 	_decimal_get_fraction(op2, fraction2);
 
 	if (mg_uint256_is_zero(fraction2)) {
-		err = MG_DECIMAL_ERROR_ZERODIVIDE;
+		err = mgE_ZERODIVIDE;
 		goto _ERROR;
 	}
 
@@ -1283,13 +1283,13 @@ MG_DECIMAL_API mg_decimal_error mg_decimal_divide_and_modulus(const mg_decimal *
 	}
 
 	if(_decimal_is_overflow(q)) {
-		err = MG_DECIMAL_ERROR_OVERFLOW;
+		err = mgE_OVERFLOW;
 		goto _ERROR;
 	}
 
 	_decimal_set2(quotient, sign, 0, q);
 
-	mg_decimal s;
+	mg_decimal_t s;
 	err = mg_decimal_multiply(quotient, op2, &s);
 	if (err != 0)
 		goto _ERROR;
@@ -1302,21 +1302,21 @@ _ERROR:
 	return err;
 }
 
-MG_DECIMAL_API mg_decimal_error mg_decimal_modulus(const mg_decimal *op1, const mg_decimal *op2, /*out*/mg_decimal *ret)
+MG_DECIMAL_API mg_error_t mg_decimal_modulus(const mg_decimal_t *op1, const mg_decimal_t *op2, /*out*/mg_decimal_t *ret)
 {
-	mg_decimal q;
+	mg_decimal_t q;
 
 	return mg_decimal_divide_and_modulus(op1, op2, &q, ret);
 }
 
-MG_DECIMAL_API mg_decimal_error mg_decimal_round(/*inout*/mg_decimal *value, int precision, int type)
+MG_DECIMAL_API mg_error_t mg_decimal_round(/*inout*/mg_decimal_t *value, int precision, int type)
 {
-	mg_decimal_error err;
+	mg_error_t err;
 	int sign;
 	int scale, scaleDiff;
 	mg_uint256_t buf1, buf2, buf3;
 	mg_uint256_t *fraction = &buf1, *tmp = &buf2, *tmp2 = &buf3;
-	uint64_t case_value;
+	unsigned long long case_value;
 
 	assert(value != NULL);
 
@@ -1337,14 +1337,14 @@ MG_DECIMAL_API mg_decimal_error mg_decimal_round(/*inout*/mg_decimal *value, int
 		return 0;
 	switch(type)
 	{
-	case MG_DECIMAL_ROUND_DOWN:
+	case mgDECIMAL_ROUND_DOWN:
 		mg_uint256_swap(&fraction, &tmp);
 		break;
-	case MG_DECIMAL_ROUND_UP:
+	case mgDECIMAL_ROUND_UP:
 		mg_uint256_set(fraction, 1);
 		mg_uint256_add(fraction, tmp);
 		break;
-	case MG_DECIMAL_ROUND_OFF:
+	case mgDECIMAL_ROUND_OFF:
 		err = mg_uint256_div(fraction, mg_uint256_get_10eN(scaleDiff - 1), tmp2);
 		if (err != 0)
 			goto _ERROR;
@@ -1357,7 +1357,7 @@ MG_DECIMAL_API mg_decimal_error mg_decimal_round(/*inout*/mg_decimal *value, int
 			mg_uint256_swap(&fraction, &tmp);
 		}
 		break;
-	case MG_DECIMAL_CEILING:
+	case mgDECIMAL_CEILING:
 		if(sign == SIGN_POSITIVE) {
 			mg_uint256_set(fraction, 1);
 			mg_uint256_add(fraction, tmp);
@@ -1365,7 +1365,7 @@ MG_DECIMAL_API mg_decimal_error mg_decimal_round(/*inout*/mg_decimal *value, int
 			mg_uint256_swap(&fraction, &tmp);
 		}
 		break;
-	case MG_DECIMAL_FLOOR:
+	case mgDECIMAL_FLOOR:
 		if(sign == SIGN_POSITIVE) {
 			mg_uint256_swap(&fraction, &tmp);
 		} else {
@@ -1374,7 +1374,7 @@ MG_DECIMAL_API mg_decimal_error mg_decimal_round(/*inout*/mg_decimal *value, int
 		}
 		break;
 	default:
-		assert(type <= MG_DECIMAL_ROUND_OFF);
+		assert(type <= mgDECIMAL_ROUND_OFF);
 	}
 
 	_decimal_set2(value, sign, -precision, fraction);
@@ -1384,9 +1384,9 @@ _ERROR:
 	return err;
 }
 
-static mg_decimal_error cutoff_invalid_digits(mg_uint256_t *value, int scale, int digits, int *cuttedDigits)
+static mg_error_t cutoff_invalid_digits(mg_uint256_t *value, int scale, int digits, int *cuttedDigits)
 {
-	mg_decimal_error err;
+	mg_error_t err;
 	mg_uint256_t buf1, buf2;
 	mg_uint256_t  *work = &buf1, *tmp = &buf2;
 	int vShift;
@@ -1407,7 +1407,7 @@ static mg_decimal_error cutoff_invalid_digits(mg_uint256_t *value, int scale, in
 	if (digits > DIGIT_MAX) {
 		vShift = digits - DIGIT_MAX;
 		if(vShift >= -scale)
-			return MG_DECIMAL_ERROR_OVERFLOW;
+			return mgE_OVERFLOW;
 
 		err = mg_uint256_div(work, mg_uint256_get_10eN(vShift), tmp);
 		if (err != 0)
@@ -1421,9 +1421,9 @@ static mg_decimal_error cutoff_invalid_digits(mg_uint256_t *value, int scale, in
 	return 0;
 }
 
-static mg_decimal_error _truncate_max_digits(mg_uint256_t *value, int scale, int *rounded_scale)
+static mg_error_t _truncate_max_digits(mg_uint256_t *value, int scale, int *rounded_scale)
 {
-	mg_decimal_error err;
+	mg_error_t err;
 	int digits;
 	int rounded_digits;
 
@@ -1439,7 +1439,7 @@ static mg_decimal_error _truncate_max_digits(mg_uint256_t *value, int scale, int
 	return 0;
 }
 
-static int get_roundable_zero_digits(uint64_t value, uint64_t *cutted)
+static int get_roundable_zero_digits(unsigned long long value, unsigned long long *cutted)
 {
 	int shiftDigits;
 
@@ -1472,13 +1472,13 @@ static int get_roundable_zero_digits(uint64_t value, uint64_t *cutted)
 	return shiftDigits;
 }
 
-static mg_decimal_error _truncate_zero_digits(mg_uint256_t *value, int scale, /*out*/int *cutted_scale)
+static mg_error_t _truncate_zero_digits(mg_uint256_t *value, int scale, /*out*/int *cutted_scale)
 {
-	mg_decimal_error err;
+	mg_error_t err;
 	mg_uint256_t buf1, buf2;
 	mg_uint256_t  *work = &buf1, *tmp = &buf2;
 	const mg_uint256_t *shift;
-	uint64_t v;
+	unsigned long long v;
 	int vShift;
 	int cutted;
 

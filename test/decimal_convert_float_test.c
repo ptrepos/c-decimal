@@ -11,14 +11,14 @@ static void float_convert_test(float value, const char *ret, int precision)
 {
 	char strbuf[1000];
 	int size;
-	mg_decimal value1;
+	mg_decimal_t value1;
 	float value2;
 
 	mg_assert(mg_decimal_value_of_float(value, /*out*/&value1) == 0);
 
 	mg_assert(mg_decimal_to_float(&value1, /*out*/&value2) == 0);
 
-	mg_assert(mg_decimal_round(/*inout*/&value1, precision, MG_DECIMAL_ROUND_OFF) == 0);
+	mg_assert(mg_decimal_round(/*inout*/&value1, precision, mgDECIMAL_ROUND_OFF) == 0);
 
 	mg_assert(mg_decimal_to_string(&value1, strbuf, 1000, &size) == 0);
 
@@ -67,8 +67,8 @@ void decimal_convert_float_test()
 	float_convert_test(16994, "16994", 6);
 
 	{
-		mg_decimal value;
-		mg_assert(mg_decimal_value_of_float(1e+37f, &value) == MG_DECIMAL_ERROR_OVERFLOW);
+		mg_decimal_t value;
+		mg_assert(mg_decimal_value_of_float(1e+37f, &value) == mgE_OVERFLOW);
 	}
 
 	printf("TEST mg_decimal convert float methods: OK\n");

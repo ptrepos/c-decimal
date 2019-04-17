@@ -167,9 +167,9 @@ static inline void set_double(mg_uint256_t *op1, double value, int n)
 	}
 }
 
-MG_PRIVATE mg_decimal_error mg_uint256_div(mg_uint256_t *op1, const mg_uint256_t *op2, mg_uint256_t *quotient)
+MG_PRIVATE mg_error_t mg_uint256_div(mg_uint256_t *op1, const mg_uint256_t *op2, mg_uint256_t *quotient)
 {
-	mg_decimal_error err = 0;
+	mg_error_t err = 0;
 	double op1_v, op2_v, q_tmp;
 	mg_uint256_t buf1, buf2, buf3;
 	mg_uint256_t *q = &buf1, *qv = &buf2, *qv_hi = &buf3;
@@ -184,7 +184,7 @@ MG_PRIVATE mg_decimal_error mg_uint256_div(mg_uint256_t *op1, const mg_uint256_t
 
 	if(op2_digits <= 1) {
 		if(op2_digits <= 0) {
-			err = MG_DECIMAL_ERROR_ZERODIVIDE;
+			err = mgE_ZERODIVIDE;
 			goto _ERROR;
 		}
 

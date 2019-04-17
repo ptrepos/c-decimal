@@ -11,7 +11,7 @@ static void convert_test(const char *text)
 {
 	char strbuf[1000];
 	int size;
-	mg_decimal value;
+	mg_decimal_t value;
 	
 	mg_assert(mg_decimal_parse_string(text, &value) == 0);
 	mg_assert(mg_decimal_to_string(&value, strbuf, 0, &size) != 0);
@@ -24,7 +24,7 @@ static void convert_test2(const char *text1, const char *text2)
 {
 	char strbuf[1000];
 	int size;
-	mg_decimal value;
+	mg_decimal_t value;
 
 	mg_assert(mg_decimal_parse_string(text1, &value) == 0);
 	mg_assert(mg_decimal_to_string(&value, strbuf, 0, &size) != 0);
@@ -83,8 +83,8 @@ void decimal_convert_string_test()
 	convert_test2("0.11234564857894156327864986148541864564165411231321", "0.112345648578941563278649861485418645");
 	
 	{
-		mg_decimal value;
-		mg_assert(mg_decimal_parse_string("1234567891234156498715634865156465151654152165453132416854114", &value) == MG_DECIMAL_ERROR_OVERFLOW);
+		mg_decimal_t value;
+		mg_assert(mg_decimal_parse_string("1234567891234156498715634865156465151654152165453132416854114", &value) == mgE_OVERFLOW);
 	}
 
 	printf("TEST mg_decimal convert string methods: OK\n");

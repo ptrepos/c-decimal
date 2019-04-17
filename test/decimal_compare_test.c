@@ -8,7 +8,7 @@
 
 static void compare_test(const char *text1, const char *text2, int ret)
 {
-	mg_decimal value1, value2;
+	mg_decimal_t value1, value2;
 
 	mg_assert(mg_decimal_parse_string(text1, &value1) == 0);
 	mg_assert(mg_decimal_parse_string(text2, &value2) == 0);

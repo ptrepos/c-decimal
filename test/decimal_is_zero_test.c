@@ -8,7 +8,7 @@
 
 static void is_zero_test(const char *text, bool zero)
 {
-	mg_decimal value1;
+	mg_decimal_t value1;
 
 	mg_assert(mg_decimal_parse_string(text, &value1) == 0);
 	mg_assert(mg_decimal_is_zero(&value1) == zero);

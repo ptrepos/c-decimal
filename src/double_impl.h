@@ -26,14 +26,14 @@ static inline void _double_parse(
 		double value, 
 		int *sign, 
 		int *scale, 
-		uint64_t *fraction,
+		unsigned long long *fraction,
 		int *status)
 {
-	uint64_t *p = (uint64_t*)&value;
+	unsigned long long *p = (unsigned long long*)&value;
 
 	int s = (*p >> 63) & 0x1;
 	int e = (int)((*p >> 52) & 0x7FF);
-	uint64_t f = *p & 0xFFFFFFFFFFFFFULL;
+	unsigned long long f = *p & 0xFFFFFFFFFFFFFULL;
 
 	if(e == DOUBLE_EXP_INF && f == 0) {
 		*status = DOUBLE_STATUS_INFINITY;
@@ -60,13 +60,13 @@ static inline void _double_set(
 		double *value, 
 		int sign, 
 		int scale, 
-		uint64_t fraction)
+		unsigned long long fraction)
 {
-	uint64_t *p = (uint64_t*)value;
+	unsigned long long *p = (unsigned long long*)value;
 	
 	int exponent = scale + DOUBLE_EXP_SHIFT;
 	
-	*p = ((uint64_t)(sign & 0x1) << 63) | 
-	     ((uint64_t)(exponent & 0x7FF) << 52) | 
+	*p = ((unsigned long long)(sign & 0x1) << 63) |
+	     ((unsigned long long)(exponent & 0x7FF) << 52) |
 	     (fraction & 0xFFFFFFFFFFFFFULL);
 }
