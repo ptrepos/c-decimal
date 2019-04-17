@@ -43,6 +43,7 @@ void decimal_convert_uint_test()
 	uint_convert_test(0, "0");
 	uint_convert_test(2147483647, "2147483647");
 	uint_convert_test(4294967295, "4294967295");
+	uint_convert_test(12345, "12345");
 
 	convert_overflow("12345679812313214");
 	convert_overflow("-12345679812313214");

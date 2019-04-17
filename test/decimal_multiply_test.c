@@ -22,6 +22,18 @@ static void multiply_test(const char *text1, const char *text2, const char *ret)
 	mg_assert(strcmp(ret, strbuf) == 0);
 }
 
+static void overflow_test(const char *text1, const char *text2)
+{
+	char strbuf[1000];
+	int size;
+	mg_decimal value1, value2, value3;
+
+	mg_assert(mg_decimal_parse_string(text1, &value1) == 0);
+	mg_assert(mg_decimal_parse_string(text2, &value2) == 0);
+
+	mg_assert(mg_decimal_multiply(&value1, &value2, /*out*/&value3) == MG_DECIMAL_ERROR_OVERFLOW);
+}
+
 void decimal_multiply_test()
 {
 	clock_t tm = clock();
@@ -81,6 +93,22 @@ void decimal_multiply_test()
 	multiply_test("12331", "239541530454123456978132", "2953786612029796347997345692");
 	multiply_test("20498", "0.78", "15988.44");
 	multiply_test("9979", "0.87", "8681.73");
+	
+	multiply_test("0.00000000123412", "89145604156", "110.01637300100272");
+	multiply_test("89145604156", "0.00000000123412", "110.01637300100272");
+	multiply_test("0.00000000123412", "0.0000012312", "0.000000000000001519448544");
+	multiply_test("0.0000012312", "0.00000000123412", "0.000000000000001519448544");
+	multiply_test("-0.00000000123412", "0.0000012312", "-0.000000000000001519448544");
+	multiply_test("0.0000012312", "-0.00000000123412", "-0.000000000000001519448544");
+	multiply_test("-0.00000000123412", "89145604156", "-110.01637300100272");
+	multiply_test("89145604156", "-0.00000000123412", "-110.01637300100272");
+	multiply_test("0.00000000123412", "-0.0000012312", "-0.000000000000001519448544");
+	multiply_test("-0.0000012312", "0.00000000123412", "-0.000000000000001519448544");
+	multiply_test("0.00000000123412", "-89145604156", "-110.01637300100272");
+	multiply_test("-89145604156", "0.00000000123412", "-110.01637300100272");
+
+	overflow_test("99999999999999999999999999.0", "99999999999999999999999999.0");
+	overflow_test("199999999999999999999999999.0", "199999999999999999999999999.0");
 
 	printf("TEST mg_decimal_multiply(): OK\n");
 }
