@@ -14,9 +14,9 @@ static void uint64_convert_test(int64_t value, const char *ret)
 	mg_decimal value1;
 	int64_t value2;
 
-	mg_assert(mg_decimal_value_of_uint64(value, &value1) == 0);
+	mg_assert(mg_decimal_value_of_ulong_long(value, &value1) == 0);
 
-	mg_assert(mg_decimal_to_uint64(&value1, /*out*/&value2) == 0);
+	mg_assert(mg_decimal_to_ulong_long(&value1, /*out*/&value2) == 0);
 
 	mg_assert(value == value2);
 
@@ -31,7 +31,7 @@ static void convert_overflow(const char *value)
 	unsigned long long value3;
 
 	mg_assert(mg_decimal_parse_string(value, &value1) == 0);
-	mg_assert(mg_decimal_to_uint64(&value1, /*out*/&value3) == MG_DECIMAL_ERROR_OVERFLOW);
+	mg_assert(mg_decimal_to_ulong_long(&value1, /*out*/&value3) == MG_DECIMAL_ERROR_OVERFLOW);
 }
 
 void decimal_convert_uint64_test()

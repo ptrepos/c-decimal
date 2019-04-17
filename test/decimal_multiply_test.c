@@ -24,8 +24,6 @@ static void multiply_test(const char *text1, const char *text2, const char *ret)
 
 static void overflow_test(const char *text1, const char *text2)
 {
-	char strbuf[1000];
-	int size;
 	mg_decimal value1, value2, value3;
 
 	mg_assert(mg_decimal_parse_string(text1, &value1) == 0);

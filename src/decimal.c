@@ -36,8 +36,8 @@ static mg_decimal_error _divide_internal(
 
 MG_DECIMAL_API void mg_decimal_set_binary(
 	mg_decimal *value,
-	uint64_t high,
-	uint64_t low)
+	unsigned long long high,
+	unsigned long long low)
 {
 	value->w[1] = high;
 	value->w[0] = low;
@@ -45,8 +45,8 @@ MG_DECIMAL_API void mg_decimal_set_binary(
 
 MG_DECIMAL_API void mg_decimal_get_binary(
 	const mg_decimal *value,
-	/*out*/uint64_t *high,
-	/*out*/uint64_t *low)
+	/*out*/unsigned long long *high,
+	/*out*/unsigned long long *low)
 {
 	*high = value->w[1];
 	*low = value->w[0];
@@ -56,8 +56,8 @@ MG_DECIMAL_API void mg_decimal_get_binary(
 
 MG_DECIMAL_API void mg_decimal_set_binary(
 	/*out*/mg_decimal *value,
-	uint64_t high,
-	uint64_t low)
+	unsigned long long high,
+	unsigned long long low)
 {
 	value->w[3] = (uint32_t)(high >> 32ULL);
 	value->w[2] = (uint32_t)(high);
@@ -67,8 +67,8 @@ MG_DECIMAL_API void mg_decimal_set_binary(
 
 MG_DECIMAL_API void mg_decimal_get_binary(
 	const mg_decimal *value,
-	/*out*/uint64_t *high,
-	/*out*/uint64_t *low)
+	/*out*/unsigned long long *high,
+	/*out*/unsigned long long *low)
 {
 	*high = ((uint64_t)value->w[3] << 32ULL) | (uint64_t)value->w[2];
 	*low = ((uint64_t)value->w[1] << 32ULL) | (uint64_t)value->w[0];
@@ -145,7 +145,7 @@ MG_DECIMAL_API mg_decimal_error mg_decimal_value_of_uint(unsigned int value, /*o
 	return 0;
 }
 
-MG_DECIMAL_API mg_decimal_error mg_decimal_value_of_int64(int64_t value, /*out*/mg_decimal *ret)
+MG_DECIMAL_API mg_decimal_error mg_decimal_value_of_long_long(long long value, /*out*/mg_decimal *ret)
 {
 	mg_decimal_error err;
 	int sign;
@@ -165,7 +165,7 @@ MG_DECIMAL_API mg_decimal_error mg_decimal_value_of_int64(int64_t value, /*out*/
 	return 0;
 }
 
-MG_DECIMAL_API mg_decimal_error mg_decimal_value_of_uint64(uint64_t value, /*out*/mg_decimal *ret)
+MG_DECIMAL_API mg_decimal_error mg_decimal_value_of_ulong_long(unsigned long long value, /*out*/mg_decimal *ret)
 {
 	mg_decimal_error err;
 	mg_uint256_t fraction;
@@ -439,7 +439,7 @@ _ERROR:
 	return err;
 }
 
-MG_DECIMAL_API mg_decimal_error mg_decimal_to_int64(const mg_decimal *value, /*out*/int64_t *ret)
+MG_DECIMAL_API mg_decimal_error mg_decimal_to_long_long(const mg_decimal *value, /*out*/long long *ret)
 {
 	mg_decimal_error err;
 	int sign;
@@ -490,7 +490,7 @@ _ERROR:
 	return err;
 }
 
-MG_DECIMAL_API mg_decimal_error mg_decimal_to_uint64(const mg_decimal *value, /*out*/uint64_t *ret)
+MG_DECIMAL_API mg_decimal_error mg_decimal_to_ulong_long(const mg_decimal *value, /*out*/unsigned long long *ret)
 {
 	mg_decimal_error err;
 	int sign;

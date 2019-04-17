@@ -18,9 +18,9 @@ extern "C" {
 typedef struct mg_decimal
 {
 #if defined(__MG_DECIMAL_ARCH32)
-	uint32_t w[4];
+	unsigned int w[4];
 #else
-	uint64_t w[2];
+	unsigned long long w[2];
 #endif
 } mg_decimal;
 
@@ -39,21 +39,21 @@ MG_DECIMAL_API void mg_decimal_minus_one(/*out*/mg_decimal *value);
 MG_DECIMAL_API void mg_decimal_min_value(/*out*/mg_decimal *value);
 MG_DECIMAL_API void mg_decimal_max_value(/*out*/mg_decimal *value);
 
-MG_DECIMAL_API void mg_decimal_set_binary(/*out*/mg_decimal *value, uint64_t high, uint64_t low);
-MG_DECIMAL_API void mg_decimal_get_binary(const mg_decimal *value, /*out*/uint64_t *high, /*out*/uint64_t *low);
+MG_DECIMAL_API void mg_decimal_set_binary(/*out*/mg_decimal *value, unsigned long long high, unsigned long long low);
+MG_DECIMAL_API void mg_decimal_get_binary(const mg_decimal *value, /*out*/unsigned long long *high, /*out*/unsigned long long *low);
 
 MG_DECIMAL_API mg_decimal_error mg_decimal_value_of_int(int value, /*out*/mg_decimal *ret);
 MG_DECIMAL_API mg_decimal_error mg_decimal_value_of_uint(unsigned int value, /*out*/mg_decimal *ret);
-MG_DECIMAL_API mg_decimal_error mg_decimal_value_of_int64(int64_t value, /*out*/mg_decimal *ret);
-MG_DECIMAL_API mg_decimal_error mg_decimal_value_of_uint64(uint64_t value, /*out*/mg_decimal *ret);
+MG_DECIMAL_API mg_decimal_error mg_decimal_value_of_long_long(long long value, /*out*/mg_decimal *ret);
+MG_DECIMAL_API mg_decimal_error mg_decimal_value_of_ulong_long(unsigned long long value, /*out*/mg_decimal *ret);
 MG_DECIMAL_API mg_decimal_error mg_decimal_value_of_float(float value, /*out*/mg_decimal *ret);
 MG_DECIMAL_API mg_decimal_error mg_decimal_value_of_double(double value, /*out*/mg_decimal *ret);
 MG_DECIMAL_API mg_decimal_error mg_decimal_parse_string(const char *value, /*out*/mg_decimal *ret);
 
 MG_DECIMAL_API mg_decimal_error mg_decimal_to_int(const mg_decimal *value, /*out*/int *ret);
 MG_DECIMAL_API mg_decimal_error mg_decimal_to_uint(const mg_decimal *value, /*out*/unsigned int *ret);
-MG_DECIMAL_API mg_decimal_error mg_decimal_to_int64(const mg_decimal *value, /*out*/int64_t *ret);
-MG_DECIMAL_API mg_decimal_error mg_decimal_to_uint64(const mg_decimal *value, /*out*/uint64_t *ret);
+MG_DECIMAL_API mg_decimal_error mg_decimal_to_long_long(const mg_decimal *value, /*out*/long long *ret);
+MG_DECIMAL_API mg_decimal_error mg_decimal_to_ulong_long(const mg_decimal *value, /*out*/unsigned long long *ret);
 MG_DECIMAL_API mg_decimal_error mg_decimal_to_float(const mg_decimal *value, /*out*/float *ret);
 MG_DECIMAL_API mg_decimal_error mg_decimal_to_double(const mg_decimal *value, /*out*/double *ret);
 MG_DECIMAL_API mg_decimal_error mg_decimal_to_string(const mg_decimal *value, /*out*/char *buffer, int buffer_size, /*out*/int *required_buffer_size);
