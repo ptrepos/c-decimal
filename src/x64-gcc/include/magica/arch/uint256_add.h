@@ -10,10 +10,11 @@ static inline void mg_uint256_add(mg_uint256_t *op1, const mg_uint256_t *op2)
 	register unsigned long long a3 asm("r11") = op1->word[3];
 	
 	asm volatile (
-		"addq (%%rdx), %%r8 \n\t"
-		"adcq 8(%%rdx), %%r9 \n\t"
-		"adcq 16(%%rdx), %%r10 \n\t"
-		"adcq 24(%%rdx), %%r11 \n\t"
+		".intel_syntax noprefix\n"
+		"add r8, [rdx] \n\t"
+		"adc r9, 8[rdx] \n\t"
+		"adc r10, 16[rdx] \n\t"
+		"adc r11, 24[rdx] \n\t"
 		: "+r"(a0), "+r"(a1), "+r"(a2), "+r"(a3)
 		: "d"(op2), "r"(a0), "r"(a1), "r"(a2), "r"(a3)
 		: 

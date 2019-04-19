@@ -12,19 +12,20 @@ static inline bool mg_uint256_less_than(const mg_uint256_t *op1, const mg_uint25
 	register unsigned long long ret;
 	
 	asm volatile (
-		"movq %%r8, %%rax \n\t"
-		"subq (%%rdx), %%rax \n\t"
-		"movq %%r9, %%rax \n\t"
-		"sbbq 8(%%rdx), %%rax \n\t"
-		"movq %%r10, %%rax \n\t"
-		"sbbq 16(%%rdx), %%rax \n\t"
-		"movq %%r11, %%rax \n\t"
-		"sbbq 24(%%rdx), %%rax \n\t"
-		"movl $0, %%eax \n\t"
-		"setb %%al \n\t"
+		".intel_syntax noprefix\n"
+		"mov rax, r8 \n\t"
+		"sub rax, [rdx] \n\t"
+		"mov rax, r9 \n\t"
+		"sbb rax, 8[rdx] \n\t"
+		"mov rax, r10 \n\t"
+		"sbb rax, 16[rdx] \n\t"
+		"mov rax, r11 \n\t"
+		"sbb rax, 24[rdx] \n\t"
+		"mov eax, 0 \n\t"
+		"setb al \n\t"
 		: "=&a"(ret)
 		: "d"(op2), "r"(a0), "r"(a1), "r"(a2), "r"(a3)
-		:
+		: 
 	);
 	
 	return ret != 0;

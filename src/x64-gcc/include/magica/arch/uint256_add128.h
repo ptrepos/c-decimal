@@ -8,8 +8,9 @@ static inline void mg_uint256_add128(mg_uint256_t *op1, const mg_uint256_t *op2)
 	register unsigned long long a1 asm("r9") = op1->word[1];
 	
 	asm volatile (
-		"addq (%%rdx), %%r8 \n\t"
-		"adcq 8(%%rdx), %%r9 \n\t"
+		".intel_syntax noprefix\n"
+		"add r8, [rdx] \n\t"
+		"adc r9, 8[rdx] \n\t"
 		: "+r"(a0), "+r"(a1)
 		: "d"(op2), "r"(a0), "r"(a1)
 		: 

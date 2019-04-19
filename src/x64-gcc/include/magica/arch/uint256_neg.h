@@ -11,14 +11,15 @@ static inline void mg_uint256_neg(mg_uint256_t *op1)
 	register unsigned long long ret;
 	
 	asm volatile (
-		"notq %%r8 \n\t"
-		"notq %%r9 \n\t"
-		"notq %%r10 \n\t"
-		"notq %%r11 \n\t"
-		"addq $1, %%r8 \n\t"
-		"adcq $0, %%r9 \n\t"
-		"adcq $0, %%r10 \n\t"
-		"adcq $0, %%r11 \n\t"
+		".intel_syntax noprefix\n"
+		"not r8 \n\t"
+		"not r9 \n\t"
+		"not r10 \n\t"
+		"not r11 \n\t"
+		"add r8, 1 \n\t"
+		"adc r9, 0 \n\t"
+		"adc r10, 0 \n\t"
+		"adc r11, 0 \n\t"
 		: "+r"(a0), "+r"(a1), "+r"(a2), "+r"(a3)
 		: "r"(a0), "r"(a1), "r"(a2), "r"(a3)
 		:

@@ -64,6 +64,7 @@ void mg_uint256_add_test()
 	add128_sub128_test("1024", "1024");
 	add128_sub128_test("97446154111", "4561");
 	add128_sub128_test("4561", "97446154111");
+	add128_sub128_test("9744615411197446154111", "9744615411197446154111");
 
 	printf("TEST mg_uint256_add() and mg_uint256_subtract(): OK\n");
 }
