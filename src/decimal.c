@@ -1377,6 +1377,11 @@ MG_DECIMAL_API mg_error_t mg_decimal_round(/*inout*/mg_decimal_t *value, int pre
 		assert(type <= mgDECIMAL_ROUND_OFF);
 	}
 
+	if(precision < 0) {
+		mg_uint256_mul128(fraction, mg_uint256_get_10eN(-precision));
+		precision = 0;
+	}
+
 	_decimal_set2(value, sign, -precision, fraction);
 
 	return 0;

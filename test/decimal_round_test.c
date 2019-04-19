@@ -100,5 +100,21 @@ void decimal_round_test()
 	round_test("-0000.001412345679", 3, mgDECIMAL_FLOOR, "-0.002");
 	round_test("-0000.001512345679", 3, mgDECIMAL_FLOOR, "-0.002");
 
+	round_test("1005", -1, mgDECIMAL_FLOOR, "1000");
+	round_test("1000.5", 0, mgDECIMAL_FLOOR, "1000");
+	round_test("1025", -2, mgDECIMAL_FLOOR, "1000");
+	round_test("-1005", -1, mgDECIMAL_FLOOR, "-1010");
+	round_test("-1000.5", 0, mgDECIMAL_FLOOR, "-1001");
+	round_test("-1025", -2, mgDECIMAL_FLOOR, "-1100");
+	round_test("9999999991025", -5, mgDECIMAL_FLOOR, "9999999900000");
+
+	round_test("1005", -1, mgDECIMAL_CEILING, "1010");
+	round_test("1000.5", 0, mgDECIMAL_CEILING, "1001");
+	round_test("1025", -2, mgDECIMAL_CEILING, "1100");
+	round_test("-1005", -1, mgDECIMAL_CEILING, "-1000");
+	round_test("-1000.5", 0, mgDECIMAL_CEILING, "-1000");
+	round_test("-1025", -2, mgDECIMAL_CEILING, "-1000");
+	round_test("9999999991025", -5, mgDECIMAL_CEILING, "10000000000000");
+
 	printf("TEST mg_decimal_round(): OK\n");
 }
