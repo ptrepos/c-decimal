@@ -63,6 +63,30 @@
     <ClInclude Include="src\gen32\include\magica\arch\decimal_impl.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="src\gen-c\include\magica\arch\uintbase.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gen-c\include\magica\arch\uint256_sub128.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gen-c\include\magica\arch\uint256_sub.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gen-c\include\magica\arch\uint256_neg128.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gen-c\include\magica\arch\uint256_neg.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gen-c\include\magica\arch\uint256_less_than.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gen-c\include\magica\arch\uint256_add128.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gen-c\include\magica\arch\uint256_add.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\decimal.c">
@@ -75,6 +99,9 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="src\gen64\uint256.c">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gen-c\uint256_mul_digits.c">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>

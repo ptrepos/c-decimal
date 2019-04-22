@@ -13,10 +13,12 @@
 #define mgUINT256_WORD_COUNT	(8)
 #define mgUINT256_WORD_BITS		(32)
 
+typedef unsigned int _mg_word_t;
+
 /**
  * 256bit integer implementation for 32bit.
  */
 typedef struct mg_uint256
 {
-	unsigned int word[mgUINT256_WORD_COUNT];
+	_mg_word_t word[mgUINT256_WORD_COUNT];
 } mg_uint256_t;
