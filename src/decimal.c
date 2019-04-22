@@ -32,27 +32,7 @@ static mg_error_t _divide_internal(
 		/*inout*/int *_scale,
 		/*inout*/mg_uint256_t *_q);
 
-#if defined(_M_X64) || defined(_M_ARM64) || defined(__amd64__) || defined(__arm64__)
-
-MG_DECIMAL_API void mg_decimal_set_binary(
-	mg_decimal_t *value,
-	unsigned long long high,
-	unsigned long long low)
-{
-	value->w[1] = high;
-	value->w[0] = low;
-}
-
-MG_DECIMAL_API void mg_decimal_get_binary(
-	const mg_decimal_t *value,
-	/*out*/unsigned long long *high,
-	/*out*/unsigned long long *low)
-{
-	*high = value->w[1];
-	*low = value->w[0];
-}
-
-#else
+#if defined(__MG_DECIMAL_ARCH32)
 
 MG_DECIMAL_API void mg_decimal_set_binary(
 	/*out*/mg_decimal_t *value,
@@ -72,6 +52,26 @@ MG_DECIMAL_API void mg_decimal_get_binary(
 {
 	*high = ((unsigned long long)value->w[3] << 32ULL) | (unsigned long long)value->w[2];
 	*low = ((unsigned long long)value->w[1] << 32ULL) | (unsigned long long)value->w[0];
+}
+
+#else
+
+MG_DECIMAL_API void mg_decimal_set_binary(
+	mg_decimal_t *value,
+	unsigned long long high,
+	unsigned long long low)
+{
+	value->w[1] = high;
+	value->w[0] = low;
+}
+
+MG_DECIMAL_API void mg_decimal_get_binary(
+	const mg_decimal_t *value,
+	/*out*/unsigned long long *high,
+	/*out*/unsigned long long *low)
+{
+	*high = value->w[1];
+	*low = value->w[0];
 }
 
 #endif
