@@ -39,13 +39,13 @@ static inline uint32_t _deciaml_set_bits(uint32_t dest, uint32_t value, uint32_t
 static inline int _decimal_get_sign(const mg_decimal_t *value)
 {
 	return (int)_decimal_get_bits(
-		value->w[INFO_INDEX], SIGN_MASK, SIGN_BITINDEX);
+		value->u.b32.word3, SIGN_MASK, SIGN_BITINDEX);
 }
 
 static inline void _decimal_set_sign(mg_decimal_t *value, int sign)
 {
-	value->w[INFO_INDEX] = _deciaml_set_bits(
-		value->w[INFO_INDEX],
+	value->u.b32.word3 = _deciaml_set_bits(
+		value->u.b32.word3,
 		sign,
 		SIGN_MASK,
 		SIGN_BITINDEX);
@@ -54,16 +54,16 @@ static inline void _decimal_set_sign(mg_decimal_t *value, int sign)
 static inline int _decimal_get_scale(const mg_decimal_t *value)
 {
 	int bits = (int)_decimal_get_bits(
-		value->w[INFO_INDEX], SCALE_MASK, SCALE_BITINDEX);
+		value->u.b32.word3, SCALE_MASK, SCALE_BITINDEX);
 	return (bits & SCALE_SIGNEXPAND) == 0 ? bits: (short)(bits | SCALE_SIGNEXPAND);
 }
 
 static inline void _decimal_get_fraction(const mg_decimal_t *value, mg_uint256_t *buf)
 {
-	buf->word[0] = value->w[0];
-	buf->word[1] = value->w[1];
-	buf->word[2] = value->w[2];
-	buf->word[3] = (uint32_t)_decimal_get_bits(value->w[3], FRACTION_MASK, FRACTION_BITINDEX);
+	buf->word[0] = value->u.b32.word0;
+	buf->word[1] = value->u.b32.word1;
+	buf->word[2] = value->u.b32.word2;
+	buf->word[3] = (uint32_t)_decimal_get_bits(value->u.b32.word3, FRACTION_MASK, FRACTION_BITINDEX);
 	buf->word[4] = 0;
 	buf->word[5] = 0;
 	buf->word[6] = 0;
@@ -86,10 +86,10 @@ static inline mg_error_t _decimal_set(mg_decimal_t *value, int sign, int scale, 
 		goto _ERROR;
 	}
 
-	value->w[0] = fraction->word[0];
-	value->w[1] = fraction->word[1];
-	value->w[2] = fraction->word[2];
-	value->w[3] =
+	value->u.b32.word0 = fraction->word[0];
+	value->u.b32.word1 = fraction->word[1];
+	value->u.b32.word2 = fraction->word[2];
+	value->u.b32.word3 =
 		((sign << SIGN_BITINDEX) & SIGN_MASK) | 
 		((scale << SCALE_BITINDEX) & SCALE_MASK) | 
 		((fraction->word[3] << FRACTION_BITINDEX) & FRACTION_MASK);
@@ -105,10 +105,10 @@ static inline void _decimal_set2(mg_decimal_t *value, int sign, int scale, const
 	assert(SCALE_MIN <= scale && scale <= SCALE_MAX);
 	assert(sign == 0 || sign == 1);
 
-	value->w[0] = fraction->word[0];
-	value->w[1] = fraction->word[1];
-	value->w[2] = fraction->word[2];
-	value->w[3] =
+	value->u.b32.word0 = fraction->word[0];
+	value->u.b32.word1 = fraction->word[1];
+	value->u.b32.word2 = fraction->word[2];
+	value->u.b32.word3 =
 		((sign << SIGN_BITINDEX) & SIGN_MASK) | 
 		((scale << SCALE_BITINDEX) & SCALE_MASK) | 
 		((fraction->word[3] << FRACTION_BITINDEX) & FRACTION_MASK);

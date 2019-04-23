@@ -17,11 +17,18 @@ extern "C" {
 
 typedef struct mg_decimal
 {
-#if defined(__MG_DECIMAL_ARCH32)
-	unsigned int w[4];
-#else
-	unsigned long long w[2];
-#endif
+	union {
+		struct {
+			unsigned int word0;
+			unsigned int word1;
+			unsigned int word2;
+			unsigned int word3;
+		} b32;
+		struct {
+			unsigned long long word0;
+			unsigned long long word1;
+		} b64;
+	} u;
 } mg_decimal_t;
 
 typedef struct _mg_error	*mg_error_t;

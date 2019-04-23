@@ -1,5 +1,3 @@
-#pragma once
-
 #include <magica/decimal/mgcompat.h>
 #include <magica/arch/def.h>
 #include <magica/arch/uintbase.h>

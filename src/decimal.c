@@ -39,10 +39,10 @@ MG_DECIMAL_API void mg_decimal_set_binary(
 	unsigned long long high,
 	unsigned long long low)
 {
-	value->w[3] = (uint32_t)(high >> 32ULL);
-	value->w[2] = (uint32_t)(high);
-	value->w[1] = (uint32_t)(low >> 32ULL);
-	value->w[0] = (uint32_t)(low);
+	value->u.b32.word3 = (unsigned int)(high >> 32ULL);
+	value->u.b32.word2 = (unsigned int)(high);
+	value->u.b32.word1 = (unsigned int)(low >> 32ULL);
+	value->u.b32.word0 = (unsigned int)(low);
 }
 
 MG_DECIMAL_API void mg_decimal_get_binary(
@@ -50,8 +50,8 @@ MG_DECIMAL_API void mg_decimal_get_binary(
 	/*out*/unsigned long long *high,
 	/*out*/unsigned long long *low)
 {
-	*high = ((unsigned long long)value->w[3] << 32ULL) | (unsigned long long)value->w[2];
-	*low = ((unsigned long long)value->w[1] << 32ULL) | (unsigned long long)value->w[0];
+	*high = ((unsigned long long)value->u.b32.word3 << 32ULL) | (unsigned long long)value->u.b32.word2;
+	*low = ((unsigned long long)value->u.b32.word1 << 32ULL) | (unsigned long long)value->u.b32.word0;
 }
 
 #else
@@ -61,8 +61,8 @@ MG_DECIMAL_API void mg_decimal_set_binary(
 	unsigned long long high,
 	unsigned long long low)
 {
-	value->w[1] = high;
-	value->w[0] = low;
+	value->u.b64.word1 = high;
+	value->u.b64.word0 = low;
 }
 
 MG_DECIMAL_API void mg_decimal_get_binary(
@@ -70,8 +70,8 @@ MG_DECIMAL_API void mg_decimal_get_binary(
 	/*out*/unsigned long long *high,
 	/*out*/unsigned long long *low)
 {
-	*high = value->w[1];
-	*low = value->w[0];
+	*high = value->u.b64.word1;
+	*low = value->u.b64.word0;
 }
 
 #endif

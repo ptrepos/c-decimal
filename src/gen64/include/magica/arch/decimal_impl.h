@@ -39,13 +39,13 @@ static inline unsigned long long _deciaml_set_bits(unsigned long long dest, unsi
 static inline int _decimal_get_sign(const mg_decimal_t *value)
 {
 	return (int)_decimal_get_bits(
-		value->w[INFO_INDEX], SIGN_MASK, SIGN_BITINDEX);
+		value->u.b64.word1, SIGN_MASK, SIGN_BITINDEX);
 }
 
 static inline void _decimal_set_sign(mg_decimal_t *value, int sign)
 {
-	value->w[INFO_INDEX] = _deciaml_set_bits(
-		value->w[INFO_INDEX],
+	value->u.b64.word1 = _deciaml_set_bits(
+		value->u.b64.word1,
 		sign,
 		SIGN_MASK,
 		SIGN_BITINDEX);
@@ -54,15 +54,15 @@ static inline void _decimal_set_sign(mg_decimal_t *value, int sign)
 static inline int _decimal_get_scale(const mg_decimal_t *value)
 {
 	int bits = (int)_decimal_get_bits(
-		value->w[INFO_INDEX], SCALE_MASK, SCALE_BITINDEX);
+		value->u.b64.word1, SCALE_MASK, SCALE_BITINDEX);
 	return (bits & SCALE_SIGNEXPAND) == 0 ? bits: (short)(bits | SCALE_SIGNEXPAND);
 }
 
 static inline void _decimal_get_fraction(const mg_decimal_t *value, mg_uint256_t *buf)
 {
-	buf->word[0] = value->w[0];
+	buf->word[0] = value->u.b64.word0;
 	buf->word[1] = _decimal_get_bits(
-		value->w[INFO_INDEX], FRACTION_MASK, FRACTION_BITINDEX);
+		value->u.b64.word1, FRACTION_MASK, FRACTION_BITINDEX);
 	buf->word[2] = 0;
 	buf->word[3] = 0;
 }
@@ -83,8 +83,8 @@ static inline mg_error_t _decimal_set(mg_decimal_t *value, int sign, int scale, 
 		goto _ERROR;
 	}
 
-	value->w[0] = fraction->word[0];
-	value->w[INFO_INDEX] =
+	value->u.b64.word0 = fraction->word[0];
+	value->u.b64.word1 =
 		(((unsigned long long)sign << SIGN_BITINDEX) & SIGN_MASK) | 
 		(((unsigned long long)scale << SCALE_BITINDEX) & SCALE_MASK) |
 		(((unsigned long long)fraction->word[1] << FRACTION_BITINDEX) & FRACTION_MASK);
@@ -100,8 +100,8 @@ static inline void _decimal_set2(mg_decimal_t *value, int sign, int scale, const
 	assert(SCALE_MIN <= scale && scale <= SCALE_MAX);
 	assert(sign == 0 || sign == 1);
 
-	value->w[0] = fraction->word[0];
-	value->w[INFO_INDEX] =
+	value->u.b64.word0 = fraction->word[0];
+	value->u.b64.word1 =
 		(((unsigned long long)sign << SIGN_BITINDEX) & SIGN_MASK) |
 		(((unsigned long long)scale << SCALE_BITINDEX) & SCALE_MASK) |
 		(((unsigned long long)fraction->word[1] << FRACTION_BITINDEX) & FRACTION_MASK);
