@@ -1,0 +1,44 @@
+set_os unix
+set_processor x64
+
+begin_project magica-decimal
+
+# executable/shared
+set_type shared
+
+# gcc options
+set_gcc_options -O3 -DNDEBUG -masm=intel -std=gnu11
+
+# add include folder
+add_include include
+add_include src
+add_include src/gen64/include
+add_include src/x64-gcc/include
+
+# add items
+add_items gcc src/*.c
+add_items gcc src/gen64/*.c
+add_items nasm src/asm/x64-sysv/*.asm
+
+end_project
+
+begin_project magica-decimal-test
+
+# executable/shared
+set_type executable
+
+# gcc options
+set_gcc_options -O3 -DNDEBUG -masm=intel -std=gnu11
+
+add_include include
+add_include src
+add_include src/common64/include
+add_include src/x64-gcc/include
+
+add_items gcc test/*.c
+add_items gcc src/mg_uint256_conversion.c
+add_items gcc src/gen64/*.c
+add_items nasm src/asm/x64-sysv/*.asm
+add_items lib $output_path/magica-decimal$lib_ext
+
+end_project

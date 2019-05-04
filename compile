@@ -1,0 +1,320 @@
+#!/bin/sh
+# ./compile build [configuration]
+# ./compile rebuild [configuration]
+# ./compile clean [configuration]
+# ./compile test [configuration]
+
+command=$1
+config=$2
+
+if [ -z $config ]; then
+	config=config/default
+fi
+
+config_name=`basename $config`
+
+obj_path=obj/$config_name
+output_path=bin/$config_name
+
+UNAME=`uname -a`
+case $UNAME in
+	CYGWIN*)
+		platform_os=cygwin
+		;;
+	*)
+		platform_os=unix
+		;;
+esac
+
+os=$platform_os
+
+gcc_cmd=cc
+nasm_cmd=nasm
+
+set_gcc_cmd() {
+	gcc_cmd=$1
+}
+
+set_nasm_cmd() {
+	nasm_cmd=$1
+}
+
+set_type() {
+	type=$1
+}
+
+set_os() {
+	if [ $1 = any ]; then
+		os=$platform_os
+	else
+		os=$1
+	fi
+}
+
+set_processor() {
+	processor=$1
+}
+
+begin_project() {
+	project=$1
+	type=
+	gcc_items=
+	gcc_options=
+	gcc_link_options=
+	nasm_items=
+	nasm_options=
+	link_items=
+	link_type=
+	objs=
+	target=
+	debug_options=
+
+	case $os in
+		unix|linux)
+			exe_ext=
+			dll_ext=.so
+			lib_ext=$dll_ext
+			obj_ext=.o
+			;;
+		cygwin)
+			exe_ext=.exe
+			dll_ext=.so
+			lib_ext=$dll_ext
+			obj_ext=.o
+			;;
+		windows)
+			exe_ext=.exe
+			dll_ext=.dll
+			lib_ext=.lib
+			obj_ext=.obj
+			;;
+	esac
+}
+
+end_project() {
+	case $os in
+		unix|linux)
+			case $processor in
+				x86)
+					nasm_options=$nasm_options" -f elf"
+					;;
+				x64)
+					nasm_options=$nasm_options" -f elf64"
+					;;
+			esac
+			
+			case $type in
+				shared)
+					gcc_options=$gcc_options" -fPIC"
+					gcc_link_options=$gcc_link_options" -shared"
+					;;
+			esac
+			;;
+		cygwin)
+			case $processor in
+				x86)
+					nasm_options=$nasm_options" -f win32"
+					;;
+				x64)
+					nasm_options=$nasm_options" -f win64"
+					;;
+			esac
+			
+			case $type in
+				shared)
+					gcc_link_options=$gcc_link_options" -shared"
+					;;
+			esac
+			;;
+		windows)
+			case $processor in
+				x86)
+					nasm_options=$nasm_options" -f win32"
+					;;
+				x64)
+					nasm_options=$nasm_options" -f win64"
+					;;
+			esac
+			
+			case $type in
+				shared)
+					gcc_link_options=$gcc_link_options" -shared"
+					;;
+			esac
+			;;
+	esac
+	
+	case $type in
+		shared)
+			target=$output_path/$project$dll_ext
+			;;
+		*)
+			target=$output_path/$project$exe_ext
+			;;
+	esac
+
+	case $internal_command in
+	clean)
+		clean
+		;;
+	build)
+		build
+		;;
+	test)
+		test
+		;;
+	esac
+}
+
+set_gcc_options() {
+	gcc_options=$@
+}
+
+add_include() {
+	includes=$includes" -I$1"
+}
+
+add_items() {
+	local type=$1
+	local items=${@:2}
+	local item=
+	
+	for item in $items; do
+		if [ -e $item ]; then
+			case "$type" in
+			gcc)
+				gcc_items=$gcc_items" $item"
+				;;
+			nasm)
+				nasm_items=$nasm_items" $item"
+				;;
+			obj|lib)
+				link_items=$link_items" $item"
+				;;
+			esac
+		fi
+	done
+}
+
+set_debug_options() {
+	debug_options=$@
+}
+
+create_dir() {
+	mkdir -p `dirname $1`
+	if [ $? != 0 ] ; then
+		exit 1
+	fi
+}
+
+run_command() {
+	echo "$1"
+	$1
+	if [ $? != 0 ] ; then
+		exit 1
+	fi
+}
+
+should_update() {
+	local obj
+	
+	if [ -e $1 ]; then
+		for obj in $2; do
+			if [ $obj -ot $1 ]; then
+				:
+			else
+				return 1
+			fi
+		done
+		return 0
+	else
+		return 1
+	fi
+}
+
+run_gcc() {
+	local item=$1
+	local obj=$obj_path/${item%.*}.o
+	
+	should_update "$obj" "$item"
+	if [ $? -eq 0 ]; then
+		:
+	else
+		create_dir $obj
+		run_command "$gcc_cmd -c $gcc_options -o $obj $includes $item"
+	fi
+	
+	objs=$objs" $obj"
+}
+
+run_nasm() {
+	local item=$1
+	local obj=$obj_path/${item%.*}.o
+	
+	should_update "$obj" "$item"
+	if [ $? -eq 0 ]; then
+		:
+	else
+		create_dir $obj
+		run_command "$nasm_cmd $nasm_options -o $obj $item"
+	fi
+	
+	objs=$objs" $obj"
+}
+
+run_link() {
+	should_update "$target" "$objs $link_items"
+	if [ $? -eq 0 ]; then
+		:
+	else
+		create_dir $target
+		run_command "$gcc_cmd $gcc_link_options -o $target $objs $link_items"
+	fi
+}
+
+build() {
+	for item in $gcc_items; do
+		run_gcc $item
+	done
+	for item in $nasm_items; do
+		run_nasm $item
+	done
+	
+	run_link
+	
+	echo "BUILD COMPLETE: $target"
+}
+
+clean() {
+	rm -rf $obj_path
+	rm -rf $output_path
+}
+
+test() {
+	if [ $type = executable ]; then
+		run_command "./$target $debug_options"
+	fi
+}
+
+case $command in
+clean)
+	internal_command=clean
+	. $config
+	;;
+build)
+	internal_command=build
+	. $config
+	;;
+rebuild)
+	internal_command=clean
+	. $config
+	internal_command=build
+	. $config
+	;;
+test)
+	internal_command=build
+	. $config
+	internal_command=test
+	. $config
+	;;
+esac

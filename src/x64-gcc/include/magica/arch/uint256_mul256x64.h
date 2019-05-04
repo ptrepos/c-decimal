@@ -3,11 +3,6 @@
 #include <stdbool.h>
 #include <magica/arch/def.h>
 
-/**
- * overflow checked multiple for digits of word.
- */
-bool mg_uint256_mul_digits(const mg_uint256_t *op1, int op1_digits, const mg_uint256_t *op2, int op2_digits, mg_uint256_t *result);
-
 static inline bool mg_uint256_mul256x64(mg_uint256_t *op1, const mg_uint256_t *op2)
 {
 	register unsigned long long a0 asm("r8") = op1->word[0];

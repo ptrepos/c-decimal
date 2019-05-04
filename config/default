@@ -1,0 +1,61 @@
+# Operating System Type
+#   any: current system
+#   windows:
+#   cygwin:
+#   unix:
+set_os any
+
+# Processor Type
+#   any: current system
+#   x86:
+#   x64:
+set_processor any
+
+# Begin project definition
+begin_project magica-decimal
+
+# Target Type
+#   executable: executable file
+#   shared: dll or so
+set_type shared
+
+# gcc options
+set_gcc_options -O3 -DNDEBUG
+
+# add include directory
+add_include include
+add_include src
+add_include src/gen32/include
+add_include src/gen-c/include
+
+# add items
+#   gcc: gcc or gcc compatibility c compiler
+#   nasm: nasm or nasm compatibility assembler
+#   lib: linkage library
+add_items gcc src/*.c
+add_items gcc src/gen32/*.c
+add_items gcc src/gen-c/*.c
+
+# End project definition
+end_project
+
+begin_project magica-decimal-test
+
+# executable/shared
+set_type executable
+
+# gcc options
+set_gcc_options -O3 -DNDEBUG
+
+add_include include
+add_include src
+add_include src/gen32/include
+add_include src/gen-c/include
+
+add_items gcc test/*.c
+add_items gcc src/mg_uint256_conversion.c
+add_items gcc src/gen32/*.c
+add_items gcc src/gen-c/*.c
+add_items lib $output_path/magica-decimal$lib_ext
+
+end_project
